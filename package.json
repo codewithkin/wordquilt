@@ -11,7 +11,11 @@
     "build": "turbo run build",
     "check-types": "turbo run check-types",
     "dev:native": "turbo run dev -F native",
-    "dev:web": "turbo run dev -F web"
+    "dev:web": "turbo run dev -F web",
+    "designs:extract": "node designs/extract.mjs",
+    "check:assets": "node designs/extract.mjs && node scripts/check-assets.mjs",
+    "check:tokens": "node --test \"packages/tokens/test/*.test.ts\"",
+    "check:icons": "node scripts/flatten-ios-icons.mjs"
   },
   "dependencies": {
     "@wordquilt/env": "workspace:*",
@@ -21,6 +25,7 @@
   "devDependencies": {
     "@types/node": "^22.20.1",
     "@wordquilt/config": "workspace:*",
+    "sharp": "^0.35.3",
     "turbo": "^2.10.7",
     "typescript": "^6.0.3"
   },

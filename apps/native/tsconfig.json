@@ -2,6 +2,11 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    // @wordquilt/tokens is consumed as TypeScript source and its barrel uses
+    // explicit .ts specifiers, so plain `node` can run the token tests and
+    // scripts without a build step. Metro resolves them the same way.
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
       "@/*": ["./*"]
     }
