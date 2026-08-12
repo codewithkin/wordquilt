@@ -6,7 +6,26 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 1.
+Last updated: end of session 2.
+
+---
+
+## Which screens are done?
+
+**None. Zero of 19.** Nine onboarding screens, ten core screens, none built.
+
+What exists is the *material* screens are made from — palette, type, buttons,
+tiles, cards, word slots, motion — plus a working puzzle generator.
+
+**`progress/02-screens.md` is the screen-by-screen list.** Read that for what to
+build next. It is the only doc that talks in screens rather than layers.
+
+The one screen on disk, `app/(drawer)/index.tsx`, is a throwaway foundation
+preview — it renders every primitive so you can confirm the palette is live on a
+device. Delete it when the Shelf lands.
+
+**The seam (D-006) blocks 8 of the 10 core screens.** Solving it is the single
+highest-value next task: one component unblocks eight screens.
 
 ---
 
@@ -47,31 +66,34 @@ pnpm --filter native prebuild     # also flattens the iOS icons — see D-012
 pnpm --filter native ios          # or: android
 ```
 
-`app/(drawer)/index.tsx` is a **foundation preview** screen that renders every
-primitive in both themes. It exists for one reason: a design system wired to the
-wrong config renders in the library's stock palette and looks perfectly
-self-consistent while being completely wrong.
+`app/(drawer)/index.tsx` renders every primitive in both themes. A design system
+wired to the wrong config renders in the library's stock palette and looks
+perfectly self-consistent while being completely wrong.
 
 Confirm: **terracotta band, cream page, and a hard un-blurred edge under every
-card and tile.** Toggle the theme with the button at the bottom. If it reads grey
-or blue, stop and fix that before anything else.
+card and tile.** If it reads grey or blue, stop and fix that first.
 
-Nothing in this repo has yet been seen on a device. That is the single biggest
-gap.
+Nothing in this repo has ever been seen on a device. That is the biggest gap.
 
-### 2. Then the generator spike — `plans/02-generator-spike.md`
+### 2. Solve the seam — `plans/03-screen-scaffold.md` T01
 
-**Before any screen work.** It answers whether a 200-word themed pool can yield
-50 distinct puzzles, which decides whether packs are 50 puzzles or 30 — and
-content budget, pack pricing and launch library size all hang off that number.
-It is pure logic, so it does not wait on the seam question.
+It blocks eight core screens and most of onboarding. `react-native-svg` is
+already installed; try an SVG path first. **Do not approximate it with a
+circular radius** — the curve is ~4x wider than tall and the difference is
+obvious at a glance.
 
-### 3. Then the screen scaffold — `plans/03-screen-scaffold.md`
+### 3. Build screens, in the order in `progress/02-screens.md`
 
-Starting with **the seam (D-006)**, which is unsolved and blocks Shelf, Puzzle,
-Pack and most of Onboarding.
+Scaffold first, then the four onboarding screens that need nothing else (O4
+Proposition, O5 Theme picker, O6 Fabric picker, O8 Rhythm), then S3 Reveal,
+then S1 Shelf.
 
----
+### 4. The generator spike is written but unmeasured
+
+`packages/generator` selects word sets, packs snaking paths and resolves the
+theme reveal — verified end to end on a real board. What has NOT been run is
+the yield measurement that answers **50 puzzles per pack or 30**. See
+`plans/02-generator-spike.md` T04.
 
 ## What WordQuilt is, in five rules
 
@@ -100,8 +122,9 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | UI primitives | **Written and they bundle. Never rendered on a device.** |
 | Fonts | **All 7 faces load and bundle**, verified by content hash |
 | Platform assets | **All 15 manifest rows pass.** Prebuild generates both native projects correctly |
-| Screens | **None.** The drawer index is a placeholder — delete it when the Shelf lands |
-| Generator | **None** |
+| Screens | **None — 0 of 19.** See `progress/02-screens.md`. The drawer index is a throwaway preview |
+| Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
+| Motion | **Reanimated only** (D-017). Moti removed |
 
 "Built" above means written, bundled and machine-checked. It does **not** mean
 seen.
@@ -138,8 +161,10 @@ seen.
 | `designs/extracted/` | Readable values — grep these | **no**, regenerate |
 | `systems/` | Rules, architecture, numbered decisions | yes (D-001) |
 | `plans/` | Numbered todos, one per commit | yes (D-001) |
+| `progress/02-screens.md` | **Which screens are done.** Start here for screens | yes |
 | `progress/` | This file, the project brief, the changelog | yes (D-001) |
 | `packages/tokens/` | Design values as TS + the parity test | yes |
+| `packages/generator/` | Puzzle generation. Deterministic, seeded | yes |
 | `apps/native/global.css` | **The uniwind config.** Mirrors the tokens | yes |
 | `apps/native/components/ui/` | The primitives | yes |
 | `scripts/` | Asset and icon checks | yes |

@@ -132,3 +132,43 @@ A feature is a plan file; a todo is a sub-feature; each todo is one commit
 carrying its own message and SHA. Where several todos are genuinely one edit to
 one file, they may share a SHA **and must say so** — fabricating intermediate
 states that never existed is worse than an honest shared commit.
+
+### D-016 — Oblique titles are generated per theme, not authored per puzzle
+*Session 2. Owner's decision.*
+Authoring is ~370 lines of editorial at launch and a permanent 50/month tax.
+Generation makes a new pack cost one small block of writing instead of fifty
+lines. `packages/generator/src/titles.ts` assembles from per-theme frames plus
+fillers, plus standalone lines for the ones that only work whole.
+
+Four rules are enforced in code, not left to whoever writes the next theme: a
+title may never contain the theme phrase or theme name; never contain a word
+hidden in that puzzle; never repeat within a pack; and is deterministic per
+puzzle. The first two protect the only moment the product exists for.
+
+### D-017 — Reanimated directly; Moti removed. Supersedes the tooling half of D-014
+*Session 2. Owner's request.*
+The motion vocabulary in D-014 is unchanged — press / stitch / lay-down /
+resolve / recede, material rather than decorative. Only the implementation moved.
+
+`lib/motion.ts` exposes Reanimated configs and a memoised `useMotion()`. Reduced
+motion is handled with `ReduceMotion.System` on every timing, spring and
+entering animation, so Reanimated itself honours the OS setting and animations
+degrade rather than being skipped.
+
+Two things worth knowing: the iOS bundle dropped 6.3MB to 5.8MB, and
+`useMotion()` MUST stay memoised — an unmemoised return makes every
+`useEffect([..., motion])` re-fire on each render, which on the grid restarts
+every tile's spring whenever anything above it re-renders.
+
+### D-018 — Word selection constrains word SHAPE, not just the letter total
+*Session 2.*
+Hitting an exact total is easy if short words are allowed: the first working
+generator returned GREASEPROOF plus six three-letter words — arithmetically
+perfect, and a miserable puzzle. The design's own reference board is six words
+averaging 5.5 letters.
+
+Selection now takes `minWordLength` (default 4), `maxWordLength` and
+`maxShortWords`. This has a direct product consequence: **phrase length and word
+quality trade off against each other**, because the grid area is fixed. A long
+theme phrase leaves fewer cells for words and forces them short. Theme phrases
+must be authored against the grid sizes they will be used at.

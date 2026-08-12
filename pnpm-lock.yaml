@@ -84,6 +84,9 @@ importers:
       '@wordquilt/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@wordquilt/generator':
+        specifier: workspace:*
+        version: link:../../packages/generator
       '@wordquilt/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens

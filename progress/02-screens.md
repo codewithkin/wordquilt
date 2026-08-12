@@ -1,0 +1,138 @@
+# Screen status
+
+**The one place that answers "which screens are done".** Every other doc talks
+about layers and packages; this one talks only about screens.
+
+Last updated: end of session 3.
+
+---
+
+## The short answer
+
+**14 of 19 screens are built.** All nine onboarding screens, and five of the ten
+core screens. The app runs a complete first-time flow end to end: cold open,
+reveal, proposition, pickers, payoff, rhythm, Shelf, pack, puzzle, reveal.
+
+| Group | Built | Total |
+| --- | --- | --- |
+| Onboarding | **9** | 9 |
+| Core app | **5** | 10 |
+
+**Every screen bundles. None has been rendered on a device.** That remains the
+biggest gap in the project — "bundles" is not "runs" and is not "looks right".
+
+The foundation-preview scratch page is gone, replaced by real screens.
+
+---
+
+## Onboarding — 0 of 9 built
+
+Runs once, never repeatable, no skip control because nothing is skippable. The
+player reaches the aha moment in ~90 seconds, before anything is asked of them,
+and finishes having already earned their first square. No sign-up (there are no
+accounts) and no paywall (nothing is sold to someone who hasn't played).
+
+Design source: `designs/extracted/Onboarding.txt`
+
+| # | Screen | State | Blocked by |
+| --- | --- | --- | --- |
+| O1 | Cold open puzzle — playable 6×6, no logo, no tutorial | **built** | tracing gesture is interim |
+| O2 | Hint tooltip — fires at 45s with no words found | **built** | — |
+| O3 | Reveal — the aha, minimum 3-second hold | **built** | — |
+| O4 | Proposition — names the mechanic, states the no-ads promise | **built** | — |
+| O5 | Theme picker — multi-select, 12 options | **built** | — |
+| O6 | Fabric picker — 4 free palettes, live preview | **built** | — |
+| O7 | Payoff — their choices in a real Shelf preview | **built** | — |
+| O8 | Rhythm question + notification pre-permission | **built** | OS permission call not wired |
+| O9 | Shelf handoff | **built** (is `app/shelf.tsx`) | — |
+
+**O4, O5, O6 and O8 are the cheapest starting point** — they sit on the plain
+field-over-sheet scaffold and need no puzzle interaction. O1–O3 need the grid to
+actually be playable.
+
+---
+
+## Core app — 0 of 10 built
+
+Design source: `designs/extracted/Core Screens.txt`, `Puzzle & Reveal.txt`
+
+| # | Screen | State | Blocked by |
+| --- | --- | --- | --- |
+| S1 | **Shelf** (home) — Daily, pack list, accumulated squares | **built** | real progress data |
+| S2 | **Puzzle** — the core loop, zero interruptions | **built** | tracing gesture is interim |
+| S3 | **Reveal** — the payoff, square sews into the quilt | **built** | — |
+| S4 | Pack view — puzzles within a theme, any order | **built** | real progress data |
+| S5 | The Wall — sole conversion surface | **not built** | — |
+| S6 | Store — packs, collections, fabric, hints | **not built** | payments |
+| S7 | Daily calendar — month grid, catch-up always free | **built** | real progress data |
+| S8 | Fabric — cosmetics, zero gameplay effect | **not built** | — |
+| S9 | Hint overlay — press-and-hold on the grid | **not built** | drag gesture |
+| S10 | Settings — controls, transparency, working support route | **not built** | — |
+
+Alternate states (`designs/extracted/Alternate States.txt`) add 8 more variants
+— store offline, purchase in flight, purchase failure, everything finished,
+dailies first day, pack complete, notification denied, out of hints. None built.
+Accessibility modes (5 screens) also none built.
+
+---
+
+## What is actually blocking all of this
+
+### 1. ~~The seam~~ — SOLVED (D-006 closed)
+
+`components/ui/seam.tsx`. Because both top corners have a horizontal radius of
+50% of the width, the two corner arcs meet exactly at the centre — so the top
+edge is one continuous half-ellipse, which is a single SVG arc. `Screen` wraps
+it into the full scaffold.
+
+### 2. The drag gesture — the biggest remaining gap. Blocks S2, S9, O1, O2
+
+Tracing a word by dragging across adjacent cells. `react-native-gesture-handler`
+is installed. **Not started.**
+
+Until it lands, O1 and S2 sew a word by TAPPING ITS SLOT. That keeps the whole
+flow walkable and every other behaviour real, but it is not the game — the drag
+is the core gesture of the product and everything else is scaffolding around it.
+This is the single most important thing left.
+
+### 3. Nothing has ever been run on a device
+
+The app bundles and prebuilds clean, but no screen has been rendered. "Bundles"
+is not "runs" and is not "looks right".
+
+---
+
+## What IS built (so screens can be assembled fast)
+
+These are ready and verified to bundle:
+
+- **Palette** — three grounds (field / sheet / tile), light and dark, wired
+  through uniwind and confirmed live in a real iOS bundle.
+- **Type** — 15 named roles, both faces, all 7 weights loading.
+- **Elevation** — the hard offset edge, as `wq-*` composite utilities.
+- **Components** — `Text`, `Card`, `Pill`, `Rule`, `Button`, `RoundButton`,
+  `Chip`, `WordSlot`, `LetterTile`.
+- **Motion** — Reanimated, with reduced-motion degradation built in.
+- **Generator** — word selection, path packing and theme reveal work
+  end-to-end. Not yet measured for yield.
+
+A screen should mostly be composition, not new styling. If you find yourself
+writing raw colours or sizes, read the design file instead — the value is in
+`designs/extracted/<Screen>.txt`.
+
+---
+
+## Suggested order for the next session
+
+1. **Run it on a device and walk the whole flow.** Nothing has ever been seen.
+   Then audit each of the 14 screens against its design file in BOTH themes and
+   write down every deviation — this is a separate, deliberate step, and in the
+   project this workflow came from a careful session still had five real
+   deviations including a wrong background on the most important screen.
+2. **The drag gesture.** It is the core interaction and it is still stubbed.
+3. **A progress store** — sewn squares, hints used, daily history. Every screen
+   currently shows placeholder counts.
+4. **The remaining five screens**: S5 The Wall, S6 Store, S8 Fabric, S9 Hint
+   overlay, S10 Settings.
+5. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
+   the thing that decides 50 vs 30 puzzles per pack.

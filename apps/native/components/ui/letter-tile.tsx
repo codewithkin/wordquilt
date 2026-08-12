@@ -1,8 +1,12 @@
 import { grid, tileTilt } from "@wordquilt/tokens";
 import { cn } from "heroui-native";
-import { MotiView } from "moti";
+import { useEffect } from "react";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 
-import { duration, useMotion } from "@/lib/motion";
+import { useMotion } from "@/lib/motion";
 
 import { Text } from "./text";
 
@@ -62,7 +66,7 @@ const LETTER: Record<LetterTileState, string> = {
   used: "text-field-ink",
 };
 
-/** A tracing tile lifts very slightly under the finger; a used tile recedes. */
+/** A tracing tile lifts very slightly under the finger. */
 const SCALE: Record<LetterTileState, number> = {
   idle: 1,
   tracing: 1.06,
@@ -98,9 +102,24 @@ export function LetterTile({
   className,
 }: LetterTileProps) {
   const motion = useMotion();
+  const tilt = motion.tilt(tileTilt(row, col));
+
+  const scale = useSharedValue(SCALE[state]);
+  const opacity = useSharedValue(OPACITY[state]);
+
+  useEffect(() => {
+    // The stitch spring: a tile being sewn down settles, it does not wobble.
+    scale.value = motion.settleAfter(SCALE[state], delay);
+    opacity.value = motion.settleAfter(OPACITY[state], delay);
+  }, [state, delay, scale, opacity, motion]);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${tilt}deg` }, { scale: scale.value }],
+    opacity: opacity.value,
+  }));
 
   return (
-    <MotiView
+    <Animated.View
       accessibilityRole="text"
       accessibilityLabel={`${char}, row ${row + 1}, column ${col + 1}`}
       className={cn(
@@ -108,34 +127,19 @@ export function LetterTile({
         TILE[state],
         className,
       )}
-      style={{
-        left: col * grid.pitch + grid.pad,
-        top: row * grid.pitch,
-        width: grid.cell,
-        height: grid.cell,
-      }}
-      animate={{
-        rotate: `${motion.tilt(tileTilt(row, col))}deg`,
-        scale: SCALE[state],
-        opacity: OPACITY[state],
-      }}
-      // The stitch spring: a tile being sewn down settles, it does not wobble.
-      transition={{
-        ...motion.stitch,
-        delay: motion.reduced ? 0 : delay,
-      }}
+      style={[
+        {
+          left: col * grid.pitch + grid.pad,
+          top: row * grid.pitch,
+          width: grid.cell,
+          height: grid.cell,
+        },
+        style,
+      ]}
     >
       <Text variant="letter" className={LETTER[state]}>
         {char}
       </Text>
-    </MotiView>
+    </Animated.View>
   );
 }
-
-/**
- * The dashed thread drawn along a word as the finger traces it.
- *
- * Split out so the Puzzle screen can animate stroke length independently of the
- * tiles — the thread should follow the finger, not appear whole.
- */
-export const threadTransition = { type: "timing", duration: duration.lock } as const;
