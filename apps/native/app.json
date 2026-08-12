@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "scheme": "wordquilt",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "web": {
+      "bundler": "metro"
+    },
+    "name": "wordquilt",
+    "slug": "wordquilt",
+    "plugins": ["expo-font"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
