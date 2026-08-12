@@ -3,3 +3,357 @@
 @import "heroui-native/styles";
 
 @source './node_modules/heroui-native/lib';
+
+/* ==========================================================================
+   WordQuilt design tokens
+   --------------------------------------------------------------------------
+   Mirrors packages/tokens/src/*.ts. Those two files cannot import each other,
+   so `packages/tokens/test/parity.test.ts` compares them value by value and
+   fails the build if they drift. If you change a value here, change it there.
+
+   Values come from designs/extracted (`node designs/extract.mjs`). The design
+   files outrank this file: tokens are a convenience, not the source of truth.
+
+   Uniwind requires every theme to declare an identical set of variables and
+   errors at build time if one is missing — that is a free parity check between
+   light and dark, so keep the two blocks symmetrical.
+   ========================================================================== */
+
+@layer theme {
+  :root {
+    @variant light {
+      /* -- the terracotta band ------------------------------------------- */
+      --wq-field: #c25a34;
+      --wq-field-ink: #fff6e8;
+      --wq-field-line: rgba(255, 246, 232, 0.62);
+      --wq-field-fill: rgba(255, 246, 232, 0.16);
+      /* Offset edge for controls sitting ON the field. */
+      --wq-field-edge: #241f19;
+
+      /* -- the cream page ------------------------------------------------ */
+      --wq-sheet: #fbf4e4;
+      --wq-ink: #241f19;
+      --wq-muted: #7a6e5c;
+      /* Raised-contrast secondary, for the high-contrast setting (D-005). */
+      --wq-muted-strong: #6a5f4e;
+
+      /* -- cards and letter tiles ---------------------------------------- */
+      --wq-tile: #fffdf6;
+      --wq-line: #241f19;
+      /* The elevation ink. Tracks --wq-ink in light, diverges in dark. */
+      --wq-shade: #241f19;
+
+      /* -- quilt squares -------------------------------------------------- */
+      --wq-sewn: #f0c982;
+      --wq-sewn-alt: #e7b563;
+
+      /* -- the one colour allowed to shout -------------------------------- */
+      --wq-accent: #c25a34;
+      --wq-on-accent: #fff6e8;
+      --wq-kicker: #9e4227;
+      --wq-wash: #f6dccb;
+
+      /* -- lines and thread ----------------------------------------------- */
+      --wq-empty: rgba(36, 31, 25, 0.34);
+      --wq-thread: rgba(36, 31, 25, 0.3);
+      --wq-scrim: rgba(24, 18, 12, 0.55);
+    }
+
+    @variant dark {
+      /* Dark is a separate design, not an inversion — every value re-picked. */
+      --wq-field: #8a3e27;
+      --wq-field-ink: #fceedd;
+      --wq-field-line: rgba(252, 238, 221, 0.55);
+      --wq-field-fill: rgba(252, 238, 221, 0.12);
+      /* A warm scrim rather than the shade — near-black on terracotta reads
+         as a hole punched through the band. */
+      --wq-field-edge: rgba(36, 23, 16, 0.55);
+
+      --wq-sheet: #1e1b16;
+      --wq-ink: #f4eddf;
+      --wq-muted: #a99c89;
+      --wq-muted-strong: #b0a390;
+
+      --wq-tile: #2c2721;
+      --wq-line: rgba(244, 237, 223, 0.42);
+      /* NOT --wq-ink. Cards must sit down into the page, not glow. */
+      --wq-shade: #0e0c09;
+
+      --wq-sewn: #7a6038;
+      --wq-sewn-alt: #8e7141;
+
+      --wq-accent: #e39466;
+      --wq-on-accent: #241710;
+      --wq-kicker: #e39466;
+      --wq-wash: #4a2e22;
+
+      --wq-empty: rgba(244, 237, 223, 0.3);
+      --wq-thread: rgba(244, 237, 223, 0.3);
+      --wq-scrim: rgba(24, 18, 12, 0.55);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Repoint heroui-native's semantics at the WordQuilt palette.
+
+   Without this the library's components render in its stock grey/blue while
+   everything we build renders in terracotta — the two agree with themselves
+   and disagree with the design, which is exactly the failure that is easiest
+   to ship and hardest to notice.
+   -------------------------------------------------------------------------- */
+@layer theme {
+  :root {
+    @variant light {
+      --background: var(--wq-sheet);
+      --foreground: var(--wq-ink);
+      --surface: var(--wq-tile);
+      --surface-foreground: var(--wq-ink);
+      --overlay: var(--wq-tile);
+      --overlay-foreground: var(--wq-ink);
+      --backdrop: var(--wq-scrim);
+      --muted: var(--wq-muted);
+      --accent: var(--wq-accent);
+      --accent-foreground: var(--wq-on-accent);
+      --border: var(--wq-line);
+      --separator: var(--wq-empty);
+      --link: var(--wq-kicker);
+    }
+    @variant dark {
+      --background: var(--wq-sheet);
+      --foreground: var(--wq-ink);
+      --surface: var(--wq-tile);
+      --surface-foreground: var(--wq-ink);
+      --overlay: var(--wq-tile);
+      --overlay-foreground: var(--wq-ink);
+      --backdrop: var(--wq-scrim);
+      --muted: var(--wq-muted);
+      --accent: var(--wq-accent);
+      --accent-foreground: var(--wq-on-accent);
+      --border: var(--wq-line);
+      --separator: var(--wq-empty);
+      --link: var(--wq-kicker);
+    }
+  }
+}
+
+/* ==========================================================================
+   Utility namespaces — what turns the variables above into class names.
+   ========================================================================== */
+
+@theme inline static {
+  /* -- colours: bg-field, text-ink, border-line, ... --------------------- */
+  --color-field: var(--wq-field);
+  --color-field-ink: var(--wq-field-ink);
+  --color-field-line: var(--wq-field-line);
+  --color-field-fill: var(--wq-field-fill);
+  --color-field-edge: var(--wq-field-edge);
+  --color-sheet: var(--wq-sheet);
+  --color-ink: var(--wq-ink);
+  --color-muted: var(--wq-muted);
+  --color-muted-strong: var(--wq-muted-strong);
+  --color-tile: var(--wq-tile);
+  --color-line: var(--wq-line);
+  --color-shade: var(--wq-shade);
+  --color-sewn: var(--wq-sewn);
+  --color-sewn-alt: var(--wq-sewn-alt);
+  --color-accent: var(--wq-accent);
+  --color-on-accent: var(--wq-on-accent);
+  --color-kicker: var(--wq-kicker);
+  --color-wash: var(--wq-wash);
+  --color-empty: var(--wq-empty);
+  --color-thread: var(--wq-thread);
+  --color-scrim: var(--wq-scrim);
+
+  /* -- fabric swatches: cosmetic only, never a gameplay signal ----------- */
+  --color-fabric-terracotta: #c25a34;
+  --color-fabric-slate: #96a3c9;
+  --color-fabric-sage: #a9b78d;
+  --color-fabric-rose: #c9a2b0;
+
+  /* -- radii: rounded-tile, rounded-card, ... ---------------------------- */
+  --radius-patch: 1px;
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-tile: 15px;
+  --radius-control: 16px;
+  --radius-button: 18px;
+  --radius-button-lg: 20px;
+  --radius-card: 22px;
+  --radius-frame: 44px;
+  --radius-pill: 999px;
+
+  /* -- elevation: shadow-card, shadow-tile, ... --------------------------
+     ONE language: a hard, un-blurred offset edge in the ink colour. There is
+     not a single blurred shadow in the seven design files. Anything that
+     lifts also carries a 2px border in the same colour — the border and the
+     offset are one gesture, and an offset alone reads as a drop shadow.
+
+     `-on-field` variants use the field's edge colour instead of --wq-shade,
+     for controls sitting on the terracotta band.                          */
+  --shadow-chip: 0 3px 0 var(--wq-shade);
+  --shadow-tile: 0 4px 0 var(--wq-shade);
+  --shadow-card: 0 5px 0 var(--wq-shade);
+  --shadow-sheet: 0 6px 0 var(--wq-shade);
+  --shadow-chip-on-field: 0 3px 0 var(--wq-field-edge);
+  --shadow-tile-on-field: 0 4px 0 var(--wq-field-edge);
+  --shadow-card-on-field: 0 5px 0 var(--wq-field-edge);
+
+  /* -- type: font-display-italic, font-ui-black, ... ---------------------
+     One family per weight. React Native does NOT synthesise weights for
+     custom families — `font-ui` + a weight class silently renders the
+     regular cut. There is deliberately no weight scale here.              */
+  --font-display-italic: "Newsreader_500Medium_Italic";
+  --font-display-italic-strong: "Newsreader_600SemiBold_Italic";
+  --font-ui-medium: "Nunito_500Medium";
+  --font-ui-semibold: "Nunito_600SemiBold";
+  --font-ui-bold: "Nunito_700Bold";
+  --font-ui-extrabold: "Nunito_800ExtraBold";
+  --font-ui-black: "Nunito_900Black";
+
+  /* -- type roles: text-page-title, text-body, ... ----------------------- */
+  --text-theme-reveal: 42px;
+  --text-theme-reveal--line-height: 1.14;
+  --text-page-title: 36px;
+  --text-page-title--line-height: 1.06;
+  --text-oblique: 31px;
+  --text-oblique--line-height: 1.18;
+  --text-letter: 21px;
+  --text-letter--letter-spacing: 0.01em;
+  --text-button-lg: 20px;
+  --text-button: 19px;
+  --text-list-title: 17px;
+  --text-body: 15px;
+  --text-body--line-height: 1.5;
+  --text-crumb: 15px;
+  --text-crumb--letter-spacing: 0.1em;
+  --text-hint-band: 15px;
+  --text-meta: 14px;
+  --text-meta--line-height: 1.4;
+  --text-chip: 14px;
+  --text-word-chip: 14px;
+  --text-word-chip--letter-spacing: 0.08em;
+  /* No --text-kicker: the 13px kicker is website-only, and the name would
+     collide with the `kicker` COLOUR, which is used in-app. `text-*` resolves
+     font-size before colour in Tailwind v4, so defining both would silently
+     delete the colour utility. In-app kickers use text-section-label. */
+  --text-section-label: 12px;
+  --text-section-label--letter-spacing: 0.16em;
+}
+
+/* ==========================================================================
+   Composite recipes.
+
+   These exist because each is a FIXED combination in the design — a card is
+   always tile + 2px line + 22px radius + a 5px offset edge, never three of
+   those four. Spelling the combination out at every call site is how one of
+   them goes missing.
+
+   Properties are written literally rather than with @apply so that what
+   reaches React Native is unambiguous.
+   ========================================================================== */
+
+/* A card, pack row, or list container sitting on the sheet. */
+@utility wq-card {
+  background-color: var(--wq-tile);
+  border: 2px solid var(--wq-line);
+  border-radius: 22px;
+  box-shadow: 0 5px 0 var(--wq-shade);
+}
+
+/* A letter tile on the puzzle grid. */
+@utility wq-tile {
+  background-color: var(--wq-tile);
+  border: 2px solid var(--wq-line);
+  border-radius: 15px;
+  box-shadow: 0 4px 0 var(--wq-shade);
+}
+
+/* The primary action. One per screen — the only thing allowed to shout. */
+@utility wq-button {
+  height: 56px;
+  padding-left: 28px;
+  padding-right: 28px;
+  background-color: var(--wq-accent);
+  color: var(--wq-on-accent);
+  border: 2px solid var(--wq-line);
+  border-radius: 18px;
+  box-shadow: 0 5px 0 var(--wq-shade);
+}
+
+/* The primary action on Puzzle and Reveal, which runs larger. */
+@utility wq-button-lg {
+  height: 64px;
+  padding-left: 36px;
+  padding-right: 36px;
+  background-color: var(--wq-accent);
+  color: var(--wq-on-accent);
+  border: 2px solid var(--wq-line);
+  border-radius: 20px;
+  box-shadow: 0 5px 0 var(--wq-shade);
+}
+
+/* A quiet footer pill on the sheet. */
+@utility wq-pill {
+  height: 50px;
+  background-color: var(--wq-tile);
+  border: 2px solid var(--wq-line);
+  border-radius: 999px;
+  box-shadow: 0 4px 0 var(--wq-shade);
+}
+
+/* A circular header button ON the field — translucent, no lift. */
+@utility wq-round-on-field {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background-color: var(--wq-field-fill);
+  border: 2px solid var(--wq-field-line);
+}
+
+/* A circular button on the sheet — solid, and it lifts. */
+@utility wq-round {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background-color: var(--wq-tile);
+  border: 2px solid var(--wq-line);
+  box-shadow: 0 3px 0 var(--wq-shade);
+}
+
+/* A status chip ON the field (pack progress, hint count). */
+@utility wq-chip-on-field {
+  height: 36px;
+  padding-left: 14px;
+  padding-right: 14px;
+  border-radius: 999px;
+  background-color: var(--wq-field-fill);
+  border: 2px solid var(--wq-field-line);
+  color: var(--wq-field-ink);
+}
+
+/* A word slot that has been found: cream on terracotta, and it lifts. */
+@utility wq-word-found {
+  height: 36px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 999px;
+  background-color: var(--wq-field-ink);
+  color: var(--wq-field);
+  border: 2px solid var(--wq-field-edge);
+  box-shadow: 0 3px 0 var(--wq-field-edge);
+}
+
+/* A word slot still to find: an outline only. Never a count, never a hint. */
+@utility wq-word-empty {
+  height: 36px;
+  border-radius: 999px;
+  background-color: var(--wq-field-fill);
+  border: 2px dashed var(--wq-field-line);
+}
+
+/* The hairline between rows in a list. */
+@utility wq-rule {
+  height: 2px;
+  background-color: var(--wq-empty);
+}
