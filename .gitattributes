@@ -1,0 +1,35 @@
+# Normalise line endings on day one.
+#
+# This repo is worked on from Linux sandboxes and Windows machines. Without
+# this, a single checkout on the other platform produces a diff of thousands of
+# lines that changes nothing, and real changes become impossible to review.
+* text=auto eol=lf
+
+# Binaries — never normalised, never diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.wav binary
+*.m4a binary
+*.mp4 binary
+*.pdf binary
+*.zip binary
+*.keystore binary
+*.jks binary
+
+# Generated — collapsed in review, still tracked.
+pnpm-lock.yaml linguist-generated=true -diff
+designs/support.js linguist-generated=true -diff
+
+# The design files are the source of truth for appearance. They are large and
+# machine-written; mark them generated so they do not drown a PR diff, but keep
+# them diffable so a design change is reviewable.
+designs/*.dc.html linguist-generated=true
