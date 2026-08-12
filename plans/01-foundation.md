@@ -2,13 +2,13 @@
 
 Tokens, primitives, platform assets, and the checks that keep them honest.
 
-**Status: complete (session 1).** Committed as one change; the todos below
-record what was done and how it was verified.
+**Status: complete (session 1).** One commit per todo (D-015); T05 is four
+commits because it is four sub-features.
 
 ---
 
 ## T01 — Extract the designs into readable values
-- [x] `pending-T01`
+- [x] `393b566`
 - **Commit:** `feat(designs): extract design files into greppable values`
 - **Touches:** `designs/extract.mjs`, `.gitignore`
 - **Done when:** every `.dc.html` produces a `.json` and a sorted `.txt`, and
@@ -17,7 +17,7 @@ record what was done and how it was verified.
   this executes the design rather than parsing it.
 
 ## T02 — Build the token package from the extracted values
-- [x] `pending-T02`
+- [x] `a8c01da`
 - **Commit:** `feat(tokens): add @wordquilt/tokens from the design files`
 - **Touches:** `packages/tokens/**`
 - **Done when:** every colour, radius, elevation, type role and grid constant is
@@ -32,7 +32,7 @@ record what was done and how it was verified.
   spacer. Corrected after checking all four screen design files, which agree.
 
 ## T03 — Wire the tokens into uniwind and prove the wiring
-- [x] `pending-T03`
+- [x] `f291edd`
 - **Commit:** `feat(native): wire the WordQuilt palette into uniwind`
 - **Touches:** `apps/native/global.css`
 - **Done when:** a compiled stylesheet shows WordQuilt values behind the utility
@@ -46,7 +46,7 @@ record what was done and how it was verified.
   have silently deleted the colour utility. See D-008.
 
 ## T04 — Token parity test, made to fail
-- [x] `pending-T04`
+- [x] `5a724a7`
 - **Commit:** `test(tokens): assert TS and CSS token parity`
 - **Touches:** `packages/tokens/test/parity.test.ts`
 - **Done when:** 22 assertions pass, AND each class of check has been shown to
@@ -63,8 +63,9 @@ record what was done and how it was verified.
   colours numerically, which still separates `0.3` from `0.34`.
 
 ## T05 — Reusable primitives
-- [x] `pending-T05`
-- **Commit:** `feat(native): add UI primitives with the hard-offset elevation`
+- [x] `b8b14df` fonts · `ac3d97f` motion · `ee93ddd` primitives · `cf41708` preview
+- **Commits:** four, because this is four sub-features (D-015): loading the
+  faces, the motion language, the primitives themselves, and the preview screen.
 - **Touches:** `apps/native/components/ui/**`, `apps/native/lib/fonts.ts`,
   `apps/native/app/_layout.tsx`, `apps/native/app/(drawer)/index.tsx`
 - **Done when:** Text, Card, Pill, Rule, Button, RoundButton, Chip, WordSlot and
@@ -83,7 +84,7 @@ record what was done and how it was verified.
   session's first job.
 
 ## T06 — Platform assets and app.json
-- [x] `pending-T06`
+- [x] `f046a32`
 - **Commit:** `fix(native): wire every icon key and flatten the opaque icons`
 - **Touches:** `apps/native/app.json`, `apps/native/assets/images/**`,
   `scripts/check-assets.mjs`, `scripts/flatten-ios-icons.mjs`
