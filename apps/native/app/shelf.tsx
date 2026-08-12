@@ -84,7 +84,7 @@ export default function Shelf() {
             </View>
             <Rule />
             <Pressable
-              onPress={() => router.push("/onboarding/1")}
+              onPress={() => router.push("/puzzle")}
               accessibilityRole="button"
               className="h-[56px] items-center justify-center"
             >
@@ -98,7 +98,12 @@ export default function Shelf() {
               {packs.map((pack, i) => (
                 <View key={pack.name}>
                   {i > 0 && <Rule />}
-                  <View className="flex-row items-center gap-[14px] px-[18px] py-4">
+                  <Pressable
+                    onPress={() => router.push(`/pack/${encodeURIComponent(pack.name)}`)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${pack.name}, ${pack.count}`}
+                    className="flex-row items-center gap-[14px] px-[18px] py-4"
+                  >
                     <View className="flex-row flex-wrap gap-[2px]" style={{ width: 40 }}>
                       {Array.from({ length: 9 }).map((_, p) => (
                         <View
@@ -115,13 +120,17 @@ export default function Shelf() {
                       <Text variant="listTitle">{pack.name}</Text>
                       <Text variant="meta">{pack.count}</Text>
                     </View>
-                  </View>
+                  </Pressable>
                 </View>
               ))}
             </Card>
           </View>
 
-          <Pressable className="h-[44px] justify-center" accessibilityRole="button">
+          <Pressable
+            className="h-[44px] justify-center"
+            accessibilityRole="button"
+            onPress={() => router.push("/daily")}
+          >
             <Text variant="listTitle">All Dailies</Text>
           </Pressable>
         </View>
