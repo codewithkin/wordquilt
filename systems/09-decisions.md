@@ -1,0 +1,134 @@
+# Decisions
+
+Numbered, immutable, cited by number in code and in plan files. Never renumber.
+When a decision is superseded, add a new one and mark the old one superseded —
+do not edit it.
+
+Cite them in comments: `// tilt is deterministic, never re-rolled (D-009)`.
+
+---
+
+### D-001 — `plans/`, `systems/` and `progress/` are tracked in git
+*Session 1.*
+The workflow template suggests gitignoring them as working notes. Sessions here
+run in ephemeral cloud containers reclaimed after inactivity, so anything
+uncommitted is destroyed. Gitignoring the memory would lose it every session.
+`designs/extracted/` stays ignored — regenerated in seconds, ~80k lines of noise.
+
+### D-002 — The design files are read by EXECUTING them, not by parsing markup
+*Session 1.*
+The `.dc.html` files are templates full of `{{token}}` placeholders; every real
+value lives in a `renderVals()` method in an embedded script. `designs/extract.mjs`
+runs that method in a sandbox and dumps the value tree. Regex over the markup
+returns placeholders, not values.
+
+### D-003 — heroui-native's semantic variables are repointed at the WordQuilt palette
+*Session 1.*
+Rather than avoiding the library or restyling each component. Without the
+repoint its components render in stock grey/blue while our components render in
+terracotta — internally consistent and completely wrong. Verified by grepping a
+built iOS bundle: every WordQuilt hex present, zero occurrences of the stock accent.
+
+### D-004 — Prefer the `wq-*` composite utilities over Tailwind's `shadow-*`
+*Session 1.*
+Tailwind's `shadow-card` compiles to a composed
+`var(--tw-inset-shadow), var(--tw-ring-shadow), …` chain. React Native's
+`boxShadow` parser takes a simple string and the chain is **not verified** to
+survive it. The `wq-*` composites emit a plain `box-shadow`. The token test
+asserts they stay plain. Revisit once someone has run this on a device.
+
+### D-005 — Ship both `muted` and `mutedStrong`
+*Session 1.*
+The core screens specify `muted` `#7A6E5C` (light) / `#A99C89` (dark). The
+Accessibility design file specifies `#6A5F4E` / `#B0A390` for the same role.
+Measured contrast on the light sheet: 4.55:1 vs 5.70:1 — the core value only
+just clears AA. Shipping both as tokens lets the high-contrast setting swap
+without changing what the core screens actually specify.
+
+### D-006 — The seam is unsolved, and must not be approximated
+*Session 1. OPEN.*
+The sheet curves over the field as an ellipse (`border-top-radius: 50% 74px`,
+`width: 116%`). React Native does not support elliptical corner radii. It needs
+an SVG path or a mask. A circular-radius approximation is obviously wrong — the
+curve is roughly 4× wider than tall. Blocks the Shelf and Puzzle screens.
+
+### D-007 — Seam overlap is 40px, not 48px
+*Session 1.*
+`Core Screens`, `Alternate States` and `Onboarding` all place the sheet exactly
+40px above the field's base, across every field height they draw (196, 214, 216,
+306). `Puzzle & Reveal` alone uses 48. That file was drawn first ("the hardest
+screen first") and drifted. We follow the three-file majority, including on the
+Puzzle screen — where `Alternate States` also draws 40.
+
+### D-008 — The 13px `kicker` type role is not in the token layer
+*Session 1.*
+It appears only in the website design and the design-canvas chrome, neither in
+launch scope. In-app "kickers" (`dailyKicker`, `offerKicker`) are 12px/900/0.16em
+— identical to `sectionLabel`, differing only in colour. Its presence would also
+collide with the `kicker` **colour**: Tailwind v4 resolves `text-<name>` against
+`--text-*` before `--color-*`, so defining both silently deletes the colour
+utility. The token test now fails any such collision.
+
+### D-009 — Tile tilt is deterministic, never randomised at render
+*Session 1.*
+`((row*7 + col) % 5 - 2) * 0.7`, from the design. The tilt is texture, not
+animation. A board that re-tilts on each render reads as a rendering fault.
+The literal 7 is a hash multiplier, not the row length — it stays 7 for grid
+sizes 6×6 through 9×9.
+
+### D-010 — Our `Text` primitive takes `variant`, not `role`
+*Session 1.*
+React Native's `TextProps` already has `role` — the ARIA role. Declaring ours on
+top narrowed the union to an empty intersection and made every call site a type
+error. WordQuilt has real accessibility work ahead (VoiceOver traversal of the
+grid is a designed screen), so RN's `role` stays available.
+
+### D-011 — The bundle identifier is deliberately absent from `app.json`
+*Session 1. OPEN — launch blocker.*
+`expo prebuild` wrote `com.anonymous.wordquilt` into both `ios.bundleIdentifier`
+and `android.package`. That is Expo's "you must change this" placeholder. Both
+are permanent once submitted to either store and are the owner's decision, so
+they were removed rather than guessed. Prebuild re-defaults them in development,
+which is harmless and keeps the gap visible.
+
+### D-012 — Opaque source icons are stored as RGB, and prebuild output is re-flattened
+*Session 1.*
+The design manifest requires seven files to have no alpha channel. All seven
+shipped as RGBA (fully opaque, but the channel present — which is what App Store
+Connect rejects). They were flattened losslessly, pixel-identity verified.
+
+Separately, `expo prebuild` **re-adds** an alpha channel to the generated dark
+iOS icon every time — exactly what the asset README warned about. Since `ios/` is
+regenerated, the fix is a re-runnable post-prebuild step
+(`scripts/flatten-ios-icons.mjs`), wired into `pnpm --filter native prebuild`.
+
+### D-013 — Orientation is locked to portrait
+*Session 1.*
+Was `default` (any orientation). Every frame in every design file is portrait
+390×844, and there is no landscape design for any screen. The core gesture is a
+finger drag across a grid sized to a portrait width. Reversible in one line if
+the owner wants landscape designed.
+
+### D-014 — Motion is implemented with Moti, and is material rather than decorative
+*Session 1.*
+Moti on Reanimated. The vocabulary is press / stitch / lay-down / resolve /
+recede — see `systems/03-motion.md`. Things are stitched, pressed and laid down;
+nothing slides in from offscreen or bounces.
+
+The spec is derived from what the Accessibility design says is REMOVED under
+reduced motion, which tells us what exists normally. Anything not traceable to a
+design caption is an invention and is recorded as such.
+
+Two consequences that are easy to get wrong:
+- The press gesture is the control sitting DOWN onto its own offset edge by
+  exactly the edge depth, with the shadow collapsing in step — not an opacity
+  fade. The only exception is `RoundButton` on the field, which has no edge.
+- Reduced motion **degrades, never skips**. A player with reduced motion still
+  has to see that a word locked in. `useMotion()` returns the durations to use.
+
+### D-015 — One commit per todo
+*Session 1. Process.*
+A feature is a plan file; a todo is a sub-feature; each todo is one commit
+carrying its own message and SHA. Where several todos are genuinely one edit to
+one file, they may share a SHA **and must say so** — fabricating intermediate
+states that never existed is worse than an honest shared commit.
