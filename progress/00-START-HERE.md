@@ -6,26 +6,25 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 2.
+Last updated: end of session 3.
 
 ---
 
 ## Which screens are done?
 
-**None. Zero of 19.** Nine onboarding screens, ten core screens, none built.
+**14 of 19.** All nine onboarding screens, and five of the ten core screens.
 
-What exists is the *material* screens are made from — palette, type, buttons,
-tiles, cards, word slots, motion — plus a working puzzle generator.
+The app walks a complete first-time flow: cold open -> reveal -> proposition ->
+theme picker -> fabric picker -> payoff -> rhythm -> Shelf, then Shelf -> pack ->
+puzzle -> reveal -> back to the Shelf.
+
+Not built: The Wall, Store, Fabric, Hint overlay, Settings.
 
 **`progress/02-screens.md` is the screen-by-screen list.** Read that for what to
 build next. It is the only doc that talks in screens rather than layers.
 
-The one screen on disk, `app/(drawer)/index.tsx`, is a throwaway foundation
-preview — it renders every primitive so you can confirm the palette is live on a
-device. Delete it when the Shelf lands.
-
-**The seam (D-006) blocks 8 of the 10 core screens.** Solving it is the single
-highest-value next task: one component unblocks eight screens.
+**Every screen bundles. None has ever been rendered on a device.** That is the
+biggest gap in the project, and it is task one below.
 
 ---
 
@@ -58,7 +57,7 @@ diverging silently.
 
 ## Your task, in order
 
-### 1. Run the app and look at it. Before anything else.
+### 1. Run it, walk the whole flow, then AUDIT. Before anything else.
 
 ```bash
 pnpm install
@@ -66,29 +65,32 @@ pnpm --filter native prebuild     # also flattens the iOS icons — see D-012
 pnpm --filter native ios          # or: android
 ```
 
-`app/(drawer)/index.tsx` renders every primitive in both themes. A design system
-wired to the wrong config renders in the library's stock palette and looks
-perfectly self-consistent while being completely wrong.
+Fourteen screens have been written and none has been seen. Walk the flow from a
+fresh install, then open each screen's design file and compare it in BOTH
+themes: ground, surface, border, radii, control heights, type sizes, section
+gaps.
 
-Confirm: **terracotta band, cream page, and a hard un-blurred edge under every
-card and tile.** If it reads grey or blue, stop and fix that first.
+**This is a separate, deliberate step — do not skip it because the screens were
+built carefully.** In the project this workflow came from, a session that had
+genuinely followed the designs still had five real deviations, including a wrong
+background on the most important screen.
 
-Nothing in this repo has ever been seen on a device. That is the biggest gap.
+### 2. The drag gesture. It is the core interaction and it is stubbed (D-020).
 
-### 2. Solve the seam — `plans/03-screen-scaffold.md` T01
+Tracing a word by dragging across adjacent cells.
+`react-native-gesture-handler` is installed. Until it lands, O1 and S2 sew a
+word by tapping its slot — the flow is walkable but it is not the game.
 
-It blocks eight core screens and most of onboarding. `react-native-svg` is
-already installed; try an SVG path first. **Do not approximate it with a
-circular radius** — the curve is ~4x wider than tall and the difference is
-obvious at a glance.
+### 3. A progress store
 
-### 3. Build screens, in the order in `progress/02-screens.md`
+Every screen shows placeholder counts. Sewn squares, hints used and daily
+history all need somewhere real to live. `lib/storage.ts` has the pattern.
 
-Scaffold first, then the four onboarding screens that need nothing else (O4
-Proposition, O5 Theme picker, O6 Fabric picker, O8 Rhythm), then S3 Reveal,
-then S1 Shelf.
+### 4. The remaining five screens
 
-### 4. The generator spike is written but unmeasured
+S5 The Wall, S6 Store, S8 Fabric, S9 Hint overlay, S10 Settings.
+
+### 5. The generator spike is written but unmeasured
 
 `packages/generator` selects word sets, packs snaking paths and resolves the
 theme reveal — verified end to end on a real board. What has NOT been run is
@@ -122,7 +124,8 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | UI primitives | **Written and they bundle. Never rendered on a device.** |
 | Fonts | **All 7 faces load and bundle**, verified by content hash |
 | Platform assets | **All 15 manifest rows pass.** Prebuild generates both native projects correctly |
-| Screens | **None — 0 of 19.** See `progress/02-screens.md`. The drawer index is a throwaway preview |
+| Screens | **14 of 19.** All onboarding, 5 core. See `progress/02-screens.md` |
+| The seam | **Solved** (D-006 closed). One SVG arc — see `components/ui/seam.tsx` |
 | Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
 | Motion | **Reanimated only** (D-017). Moti removed |
 
