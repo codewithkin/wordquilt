@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E7E4DD; }
+  a { color: #A8462A; }
+  a:hover { color: #C25A34; }
+</style>
+</helmet>
+
+<section style="display:flex;flex-direction:column;gap:36px;padding:56px 64px 96px;font-family:Nunito,system-ui,sans-serif;color:#26241F">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">Turn 8 · platform assets</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border:2px solid #241F19;border-radius:8px;font-size:13px;font-weight:800">8a</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-0.01em">Icon ladder, splash, store art, manifest</span>
+    </div>
+    <div style="font-size:16px;line-height:1.55;color:#5F5A51;text-wrap:pretty">The mark is the quilt patch already used on the Shelf: a four-by-four square with one traced diagonal. Three drawings, not one scaled — the lockup for store canvases, the patch for home screens, the single glyph below 60px. Filenames, sizes and alpha rules below are written for <strong>Expo SDK 57</strong>, keyed to the exact <code>app.json</code> field each file feeds.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:56px">
+
+    <div style="{{sheetStyle}}">
+      <div style="{{kickerStyle}}">The readability ladder</div>
+      <div style="{{h2Style}}">Three drawings, three thresholds</div>
+      <div style="display:flex;gap:44px;align-items:flex-end;padding-top:26px;flex-wrap:wrap">
+        <sc-for list="{{ladder}}" as="l" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="{{l.canvas}}">
+              <div style="{{l.patchWrap}}">
+                <sc-for list="{{l.cells}}" as="c" hint-placeholder-count="16">
+                  <div style="{{c.style}}"></div>
+                </sc-for>
+              </div>
+              <sc-if value="{{l.hasWordmark}}" hint-placeholder-val="{{ true }}">
+                <div style="{{l.wordmark}}">WordQuilt</div>
+              </sc-if>
+            </div>
+            <div style="{{captionStrong}}">{{l.name}}</div>
+            <div style="{{captionBody}}">{{l.rule}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="{{sheetStyle}}">
+      <div style="{{kickerStyle}}">Rendered at real size</div>
+      <div style="{{h2Style}}">What it looks like where it lands</div>
+      <div style="display:flex;gap:36px;align-items:flex-end;padding-top:26px;flex-wrap:wrap">
+        <sc-for list="{{sizes}}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+            <div style="{{s.canvas}}">
+              <div style="{{s.patchWrap}}">
+                <sc-for list="{{s.cells}}" as="c" hint-placeholder-count="16">
+                  <div style="{{c.style}}"></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="{{captionStrong}}">{{s.px}}</div>
+            <div style="{{captionSmall}}">{{s.use}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="{{sheetStyle}}">
+      <div style="{{kickerStyle}}">Android adaptive</div>
+      <div style="{{h2Style}}">Foreground, background, safe zone</div>
+      <div style="display:flex;gap:44px;padding-top:26px;flex-wrap:wrap">
+        <sc-for list="{{adaptive}}" as="a" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:14px;width:300px">
+            <div style="{{a.canvas}}">
+              <sc-if value="{{a.hasPatch}}" hint-placeholder-val="{{ true }}">
+                <div style="{{a.patchWrap}}">
+                  <sc-for list="{{a.cells}}" as="c" hint-placeholder-count="16">
+                    <div style="{{c.style}}"></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{a.hasSafe}}" hint-placeholder-val="{{ true }}">
+                <div style="{{a.safeCircle}}"></div>
+                <div style="{{a.safeLabel}}">72dp visible</div>
+              </sc-if>
+            </div>
+            <div style="{{captionStrong}}">{{a.name}}</div>
+            <div style="{{captionBody}}">{{a.rule}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="{{sheetStyle}}">
+      <div style="{{kickerStyle}}">Splash and store art</div>
+      <div style="{{h2Style}}">Opaque, centred, nothing that needs reading</div>
+      <div style="display:flex;gap:40px;padding-top:26px;align-items:flex-start;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="{{splashPhone}}">
+            <div style="{{splashPatchWrap}}">
+              <sc-for list="{{splashCells}}" as="c" hint-placeholder-count="16">
+                <div style="{{c.style}}"></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="{{captionStrong}}">Launch screen · 390 × 844</div>
+          <div style="{{captionBody}}">Terracotta field, mark centred on the optical centre, no wordmark and no spinner. Holds for as long as the app takes and never animates.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="{{featureGraphic}}">
+            <div style="{{featurePatchWrap}}">
+              <sc-for list="{{featureCells}}" as="c" hint-placeholder-count="16">
+                <div style="{{c.style}}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="{{featureTitle}}">WordQuilt</div>
+              <div style="{{featureSub}}">The letters you don't use spell out the theme.</div>
+            </div>
+          </div>
+          <div style="{{captionStrong}}">Play feature graphic · 1024 × 500, shown at 60%</div>
+          <div style="{{captionBody}}">No screenshot inside it, no device frame, no text near the edges — Play crops it differently on every surface.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="{{sheetStyle}}">
+      <div style="{{kickerStyle}}">Manifest</div>
+      <div style="{{h2Style}}">Every file, exactly</div>
+      <div style="height:22px"></div>
+      <div style="{{tableStyle}}">
+        <div style="{{theadStyle}}">
+          <div style="{{thFile}}">File</div>
+          <div style="{{thSize}}">Size</div>
+          <div style="{{thAlpha}}">Alpha</div>
+          <div style="{{thKey}}">app.json key</div>
+        </div>
+        <sc-for list="{{manifest}}" as="m" hint-placeholder-count="12">
+          <div style="{{m.row}}">
+            <div style="{{m.file}}">{{m.name}}</div>
+            <div style="{{m.size}}">{{m.dims}}</div>
+            <div style="{{m.alpha}}">{{m.alphaText}}</div>
+            <div style="{{m.key}}">{{m.keyText}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="height:20px"></div>
+      <div style="{{noteStyle}}">Expo generates every derived size at build time, so author each source at 1024 and let prebuild downscale — the ladder above is what those downscales must still read as, not extra files to ship. iOS icons must be fully opaque with square corners; Expo will not strip alpha for you and App Store Connect rejects it. Android adaptive layers are treated as 108dp square with only the centre 72dp guaranteed visible, and the monochrome layer must be one flat shape on transparency because its colour is discarded. Splash background is set as a colour, not an image, so it fills any aspect ratio without seams.</div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600,&quot;height&quot;:2400},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C25A34&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C25A34&quot;,&quot;#B4543A&quot;,&quot;#A8552F&quot;,&quot;#C2603F&quot;],&quot;section&quot;:&quot;Direction&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || "#C25A34";
+    const t = { field:accent, fieldDeep:"#8E3F2C", cream:"#FFF6E8", sheet:"#FBF4E4", ink:"#241F19", muted:"#7A6E5C",
+                sewn:"#F0C982", kicker:"#9E4227", empty:"rgba(36,31,25,0.30)" };
+    const display = "Newsreader, Georgia, serif";
+    const ui = "Nunito, system-ui, sans-serif";
+    const mono = "'IBM Plex Sans', monospace";
+
+    // the mark: 4x4 patch, one traced diagonal
+    const TRACE = [1, 6, 11, 14];
+    const patchCells = (cell, gap, opts) => {
+      const o = opts || {};
+      const out = [];
+      for (let i = 0; i < 16; i++) {
+        const on = TRACE.indexOf(i) !== -1;
+        out.push({ style: {
+          width:cell+"px", height:cell+"px", borderRadius:(cell * 0.26)+"px",
+          background: on ? (o.traceFill || t.sewn) : (o.tileFill || t.cream),
+          opacity: on ? 1 : (o.tileAlpha || 1),
+          border: o.line ? ("2px solid " + o.line) : "none", boxSizing:"border-box"
+        } });
+      }
+      return out;
+    };
+    const wrap = (cell, gap) => ({ display:"grid", gridTemplateColumns:"repeat(4,"+cell+"px)", gap:gap+"px" });
+
+    const glyphCells = (cell, gap, fill) => {
+      const out = [];
+      for (let i = 0; i < 16; i++) {
+        const on = TRACE.indexOf(i) !== -1;
+        out.push({ style: { width:cell+"px", height:cell+"px", borderRadius:(cell*0.26)+"px",
+          background: on ? fill : "transparent" } });
+      }
+      return out;
+    };
+
+    const canvas = (size, radius, bg) => ({
+      width:size+"px", height:size+"px", borderRadius:radius+"px", background:bg,
+      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:(size*0.06)+"px",
+      border:"2px solid "+t.ink, boxSizing:"border-box", flexShrink:0
+    });
+
+    const ladder = [
+      { name:"Full lockup", rule:"1024px and up. Store listings, press, the website header. Mark plus wordmark, generous margin.",
+        canvas: Object.assign(canvas(300, 62, t.field), { justifyContent:"center" }),
+        patchWrap: wrap(30, 5), cells: patchCells(30, 5), hasWordmark:true,
+        wordmark: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"38px", color:t.cream, paddingTop:"6px" } },
+      { name:"The patch", rule:"180px to 512px. Home screens, app switcher, settings lists. Wordmark drops; the diagonal carries it.",
+        canvas: canvas(180, 40, t.field), patchWrap: wrap(24, 4), cells: patchCells(24, 4), hasWordmark:false },
+      { name:"Single glyph", rule:"Below 60px, and every monochrome context. Four squares only — the four that make the trace.",
+        canvas: canvas(120, 28, t.field), patchWrap: wrap(20, 3), cells: glyphCells(20, 3, t.cream), hasWordmark:false }
+    ];
+
+    const sizes = [
+      { px:"1024 px", use:"App Store", size:132, radius:30, cell:26, gap:4, glyph:false },
+      { px:"180 px", use:"iPhone home", size:180, radius:40, cell:36, gap:6, glyph:false },
+      { px:"120 px", use:"iPhone spotlight", size:120, radius:27, cell:24, gap:4, glyph:false },
+      { px:"87 px", use:"iPhone settings", size:87, radius:20, cell:17, gap:3, glyph:false },
+      { px:"60 px", use:"Notifications", size:60, radius:14, cell:12, gap:2, glyph:true },
+      { px:"48 px", use:"Android legacy", size:48, radius:11, cell:9, gap:1, glyph:true }
+    ].map(s => ({ px:s.px, use:s.use,
+      canvas: canvas(s.size, s.radius, t.field),
+      patchWrap: wrap(s.cell, s.gap),
+      cells: s.glyph ? glyphCells(s.cell, s.gap, t.cream) : patchCells(s.cell, s.gap) }));
+
+    const adaptive = [
+      { name:"Foreground layer", rule:"432 × 432 px (108dp @4x), transparent outside the mark. The patch sits inside the 72dp safe circle so no mask ever clips it.",
+        canvas: Object.assign(canvas(300, 24, t.sheet), { position:"relative", backgroundImage:"repeating-linear-gradient(135deg, rgba(36,31,25,0.06) 0 10px, rgba(36,31,25,0) 10px 20px)" }),
+        hasPatch:true, hasSafe:true, patchWrap: wrap(30, 5), cells: patchCells(30, 5, { tileFill:t.field, traceFill:t.fieldDeep }),
+        safeCircle: { position:"absolute", left:"50px", top:"50px", width:"200px", height:"200px", borderRadius:"999px",
+                      border:"2px dashed "+t.kicker, boxSizing:"border-box", pointerEvents:"none" },
+        safeLabel: { position:"absolute", left:"0", bottom:"14px", width:"300px", textAlign:"center",
+                     fontFamily:mono, fontSize:"12px", fontWeight:600, color:t.kicker } },
+      { name:"Background layer", rule:"432 × 432 px, fully opaque, one flat terracotta. No texture, no gradient — Android animates the layers apart.",
+        canvas: canvas(300, 24, t.field), hasPatch:false, hasSafe:false },
+      { name:"Monochrome layer", rule:"432 × 432 px, one flat shape on transparency. Only the four trace squares survive, so the glyph stays legible when themed.",
+        canvas: Object.assign(canvas(300, 24, t.sheet), { position:"relative" }),
+        hasPatch:true, hasSafe:false, patchWrap: wrap(30, 5), cells: glyphCells(30, 5, t.ink) }
+    ];
+
+    const manifest = [
+      { name:"assets/icon.png", dims:"1024 × 1024", alphaText:"None. Opaque, square corners", keyText:"expo.icon — fallback for both platforms" },
+      { name:"assets/icon-ios.png", dims:"1024 × 1024", alphaText:"None. Apple rejects alpha", keyText:"expo.ios.icon" },
+      { name:"assets/icon-ios-dark.png", dims:"1024 × 1024", alphaText:"None", keyText:"expo.ios.icon.dark — SDK 52+" },
+      { name:"assets/icon-ios-tinted.png", dims:"1024 × 1024", alphaText:"None. Greyscale artwork", keyText:"expo.ios.icon.tinted — iOS 18 tinted mode" },
+      { name:"assets/adaptive-foreground.png", dims:"1024 × 1024", alphaText:"Alpha required", keyText:"expo.android.adaptiveIcon.foregroundImage" },
+      { name:"assets/adaptive-background.png", dims:"1024 × 1024", alphaText:"None. Fully opaque", keyText:"expo.android.adaptiveIcon.backgroundImage" },
+      { name:"— (no file)", dims:"—", alphaText:"Opaque #C25A34", keyText:"expo.android.adaptiveIcon.backgroundColor — use instead of the image" },
+      { name:"assets/adaptive-monochrome.png", dims:"1024 × 1024", alphaText:"Alpha required. Flat shape", keyText:"expo.android.adaptiveIcon.monochromeImage" },
+      { name:"assets/splash-icon.png", dims:"512 × 512", alphaText:"Alpha required", keyText:"expo-splash-screen plugin · image" },
+      { name:"assets/splash-icon-dark.png", dims:"512 × 512", alphaText:"Alpha required", keyText:"expo-splash-screen · dark.image" },
+      { name:"— (no file)", dims:"—", alphaText:"Opaque #C25A34 / #8A3E27", keyText:"expo-splash-screen · backgroundColor + dark.backgroundColor" },
+      { name:"assets/favicon.png", dims:"48 × 48", alphaText:"Alpha kept", keyText:"expo.web.favicon" },
+      { name:"store/appstore-1024.png", dims:"1024 × 1024", alphaText:"None", keyText:"App Store Connect listing" },
+      { name:"store/play-icon-512.png", dims:"512 × 512", alphaText:"Alpha kept, 32-bit PNG", keyText:"Play Console listing icon" },
+      { name:"store/play-feature-1024x500.png", dims:"1024 × 500", alphaText:"None", keyText:"Play Console feature graphic" }
+    ].map((m, i) => ({ name:m.name, dims:m.dims, alphaText:m.alphaText, keyText:m.keyText,
+      row: { display:"flex", alignItems:"center", gap:"20px", padding:"14px 22px", minHeight:"56px",
+             borderTop: i === 0 ? "none" : "2px solid "+t.empty, boxSizing:"border-box" },
+      file: { fontFamily:mono, fontSize:"14px", fontWeight:600, color:t.ink, width:"390px", flexShrink:0 },
+      size: { fontFamily:mono, fontSize:"14px", color:t.muted, width:"140px", flexShrink:0 },
+      alpha: { fontFamily:ui, fontSize:"15px", fontWeight:700, color:t.ink, width:"250px", flexShrink:0 },
+      key: { fontFamily:ui, fontSize:"15px", fontWeight:600, color:t.muted, flex:"1" } }));
+
+    const th = (w) => ({ fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.14em", textTransform:"uppercase",
+                         color:t.muted, width:w, flexShrink: w === "auto" ? 1 : 0 });
+
+    return {
+      ladder, sizes, adaptive, manifest,
+      sheetStyle: { background:t.sheet, borderRadius:"26px", border:"2px solid "+t.ink, boxShadow:"0 6px 0 "+t.ink,
+                    padding:"44px 48px 48px", width:"1440px", boxSizing:"border-box", display:"flex", flexDirection:"column", gap:"6px" },
+      kickerStyle: { fontFamily:ui, fontSize:"13px", fontWeight:900, letterSpacing:"0.18em", textTransform:"uppercase", color:t.kicker },
+      h2Style: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"40px", lineHeight:"1.1", color:t.ink },
+      captionStrong: { fontFamily:ui, fontSize:"16px", fontWeight:900, color:t.ink },
+      captionBody: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.5", color:t.muted, maxWidth:"300px", textWrap:"pretty" },
+      captionSmall: { fontFamily:mono, fontSize:"12px", fontWeight:500, color:t.muted },
+      splashPhone: { width:"260px", height:"562px", borderRadius:"32px", background:t.field, border:"2px solid "+t.ink,
+                     boxShadow:"0 6px 0 "+t.ink, display:"flex", alignItems:"center", justifyContent:"center", boxSizing:"border-box" },
+      splashPatchWrap: wrap(26, 4),
+      splashCells: patchCells(26, 4),
+      featureGraphic: { width:"614px", height:"300px", borderRadius:"20px", background:t.field, border:"2px solid "+t.ink,
+                        boxShadow:"0 6px 0 "+t.ink, display:"flex", alignItems:"center", gap:"36px", padding:"0 54px", boxSizing:"border-box" },
+      featurePatchWrap: wrap(28, 5),
+      featureCells: patchCells(28, 5),
+      featureTitle: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"52px", color:t.cream, lineHeight:"1" },
+      featureSub: { fontFamily:ui, fontSize:"19px", fontWeight:700, color:t.cream, opacity:0.9, maxWidth:"320px", lineHeight:"1.4" },
+      tableStyle: { background:"#FFFDF6", borderRadius:"22px", border:"2px solid "+t.ink, boxShadow:"0 5px 0 "+t.ink, overflow:"hidden" },
+      theadStyle: { display:"flex", alignItems:"center", gap:"20px", padding:"16px 22px", background:"#F4EAD6",
+                    borderBottom:"2px solid "+t.ink, boxSizing:"border-box" },
+      thFile: th("390px"), thSize: th("140px"), thAlpha: th("250px"), thKey: th("auto"),
+      noteStyle: { fontFamily:ui, fontSize:"15px", fontWeight:600, lineHeight:"1.6", color:t.muted, maxWidth:"1000px", textWrap:"pretty" }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

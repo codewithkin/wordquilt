@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E7E4DD; }
+  a { color: #A8462A; }
+  a:hover { color: #C25A34; }
+</style>
+</helmet>
+
+<section style="display:flex;flex-direction:column;gap:36px;padding:56px 64px 96px;font-family:Nunito,system-ui,sans-serif;color:#26241F">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">Turn 7 · marketing site</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border:2px solid #241F19;border-radius:8px;font-size:13px;font-weight:800">7a</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-0.01em">Landing · About · Privacy · Terms</span>
+    </div>
+    <div style="font-size:16px;line-height:1.55;color:#5F5A51;text-wrap:pretty">Desktop at 1440, the app's palette, type and ink-outline language, but web conventions throughout: real nav, real footer, and legal pages with the same typographic care as the landing page. Image placeholders say exactly what art belongs there. <strong>Privacy and Terms copy is plausible placeholder and needs a lawyer before it ships.</strong></div>
+  </div>
+
+  <sc-for list="{{rows}}" as="row" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">{{row.label}}</div>
+      <div style="display:flex;gap:40px;align-items:flex-start">
+        <sc-for list="{{row.pages}}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:14px;width:1440px">
+            <div style="{{p.page}}">
+
+              <div style="{{p.nav}}">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="{{p.mark}}"></div>
+                  <div style="{{p.wordmark}}">WordQuilt</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:36px">
+                  <div style="{{p.navLink}}">The game</div>
+                  <div style="{{p.navLink}}">About</div>
+                  <div style="{{p.navLink}}">Privacy</div>
+                  <div style="{{p.navLink}}">Terms</div>
+                  <div style="{{p.navButton}}">Get it for iPhone</div>
+                </div>
+              </div>
+
+              <sc-if value="{{p.isLanding}}" hint-placeholder-val="{{ true }}">
+                <div style="{{p.hero}}">
+                  <div style="display:flex;flex-direction:column;gap:28px;width:600px">
+                    <div style="{{p.heroTitle}}">A word search with something hidden inside it.</div>
+                    <div style="{{p.heroBody}}">Trace the words you can find. The letters you never use spell out the theme — and that is the whole game. Five quiet minutes, once a day, with nothing asking anything of you.</div>
+                    <div style="display:flex;gap:14px;align-items:center">
+                      <div style="{{p.ctaPrimary}}">Get it for iPhone</div>
+                      <div style="{{p.ctaGhost}}">Also on Android</div>
+                    </div>
+                    <div style="{{p.heroNote}}">Free to play, free forever for the daily puzzle. No ads, no account, no timers.</div>
+                  </div>
+                  <div style="{{p.heroArt}}">
+                    <div style="{{p.artLabel}}">App screenshot — Puzzle screen, light mode, mid-trace, 390 × 844</div>
+                  </div>
+                </div>
+
+                <div style="{{p.band}}">
+                  <sc-for list="{{p.promises}}" as="pr" hint-placeholder-count="3">
+                    <div style="{{p.promiseCard}}">
+                      <div style="{{p.promiseTitle}}">{{pr.title}}</div>
+                      <div style="{{p.promiseBody}}">{{pr.body}}</div>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <div style="{{p.section}}">
+                  <div style="{{p.sectionKicker}}">How it works</div>
+                  <div style="{{p.sectionTitle}}">Three minutes to learn, and then it's yours.</div>
+                  <div style="display:flex;gap:28px;padding-top:14px">
+                    <sc-for list="{{p.steps}}" as="st" hint-placeholder-count="3">
+                      <div style="{{p.stepCard}}">
+                        <div style="{{p.stepNum}}">{{st.n}}</div>
+                        <div style="{{p.stepTitle}}">{{st.title}}</div>
+                        <div style="{{p.stepBody}}">{{st.body}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="{{p.splitSection}}">
+                  <div style="{{p.splitArt}}">
+                    <div style="{{p.artLabel}}">App screenshot — Reveal screen at the hold, theme resolved, 390 × 844</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:20px;width:520px">
+                    <div style="{{p.sectionKicker}}">The reveal</div>
+                    <div style="{{p.sectionTitle}}">The leftovers are the point.</div>
+                    <div style="{{p.sectionBody}}">Every puzzle is built so that the letters nobody needs spell out what the puzzle was about. Steam on the window. The last bus. Things my mother kept. You finish the grid, the room goes quiet for three seconds, and the theme arrives.</div>
+                  </div>
+                </div>
+
+                <div style="{{p.section}}">
+                  <div style="{{p.sectionKicker}}">What it costs</div>
+                  <div style="{{p.sectionTitle}}">Buy a theme, or don't.</div>
+                  <div style="display:flex;gap:24px;padding-top:14px">
+                    <sc-for list="{{p.prices}}" as="pc" hint-placeholder-count="3">
+                      <div style="{{p.priceCard}}">
+                        <div style="{{p.priceName}}">{{pc.name}}</div>
+                        <div style="{{p.priceAmount}}">{{pc.amount}}</div>
+                        <div style="{{p.priceBody}}">{{pc.body}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="{{p.priceNote}}">One-time purchases, in real money. No coins, no subscriptions, no season passes, and nothing expires.</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{p.isProse}}" hint-placeholder-val="{{ true }}">
+                <div style="{{p.proseHead}}">
+                  <div style="{{p.sectionKicker}}">{{p.kicker}}</div>
+                  <div style="{{p.proseTitle}}">{{p.proseTitleText}}</div>
+                  <div style="{{p.proseStand}}">{{p.stand}}</div>
+                  <div style="{{p.updated}}">{{p.updatedText}}</div>
+                </div>
+                <sc-if value="{{p.hasLegalFlag}}" hint-placeholder-val="{{ true }}">
+                  <div style="{{p.flag}}">Placeholder copy for design purposes. Must be reviewed and rewritten by a lawyer before launch.</div>
+                </sc-if>
+                <div style="{{p.proseBody}}">
+                  <sc-for list="{{p.blocks}}" as="b" hint-placeholder-count="6">
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                      <div style="{{p.blockHead}}">{{b.head}}</div>
+                      <div style="{{p.blockText}}">{{b.text}}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <div style="{{p.footer}}">
+                <div style="display:flex;justify-content:space-between;gap:60px">
+                  <div style="display:flex;flex-direction:column;gap:12px;width:340px">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="{{p.markFoot}}"></div>
+                      <div style="{{p.wordmarkFoot}}">WordQuilt</div>
+                    </div>
+                    <div style="{{p.footNote}}">A daily themed word search. Made in Bristol.</div>
+                  </div>
+                  <div style="display:flex;gap:72px">
+                    <sc-for list="{{p.footCols}}" as="col" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;gap:12px">
+                        <div style="{{p.footHead}}">{{col.head}}</div>
+                        <sc-for list="{{col.links}}" as="l" hint-placeholder-count="3">
+                          <div style="{{p.footLink}}">{{l.t}}</div>
+                        </sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="{{p.footRule}}"></div>
+                <div style="display:flex;justify-content:space-between">
+                  <div style="{{p.footFine}}">© 2026 WordQuilt Ltd.</div>
+                  <div style="{{p.footFine}}">hello@wordquilt.app</div>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:13px;font-weight:800">{{p.capTitle}}</div>
+              <div style="font-size:12px;color:#6B6559;font-family:'IBM Plex Sans',monospace">{{p.capRoute}}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5F5A51;text-wrap:pretty">{{p.capState}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:3200,&quot;height&quot;:2400},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C25A34&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C25A34&quot;,&quot;#B4543A&quot;,&quot;#A8552F&quot;,&quot;#C2603F&quot;],&quot;section&quot;:&quot;Direction&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || "#C25A34";
+    const T = {
+      light: { field:accent, fieldInk:"#FFF6E8", page:"#FBF4E4", band:"#F4EAD6", ink:"#241F19", line:"#241F19", shade:"#241F19",
+               muted:"#7A6E5C", tile:"#FFFDF6", sewn:"#F0C982", accent:accent, kicker:"#9E4227", onAccent:"#FFF6E8", wash:"#F6DCCB",
+               empty:"rgba(36,31,25,0.30)" },
+      dark:  { field:"#8A3E27", fieldInk:"#FCEEDD", page:"#1E1B16", band:"#26221C", ink:"#F4EDDF", line:"rgba(244,237,223,0.42)", shade:"#0E0C09",
+               muted:"#A99C89", tile:"#2C2721", sewn:"#7A6038", accent:"#E39466", kicker:"#E39466", onAccent:"#241710", wash:"#4A2E22",
+               empty:"rgba(244,237,223,0.28)" }
+    };
+    const display = "Newsreader, Georgia, serif";
+    const ui = "Nunito, system-ui, sans-serif";
+
+    const base = (mode, opt) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const stripe = mode === "light"
+        ? "repeating-linear-gradient(135deg, rgba(36,31,25,0.07) 0 10px, rgba(36,31,25,0) 10px 20px)"
+        : "repeating-linear-gradient(135deg, rgba(244,237,223,0.07) 0 10px, rgba(244,237,223,0) 10px 20px)";
+      return {
+        isLanding:false, isProse:false, hasLegalFlag:false,
+        page: { position:"relative", width:"1440px", background:t.page, borderRadius:"18px", overflow:"hidden",
+                border:"2px solid "+t.line, boxShadow:"0 6px 0 "+inkEdge, display:"flex", flexDirection:"column" },
+        nav: { height:"92px", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 60px",
+               background:t.field, borderBottom:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.3)"), boxSizing:"border-box" },
+        mark: { width:"34px", height:"34px", borderRadius:"10px", background:t.sewn,
+                border:"2px solid "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"), transform:"rotate(-4deg)", boxSizing:"border-box" },
+        markFoot: { width:"30px", height:"30px", borderRadius:"9px", background:t.sewn, border:"2px solid "+t.line, transform:"rotate(-4deg)", boxSizing:"border-box" },
+        wordmark: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"27px", color:t.fieldInk },
+        wordmarkFoot: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"24px", color:t.ink },
+        navLink: { fontFamily:ui, fontSize:"16px", fontWeight:800, color:t.fieldInk },
+        navButton: { height:"48px", padding:"0 22px", display:"flex", alignItems:"center", borderRadius:"14px",
+                     background:t.fieldInk, color:t.field, border:"2px solid "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"),
+                     boxShadow:"0 4px 0 "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"),
+                     fontFamily:ui, fontSize:"16px", fontWeight:900, boxSizing:"border-box" },
+        artLabel: { fontFamily:"'IBM Plex Sans', monospace", fontSize:"13px", fontWeight:500, color:t.muted, textAlign:"center",
+                    maxWidth:"280px", lineHeight:"1.5" },
+        section: { padding:"84px 60px", display:"flex", flexDirection:"column", gap:"14px", boxSizing:"border-box" },
+        sectionKicker: { fontFamily:ui, fontSize:"13px", fontWeight:900, letterSpacing:"0.18em", textTransform:"uppercase", color:t.kicker },
+        sectionTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"46px", lineHeight:"1.1", color:t.ink, maxWidth:"760px" },
+        sectionBody: { fontFamily:ui, fontSize:"18px", fontWeight:600, lineHeight:"1.6", color:t.muted, textWrap:"pretty" },
+        footer: { padding:"56px 60px 44px", background:t.band, borderTop:"2px solid "+t.empty,
+                  display:"flex", flexDirection:"column", gap:"32px", boxSizing:"border-box" },
+        footNote: { fontFamily:ui, fontSize:"15px", fontWeight:600, color:t.muted },
+        footHead: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.muted },
+        footLink: { fontFamily:ui, fontSize:"16px", fontWeight:700, color:t.ink },
+        footRule: { height:"2px", background:t.empty, opacity:0.5 },
+        footFine: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted },
+        footCols: [
+          { head:"The game", links:[{t:"How it plays"},{t:"Themes"},{t:"Dailies"}] },
+          { head:"Company", links:[{t:"About"},{t:"Contact"},{t:"Press kit"}] },
+          { head:"Legal", links:[{t:"Privacy"},{t:"Terms"},{t:"Accessibility"}] }
+        ],
+        stripe, inkEdge,
+        capTitle: opt.capTitle, capRoute: opt.capRoute + " · " + mode, capState: opt.capState
+      };
+    };
+
+    const landing = (mode) => {
+      const t = T[mode], b = base(mode, { capTitle:"W1 · Landing", capRoute:"wordquilt.app/",
+        capState:"Hero states the mechanic in one line and the promises immediately under it. Two image placeholders name exactly which screenshots go there. At 900px the hero stacks, promise cards become a single column, and the nav collapses to the wordmark plus one button." });
+      const inkEdge = b.inkEdge;
+      const art = { flex:"1", minHeight:"520px", borderRadius:"24px", background:t.tile, backgroundImage:b.stripe,
+                    border:"2px dashed "+t.empty, display:"flex", alignItems:"center", justifyContent:"center", boxSizing:"border-box" };
+      return Object.assign(b, { isLanding:true,
+        hero: { padding:"90px 60px 80px", display:"flex", gap:"70px", alignItems:"center", boxSizing:"border-box" },
+        heroTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"66px", lineHeight:"1.04", color:t.ink, textWrap:"pretty" },
+        heroBody: { fontFamily:ui, fontSize:"20px", fontWeight:600, lineHeight:"1.6", color:t.muted, textWrap:"pretty" },
+        heroNote: { fontFamily:ui, fontSize:"15px", fontWeight:700, color:t.muted },
+        ctaPrimary: { height:"64px", padding:"0 32px", display:"flex", alignItems:"center", borderRadius:"20px",
+                      background:t.accent, color:t.onAccent, border:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.42)"),
+                      boxShadow:"0 5px 0 "+inkEdge, fontFamily:ui, fontSize:"19px", fontWeight:900, boxSizing:"border-box" },
+        ctaGhost: { height:"64px", padding:"0 28px", display:"flex", alignItems:"center", borderRadius:"20px",
+                    background:"transparent", color:t.ink, border:"2px solid "+t.empty,
+                    fontFamily:ui, fontSize:"18px", fontWeight:800, boxSizing:"border-box" },
+        heroArt: art,
+        splitArt: Object.assign({}, art, { maxWidth:"520px" }),
+        splitSection: { padding:"84px 60px", display:"flex", gap:"70px", alignItems:"center", background:t.band,
+                        borderTop:"2px solid "+t.empty, borderBottom:"2px solid "+t.empty, boxSizing:"border-box" },
+        band: { padding:"0 60px 70px", display:"flex", gap:"24px", boxSizing:"border-box" },
+        promises: [
+          { title:"No advertising", body:"Not a banner, not a video, not one interruption. This is the whole reason the app exists." },
+          { title:"No timers, no streaks", body:"Nothing counts down and nothing breaks if you skip a week. Missed days are just empty squares." },
+          { title:"No account", body:"No sign-in, no email, no profile. Your quilt lives on your phone." }
+        ],
+        promiseCard: { flex:"1", background:t.tile, borderRadius:"22px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                       padding:"26px 26px 28px", display:"flex", flexDirection:"column", gap:"10px", boxSizing:"border-box" },
+        promiseTitle: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"27px", color:t.ink },
+        promiseBody: { fontFamily:ui, fontSize:"16px", fontWeight:600, lineHeight:"1.55", color:t.muted, textWrap:"pretty" },
+        steps: [
+          { n:"1", title:"Trace what you can find", body:"Drag across letters in any direction. Paths can snake. A wrong path simply clears — there is no penalty of any kind." },
+          { n:"2", title:"Fill the grid", body:"Six words per puzzle, marked off as you go. Three free hints a day if you want them, and none are ever required." },
+          { n:"3", title:"Read what's left", body:"The unused letters resolve in reading order and spell the theme. Then the square sews into your quilt." }
+        ],
+        stepCard: { flex:"1", background:t.tile, borderRadius:"22px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                    padding:"26px", display:"flex", flexDirection:"column", gap:"12px", boxSizing:"border-box" },
+        stepNum: { width:"44px", height:"44px", borderRadius:"13px", background:t.sewn, border:"2px solid "+t.line,
+                   display:"flex", alignItems:"center", justifyContent:"center", transform:"rotate(-3deg)",
+                   fontFamily:ui, fontSize:"19px", fontWeight:900, color:t.ink, boxSizing:"border-box" },
+        stepTitle: { fontFamily:ui, fontSize:"20px", fontWeight:900, color:t.ink },
+        stepBody: { fontFamily:ui, fontSize:"16px", fontWeight:600, lineHeight:"1.55", color:t.muted, textWrap:"pretty" },
+        prices: [
+          { name:"The Daily", amount:"Free", body:"A new puzzle every day, forever, plus every past day you feel like catching up on." },
+          { name:"A theme pack", amount:"$2.99", body:"Twenty puzzles on one subject. Yours permanently, offline, on every device signed into your store account." },
+          { name:"The Whole Quilt", amount:"$14.99", body:"Every pack there is, plus every pack released later. The generous option, and the last thing we'll ever ask you for." }
+        ],
+        priceCard: { flex:"1", background:t.tile, borderRadius:"22px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                     padding:"28px 26px", display:"flex", flexDirection:"column", gap:"10px", boxSizing:"border-box" },
+        priceName: { fontFamily:ui, fontSize:"14px", fontWeight:900, letterSpacing:"0.14em", textTransform:"uppercase", color:t.muted },
+        priceAmount: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"44px", color:t.ink },
+        priceBody: { fontFamily:ui, fontSize:"16px", fontWeight:600, lineHeight:"1.55", color:t.muted, textWrap:"pretty" },
+        priceNote: { fontFamily:ui, fontSize:"16px", fontWeight:700, color:t.ink, paddingTop:"20px" } });
+    };
+
+    const prose = (mode, opt) => {
+      const t = T[mode], b = base(mode, opt);
+      return Object.assign(b, { isProse:true, hasLegalFlag: !!opt.legal,
+        kicker: opt.kicker, proseTitleText: opt.title, stand: opt.stand, updatedText: opt.updated, blocks: opt.blocks,
+        proseHead: { padding:"84px 60px 0", display:"flex", flexDirection:"column", gap:"18px", maxWidth:"860px", boxSizing:"border-box" },
+        proseTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"58px", lineHeight:"1.06", color:t.ink },
+        proseStand: { fontFamily:ui, fontSize:"20px", fontWeight:600, lineHeight:"1.6", color:t.muted, textWrap:"pretty" },
+        updated: { fontFamily:ui, fontSize:"14px", fontWeight:800, letterSpacing:"0.04em", color:t.muted },
+        flag: { margin:"32px 60px 0", maxWidth:"860px", background:t.wash, borderRadius:"16px", border:"2px solid "+t.accent,
+                boxShadow:"0 4px 0 "+(mode === "light" ? t.ink : t.shade), padding:"16px 20px",
+                fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.ink, boxSizing:"border-box" },
+        proseBody: { padding:"44px 60px 84px", display:"flex", flexDirection:"column", gap:"34px", maxWidth:"860px", boxSizing:"border-box" },
+        blockHead: { fontFamily:ui, fontSize:"20px", fontWeight:900, color:t.ink },
+        blockText: { fontFamily:ui, fontSize:"17px", fontWeight:600, lineHeight:"1.72", color:t.muted, textWrap:"pretty" } });
+    };
+
+    const about = (mode) => prose(mode, {
+      kicker:"About", title:"Two people, one rule.", updated:"Written August 2026",
+      stand:"WordQuilt is made by a two-person studio in Bristol. We built it because every word game we liked had been slowly filled with things nobody asked for.",
+      capTitle:"W2 · About", capRoute:"wordquilt.app/about",
+      capState:"Short by design: who makes it, why, and the constraints the product holds itself to. The constraint list is the same one the app is built against, so the page and the product cannot drift apart.",
+      blocks: [
+        { head:"Where it came from", text:"A word search in the back of a newspaper, and the small annoyance of realising the leftover letters spelled something. That is the entire idea. We spent two years making sure nothing else got added to it." },
+        { head:"What we won't do", text:"No advertising in any form. No account, no email capture, no newsletter. No streaks, no timers, no lives, no energy, no penalties for a wrong guess. No currency to buy other currency with. No puzzle ever served twice." },
+        { head:"How it's paid for", text:"Theme packs cost a few pounds once, and that is the whole business. The daily puzzle stays free permanently, and it is not a trial of anything. If you never buy a pack, you are not a lesser kind of player." },
+        { head:"Who makes it", text:"Puzzles are hand-authored and hand-checked. Every theme is written by a person, tested by a second person, and rejected if it needs a hint to finish. There is no generator." },
+        { head:"Talking to us", text:"hello@wordquilt.app reaches both of us, and one of us answers. If something in the app is broken, the contact button inside Settings sends us your version and device so we can find it faster." }
+      ]
+    });
+
+    const privacy = (mode) => prose(mode, {
+      kicker:"Privacy", title:"We don't collect you.", updated:"Last updated 12 August 2026", legal:true,
+      stand:"WordQuilt has no accounts and no user profiles. Almost everything the app knows about you never leaves your phone.",
+      capTitle:"W3 · Privacy policy", capRoute:"wordquilt.app/privacy",
+      capState:"Numbered sections, 860px measure, visible last-updated date, and the same type care as the landing page. Copy is written to be readable first and complete second; it needs legal review before launch.",
+      blocks: [
+        { head:"1. What stays on your device", text:"Your finished puzzles, in-progress grids, earned squares, theme preferences, chosen fabric, notification time, hint balance and settings are stored locally. We cannot read them, and they are not uploaded anywhere by the app." },
+        { head:"2. What we receive", text:"Anonymous, aggregated usage events — puzzles started and completed, screens reached, and crash reports. These carry no name, no email, no device identifier that follows you between apps, and no advertising ID. We do not build a profile of you and could not link an event back to a person if asked." },
+        { head:"3. Purchases", text:"Payments are handled entirely by Apple or Google. We never see your card details, billing address or full name. We receive a purchase receipt that tells the app which content you own." },
+        { head:"4. No advertising, no third-party trackers", text:"The app contains no advertising SDKs, no analytics resellers, no social login and no attribution tracking. Nothing you do in WordQuilt is sold, shared or brokered." },
+        { head:"5. Notifications", text:"If you allow them, your chosen reminder time is stored on your device and used only to schedule one local notification a day. Notifications are scheduled by your phone, not sent from a server." },
+        { head:"6. Children", text:"The app is suitable for all ages, collects no personal data, and contains no advertising, chat, user-generated content or links out to third-party stores beyond the platform's own purchase sheet." },
+        { head:"7. Your rights and how to reach us", text:"Because we hold no personal data tied to you, there is normally nothing for us to export or delete. If you believe we hold something about you, write to hello@wordquilt.app and we will answer within thirty days. Deleting the app removes all local data from your device." }
+      ]
+    });
+
+    const terms = (mode) => prose(mode, {
+      kicker:"Terms", title:"The short version, in full.", updated:"Last updated 12 August 2026", legal:true,
+      stand:"These terms cover using WordQuilt and buying content inside it. Plain language on purpose; nothing here is hidden in a clause.",
+      capTitle:"W4 · Terms of service", capRoute:"wordquilt.app/terms",
+      capState:"Same measure and rhythm as Privacy so the pair read as one document. Purchase, refund and availability terms are stated up front rather than buried; needs legal review before launch.",
+      blocks: [
+        { head:"1. Using the app", text:"WordQuilt is licensed to you for personal, non-commercial use on devices you own. You may not resell it, extract its puzzle content, or redistribute puzzles in any form." },
+        { head:"2. What you buy", text:"Theme packs, collections, fabric sets and hint bundles are one-time purchases of a permanent licence to that content on your store account. They are not subscriptions and they do not expire. Purchased hints do not expire either." },
+        { head:"3. Restoring purchases", text:"Restore Purchases in the Store or in Settings re-downloads anything bought with your store account. Puzzle progress is stored on your device and, in this version, is not backed up — reinstalling restores what you bought but not which squares you had sewn." },
+        { head:"4. Refunds", text:"Refunds are handled by Apple or Google under their own policies, since they take the payment. If something is broken on our side, write to us and we will help you make the case." },
+        { head:"5. Availability and changes", text:"We aim to keep every pack you own playable offline and permanently. If a pack must be withdrawn for rights reasons, it stays playable for anyone who already owns it. New packs may be added at any time; owners of the Whole Quilt receive them at no extra cost." },
+        { head:"6. Fair use of hints and content", text:"Automated play, scraping puzzle data, and circumventing purchases are not permitted. We reserve the right to disable access where content has clearly been extracted for redistribution." },
+        { head:"7. Liability and law", text:"The app is provided as-is; to the extent permitted by law we are not liable for indirect loss arising from its use. Nothing here affects your statutory rights as a consumer. These terms are governed by the laws of England and Wales." }
+      ]
+    });
+
+    const build = (mode) => [ landing(mode), about(mode), privacy(mode), terms(mode) ];
+    return { rows: [ { label:"Light", pages: build("light") }, { label:"Dark", pages: build("dark") } ] };
+  }
+}
+
+</script>
+</body>
+</html>

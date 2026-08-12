@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E7E4DD; }
+  a { color: #A8462A; }
+  a:hover { color: #C25A34; }
+</style>
+</helmet>
+
+<section style="display:flex;flex-direction:column;gap:36px;padding:56px 64px 96px;font-family:Nunito,system-ui,sans-serif;color:#26241F">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">Turn 9 · accessibility</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border:2px solid #241F19;border-radius:8px;font-size:13px;font-weight:800">9a</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-0.01em">Colour-blind safe · large text · reduce motion · screen reader</span>
+    </div>
+    <div style="font-size:16px;line-height:1.55;color:#5F5A51;text-wrap:pretty">The same puzzle in every mode, so the differences are the design and not the content. Sewn and traced never rely on hue alone, the largest text size is drawn rather than assumed, and the grid has a real linear reading order for VoiceOver and TalkBack.</div>
+  </div>
+
+  <sc-for list="{{rows}}" as="row" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">{{row.label}}</div>
+      <div style="display:flex;gap:28px;align-items:flex-start">
+        <sc-for list="{{row.frames}}" as="f" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+            <div style="{{f.frame}}">
+              <div style="{{f.field}}"></div>
+              <div style="{{f.sheet}}"></div>
+
+              <div style="position:absolute;left:0;top:0;width:390px;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;box-sizing:border-box">
+                <div style="{{f.statusType}}">9:41</div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <div style="{{f.bar1}}"></div>
+                  <div style="{{f.bar2}}"></div>
+                  <div style="{{f.bar3}}"></div>
+                  <div style="{{f.battery}}"></div>
+                </div>
+              </div>
+
+              <div style="position:absolute;left:0;top:54px;width:390px;height:756px;display:flex;flex-direction:column;box-sizing:border-box;padding:0 26px">
+
+                <sc-if value="{{f.isPuzzle}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:52px;display:flex;align-items:center;gap:12px">
+                    <div style="{{f.roundButton}}">
+                      <div style="{{f.backGlyph}}"></div>
+                    </div>
+                    <div style="{{f.crumb}}">Kitchen Things</div>
+                    <div style="flex:1"></div>
+                    <div style="{{f.headerChip}}">6 of 20</div>
+                  </div>
+                  <div style="{{f.titleGap}}"></div>
+                  <div style="{{f.oblique}}">Before anyone else is up.</div>
+                  <div style="{{f.chipGap}}"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:9px;justify-content:center">
+                    <sc-for list="{{f.chips}}" as="ch" hint-placeholder-count="6">
+                      <div style="{{ch.style}}">{{ch.text}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="{{f.gridGap}}"></div>
+                  <div style="{{f.gridBox}}">
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="49">
+                      <div style="{{c.tile}}"></div>
+                    </sc-for>
+                    <svg viewBox="{{f.viewBox}}" style="{{f.svgStyle}}">
+                      <sc-for list="{{f.paths}}" as="p" hint-placeholder-count="5">
+                        <polyline points="{{p.points}}" style="{{p.style}}"></polyline>
+                      </sc-for>
+                    </svg>
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="49">
+                      <div style="{{c.letter}}">{{c.ch}}</div>
+                    </sc-for>
+                    <sc-if value="{{f.hasFocusRing}}" hint-placeholder-val="{{ true }}">
+                      <div style="{{f.focusRing}}"></div>
+                    </sc-if>
+                  </div>
+                  <div style="{{f.bandGap}}"></div>
+                  <div style="{{f.hintBand}}">{{f.bandText}}</div>
+                  <div style="flex:1"></div>
+                  <sc-if value="{{f.hasSpeech}}" hint-placeholder-val="{{ true }}">
+                    <div style="{{f.speechCard}}">
+                      <div style="{{f.speechLabel}}">VoiceOver reads</div>
+                      <div style="{{f.speechBody}}">{{f.speechText}}</div>
+                    </div>
+                    <div style="height:16px"></div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <div style="{{f.primaryButton}}">Hint</div>
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <div style="{{f.hintCount}}">3 free today</div>
+                      <div style="{{f.hintNote}}">{{f.hintNoteText}}</div>
+                    </div>
+                  </div>
+                  <div style="height:26px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isList}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:52px;display:flex;align-items:center;gap:12px">
+                    <div style="{{f.roundButton}}">
+                      <div style="{{f.backGlyph}}"></div>
+                    </div>
+                    <div style="{{f.crumb}}">Settings</div>
+                  </div>
+                  <div style="height:16px"></div>
+                  <div style="{{f.pageTitle}}">Seeing and reading</div>
+                  <div style="height:22px"></div>
+                  <sc-for list="{{f.sections}}" as="sec" hint-placeholder-count="2">
+                    <div style="display:flex;flex-direction:column">
+                      <div style="{{f.sectionLabel}}">{{sec.label}}</div>
+                      <div style="height:10px"></div>
+                      <div style="{{f.card}}">
+                        <sc-for list="{{sec.items}}" as="it" hint-placeholder-count="3">
+                          <div style="{{it.row}}">
+                            <div style="display:flex;flex-direction:column;gap:3px;flex:1">
+                              <div style="{{it.titleStyle}}">{{it.title}}</div>
+                              <div style="{{it.subStyle}}">{{it.sub}}</div>
+                            </div>
+                            <div style="{{it.rightStyle}}">{{it.right}}</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="height:22px"></div>
+                    </div>
+                  </sc-for>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+              </div>
+
+              <div style="{{f.homeIndicator}}"></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:13px;font-weight:800">{{f.capTitle}}</div>
+              <div style="font-size:12px;color:#6B6559;font-family:'IBM Plex Sans',monospace">{{f.capRoute}}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5F5A51;text-wrap:pretty">{{f.capState}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:2200,&quot;height&quot;:2100},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C25A34&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C25A34&quot;,&quot;#B4543A&quot;,&quot;#A8552F&quot;,&quot;#C2603F&quot;],&quot;section&quot;:&quot;Direction&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || "#C25A34";
+    const T = {
+      light: { field:accent, fieldInk:"#FFF6E8", fieldLine:"rgba(255,246,232,0.62)", fieldFill:"rgba(255,246,232,0.16)",
+               sheet:"#FBF4E4", ink:"#241F19", line:"#241F19", shade:"#241F19", muted:"#6A5F4E",
+               tile:"#FFFDF6", sewn:"#F0C982", accent:accent, onAccent:"#FFF6E8", wash:"#F6DCCB",
+               empty:"rgba(36,31,25,0.34)", thread:"rgba(36,31,25,0.30)" },
+      dark:  { field:"#8A3E27", fieldInk:"#FCEEDD", fieldLine:"rgba(252,238,221,0.55)", fieldFill:"rgba(252,238,221,0.12)",
+               sheet:"#1E1B16", ink:"#F4EDDF", line:"rgba(244,237,223,0.42)", shade:"#0E0C09", muted:"#B0A390",
+               tile:"#2C2721", sewn:"#7A6038", accent:"#E39466", onAccent:"#241710", wash:"#4A2E22",
+               empty:"rgba(244,237,223,0.30)", thread:"rgba(244,237,223,0.30)" }
+    };
+    const display = "Newsreader, Georgia, serif";
+    const ui = "Nunito, system-ui, sans-serif";
+
+    const grid = ["KESTLTE","TSTAMEL","ESAONTA","AHIUEWD","PINECDL","OOWEVEE","TWHISKR"];
+    const words = {
+      KETTLE: [[0,0],[0,1],[1,2],[0,3],[0,4],[1,5]],
+      TEAPOT: [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]],
+      LADLE:  [[1,6],[2,6],[3,6],[4,6],[5,6]],
+      WHISK:  [[6,1],[6,2],[6,3],[6,4],[6,5]],
+      SAUCER: [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6]],
+      SIEVE:  [[2,1],[3,2],[4,3],[5,4],[5,3]]
+    };
+    const order = ["KETTLE","TEAPOT","LADLE","WHISK","SAUCER","SIEVE"];
+    const foundWords = ["KETTLE","TEAPOT","LADLE","WHISK"];
+    const k = (r,c) => r + "," + c;
+    const foundCells = new Set();
+    foundWords.forEach(w => words[w].forEach(([r,c]) => foundCells.add(k(r,c))));
+
+    const shell = (mode, opt) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const fieldH = opt.fieldH, seam = fieldH - 40;
+      return {
+        isPuzzle:false, isList:false, hasSpeech:!!opt.speech, hasFocusRing:!!opt.focus,
+        speechText: opt.speech || "", hintNoteText: opt.hintNote || "Or hold anywhere on the grid",
+        bandText: opt.band || "",
+        frame: { position:"relative", width:"390px", height:"844px", borderRadius:"44px", overflow:"hidden", background:t.sheet,
+                 boxShadow: mode === "light" ? "0 0 0 1px rgba(0,0,0,0.12)" : "0 0 0 1px rgba(255,255,255,0.12)" },
+        field: { position:"absolute", left:"0", top:"0", width:"390px", height:fieldH+"px", background:t.field },
+        sheet: { position:"absolute", left:"-8%", top:seam+"px", width:"116%", height:(900-seam)+"px", background:t.sheet,
+                 borderTop:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.35)"),
+                 borderTopLeftRadius:"50% 74px", borderTopRightRadius:"50% 74px", boxSizing:"border-box" },
+        statusType: { fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.fieldInk },
+        bar1: { width:"3px", height:"7px", borderRadius:"1px", background:t.fieldInk },
+        bar2: { width:"3px", height:"10px", borderRadius:"1px", background:t.fieldInk },
+        bar3: { width:"3px", height:"13px", borderRadius:"1px", background:t.fieldInk },
+        battery: { width:"24px", height:"12px", borderRadius:"3px", border:"2px solid "+t.fieldInk, boxSizing:"border-box", marginLeft:"4px" },
+        roundButton: { width:"46px", height:"46px", borderRadius:"999px", background:t.fieldFill, border:"2px solid "+t.fieldLine,
+                       display:"flex", alignItems:"center", justifyContent:"center", boxSizing:"border-box", flexShrink:0 },
+        backGlyph: { width:"11px", height:"11px", borderLeft:"2.5px solid "+t.fieldInk, borderBottom:"2.5px solid "+t.fieldInk,
+                     transform:"rotate(45deg)", marginLeft:"-3px" },
+        crumb: { fontFamily:ui, fontSize:"15px", fontWeight:800, letterSpacing:"0.1em", textTransform:"uppercase", color:t.fieldInk },
+        headerChip: { height:"36px", display:"flex", alignItems:"center", padding:"0 14px", borderRadius:"999px",
+                      background:t.fieldFill, border:"2px solid "+t.fieldLine, boxSizing:"border-box",
+                      fontFamily:ui, fontSize:"14px", fontWeight:800, color:t.fieldInk, flexShrink:0 },
+        pageTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"36px", lineHeight:"1.06", color:t.fieldInk },
+        sectionLabel: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.muted },
+        card: { background:t.tile, borderRadius:"22px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge, overflow:"hidden", flexShrink:0 },
+        primaryButton: { height:"64px", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 34px",
+                         background:t.accent, color:t.onAccent, borderRadius:"20px",
+                         border:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.42)"),
+                         boxShadow:"0 5px 0 "+inkEdge, fontFamily:ui, fontSize:"19px", fontWeight:900, boxSizing:"border-box", flexShrink:0 },
+        speechCard: { background:t.tile, borderRadius:"18px", border:"2px dashed "+t.accent, padding:"14px 16px",
+                      display:"flex", flexDirection:"column", gap:"6px", boxSizing:"border-box", flexShrink:0 },
+        speechLabel: { fontFamily:ui, fontSize:"11px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.accent },
+        speechBody: { fontFamily:"'IBM Plex Sans', monospace", fontSize:"13px", fontWeight:500, lineHeight:"1.55", color:t.ink, textWrap:"pretty" },
+        hintCount: { fontFamily:ui, fontSize:"17px", fontWeight:800, color:t.ink },
+        hintNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.35", color:t.muted },
+        homeIndicator: { position:"absolute", left:"125px", bottom:"10px", width:"140px", height:"5px", borderRadius:"3px",
+                         background: mode === "light" ? "rgba(0,0,0,0.30)" : "rgba(255,255,255,0.34)" },
+        capTitle: opt.capTitle, capRoute: opt.capRoute + " · " + mode, capState: opt.capState
+      };
+    };
+
+    // variant: "cb" colour-blind safe · "xl" largest text · "motion" reduce motion · "sr" screen reader
+    const puzzle = (mode, variant, opt) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, Object.assign({ fieldH: variant === "xl" ? 330 : 306 }, opt));
+      const G = variant === "xl" ? { PITCH:44, CELL:42, SIZE:306, PAD:14 } : { PITCH:46, CELL:44, SIZE:320, PAD:7 };
+      const cb = variant === "cb";
+      const srFocus = k(2,1);
+      const cells = [];
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 7; c++) {
+          const id = k(r,c);
+          const isFound = foundCells.has(id);
+          let bg = t.tile, fg = t.ink, line = t.line, extra = {};
+          if (isFound) {
+            bg = cb ? t.tile : t.sewn;
+            if (cb) { extra = { backgroundImage: mode === "light"
+              ? "repeating-linear-gradient(135deg, rgba(36,31,25,0.34) 0 3px, rgba(36,31,25,0) 3px 8px)"
+              : "repeating-linear-gradient(135deg, rgba(244,237,223,0.32) 0 3px, rgba(244,237,223,0) 3px 8px)" }; }
+          }
+          const tilt = variant === "motion" ? 0 : (((r * 7 + c) % 5) - 2) * 0.7;
+          const base = { position:"absolute", left:(c*G.PITCH + G.PAD)+"px", top:(r*G.PITCH)+"px",
+                         width:G.CELL+"px", height:G.CELL+"px", transform: tilt ? ("rotate("+tilt+"deg)") : "none" };
+          cells.push({ ch: grid[r][c],
+            tile: Object.assign({}, base, extra, { background:bg, borderRadius:"15px", boxSizing:"border-box",
+              border:"2px solid "+line, boxShadow:"0 4px 0 "+inkEdge }),
+            letter: Object.assign({}, base, { display:"flex", alignItems:"center", justifyContent:"center",
+              fontFamily:ui, fontSize:(variant === "xl" ? 25 : 21)+"px", fontWeight:800,
+              color: isFound && !cb ? t.ink : fg, opacity: isFound && cb ? 0.55 : 1, pointerEvents:"none" }) });
+        }
+      }
+      const paths = foundWords.map(w => ({
+        points: words[w].map(([r,c]) => (c*G.PITCH + G.CELL/2) + "," + (r*G.PITCH + G.CELL/2)).join(" "),
+        style: { fill:"none", stroke: cb ? t.ink : t.thread, strokeWidth: cb ? "6px" : "5px",
+                 strokeLinecap:"round", strokeLinejoin:"round", strokeDasharray: cb ? "none" : "9 8", opacity: cb ? 0.85 : 1 }
+      }));
+      const chips = order.map((w, i) => {
+        const isFound = foundWords.indexOf(w) !== -1;
+        const tilt = variant === "motion" ? 0 : ((i % 3) - 1) * 1.4;
+        return { text: isFound ? w : "",
+          style: isFound
+            ? { height:(variant === "xl" ? 40 : 36)+"px", display:"flex", alignItems:"center", padding:"0 15px", borderRadius:"999px",
+                background:t.fieldInk, color:t.field, border:"2px solid "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"),
+                boxShadow:"0 3px 0 "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"), boxSizing:"border-box",
+                fontFamily:ui, fontSize:(variant === "xl" ? 16 : 14)+"px", fontWeight:900, letterSpacing:"0.08em",
+                transform: tilt ? ("rotate("+tilt+"deg)") : "none" }
+            : { height:(variant === "xl" ? 40 : 36)+"px", width:(w.length * (variant === "xl" ? 15 : 13) + 18)+"px", borderRadius:"999px",
+                background:t.fieldFill, border:"2px dashed "+t.fieldLine, boxSizing:"border-box",
+                transform: tilt ? ("rotate("+tilt+"deg)") : "none" } };
+      });
+      const fr = words.SIEVE[0];
+      return Object.assign(s, { isPuzzle:true, cells, paths, chips,
+        titleGap: { height:(variant === "xl" ? 18 : 16)+"px", flexShrink:0 },
+        chipGap: { height:(variant === "xl" ? 16 : 18)+"px", flexShrink:0 },
+        gridGap: { height:(variant === "xl" ? 30 : 44)+"px", flexShrink:0 },
+        bandGap: { height:"14px", flexShrink:0 },
+        oblique: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:(variant === "xl" ? 34 : 31)+"px",
+                   lineHeight:"1.18", color:t.fieldInk, textAlign:"center", textWrap:"pretty" },
+        gridBox: { position:"relative", width:"334px", height:(7*G.PITCH - (G.PITCH - G.CELL))+"px", margin:"0 auto" },
+        viewBox: "0 0 " + G.SIZE + " " + G.SIZE,
+        svgStyle: { position:"absolute", left:G.PAD+"px", top:"0", width:G.SIZE+"px", height:G.SIZE+"px", pointerEvents:"none" },
+        focusRing: { position:"absolute", left:(fr[1]*G.PITCH + G.PAD - 6)+"px", top:(fr[0]*G.PITCH - 6)+"px",
+                     width:(G.CELL + 12)+"px", height:(G.CELL + 12)+"px", borderRadius:"20px",
+                     border:"4px solid "+t.accent, boxSizing:"border-box", pointerEvents:"none" },
+        hintBand: { minHeight:"32px", display:"flex", alignItems:"center", justifyContent:"center", textAlign:"center",
+                    fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.accent, textWrap:"pretty", flexShrink:0 },
+        hintNote: { fontFamily:ui, fontSize:(variant === "xl" ? 15 : 14)+"px", fontWeight:600, lineHeight:"1.35", color:t.muted },
+        hintCount: { fontFamily:ui, fontSize:(variant === "xl" ? 19 : 17)+"px", fontWeight:800, color:t.ink } });
+    };
+
+    const cbScreen = (mode) => puzzle(mode, "cb", {
+      band:"Four sewn, two to find.",
+      capTitle:"X1 · Colour-blind safe", capRoute:"/pack/kitchen-things/07?a11y=patterns",
+      capState:"Sewn tiles are hatched and their letters dimmed; the thread is a solid ink line rather than a dashed warm one. No state anywhere in the app is signalled by hue alone — pattern, weight or wording always carries it too." });
+
+    const xlScreen = (mode) => puzzle(mode, "xl", {
+      band:"Four sewn, two to find.",
+      hintNote:"Or hold the grid",
+      capTitle:"X2 · Largest text size", capRoute:"/pack/kitchen-things/07?text=xxxl",
+      capState:"iOS AX3 / Android 200%. The grid shrinks by 4px per cell and the field grows; word slots wrap to three rows; the hint line drops a clause rather than truncating. Nothing scrolls and no touch target falls below 44px." });
+
+    const motionScreen = (mode) => puzzle(mode, "motion", {
+      band:"KETTLE sewn.",
+      capTitle:"X3 · Reduce motion", capRoute:"/pack/kitchen-things/07?motion=reduced",
+      capState:"Tile tilt is removed, so patches sit square. The lock animation becomes an instant state change with a 120ms cross-fade, the Reveal resolves all leftover letters in one step, and the sew-in on the Shelf does not animate." });
+
+    const srScreen = (mode) => puzzle(mode, "sr", { focus:true,
+      band:"Row 3, column 2.",
+      capTitle:"X4 · Screen reader", capRoute:"/pack/kitchen-things/07?a11y=voiceover",
+      speech: "\"S. Row 3, column 2. Not yet part of a word. Double-tap and hold, then swipe, to trace from here. 4 of 6 words sewn.\"",
+      capState:"The grid is a 7×7 table traversed row by row; each cell announces its letter, position, and whether it belongs to a sewn word. A rotor item jumps between unsewn regions, and word slots announce length so the puzzle is playable without sight of the trace." });
+
+    const settings = (mode) => {
+      const t = T[mode];
+      const s = shell(mode, { fieldH:196,
+        capTitle:"X5 · Accessibility settings", capRoute:"/settings/accessibility",
+        capState:"Everything here is off by default and inherits from the OS where the OS has an opinion — the app's own switch only overrides. No setting is buried behind another, and none of them change the puzzles themselves." });
+      const item = (o, first) => ({
+        title:o.title, sub:o.sub, right:o.right,
+        row: { display:"flex", alignItems:"center", gap:"14px", padding:"16px 18px", minHeight:"66px",
+               borderTop: first ? "none" : ("2px solid "+t.empty), boxSizing:"border-box" },
+        titleStyle: { fontFamily:ui, fontSize:"17px", fontWeight:800, color:t.ink },
+        subStyle: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.4", color:t.muted, textWrap:"pretty" },
+        rightStyle: { fontFamily:ui, fontSize:"14px", fontWeight:800, color: o.on ? t.accent : t.muted, whiteSpace:"nowrap" }
+      });
+      const sections = [
+        { label:"Seeing", items: [
+          item({ title:"Patterns, not just colour", sub:"Hatches sewn tiles and darkens the thread", right:"On", on:true }, true),
+          item({ title:"Higher contrast", sub:"Deeper ink, stronger outlines, flatter fabric", right:"Off" }),
+          item({ title:"Text size", sub:"Follows your phone. Currently extra large.", right:"System" })
+        ]},
+        { label:"Movement and sound", items: [
+          item({ title:"Reduce motion", sub:"Follows your phone. Reveals resolve in one step.", right:"System" }, true),
+          item({ title:"Haptics", sub:"A small tick when a word locks", right:"On", on:true }),
+          item({ title:"Read the theme aloud", sub:"Speaks the reveal when it lands", right:"Off" })
+        ]}
+      ];
+      return Object.assign(s, { isList:true, sections });
+    };
+
+    const build = (mode) => [ cbScreen(mode), xlScreen(mode), motionScreen(mode), srScreen(mode), settings(mode) ];
+    return { rows: [ { label:"Light", frames: build("light") }, { label:"Dark", frames: build("dark") } ] };
+  }
+}
+
+</script>
+</body>
+</html>

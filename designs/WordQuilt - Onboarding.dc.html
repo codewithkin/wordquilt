@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E7E4DD; }
+  a { color: #A8462A; }
+  a:hover { color: #C25A34; }
+</style>
+</helmet>
+
+<section style="display:flex;flex-direction:column;gap:36px;padding:56px 64px 96px;font-family:Nunito,system-ui,sans-serif;color:#26241F">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">Turn 5 · onboarding, O1 to O9</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border:2px solid #241F19;border-radius:8px;font-size:13px;font-weight:800">5a</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-0.01em">Cold open to Shelf</span>
+    </div>
+    <div style="font-size:16px;line-height:1.55;color:#5F5A51;text-wrap:pretty">Nine screens, no skip control, nothing sold. The cold-open puzzle is a real 6×6: six words hidden, thirteen letters left over reading <em>morning ritual</em> in reading order, and the square it earns is the one already sewn on the Shelf at O9.</div>
+  </div>
+
+  <sc-for list="{{rows}}" as="row" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">{{row.label}}</div>
+      <div style="display:flex;gap:28px">
+        <sc-for list="{{row.frames}}" as="f" hint-placeholder-count="9">
+          <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+            <div style="{{f.frame}}">
+              <div style="{{f.field}}"></div>
+              <div style="{{f.sheet}}"></div>
+
+              <div style="position:absolute;left:0;top:0;width:390px;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;box-sizing:border-box">
+                <div style="{{f.statusType}}">9:41</div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <div style="{{f.bar1}}"></div>
+                  <div style="{{f.bar2}}"></div>
+                  <div style="{{f.bar3}}"></div>
+                  <div style="{{f.battery}}"></div>
+                </div>
+              </div>
+
+              <div style="position:absolute;left:0;top:54px;width:390px;height:756px;display:flex;flex-direction:column;box-sizing:border-box;padding:0 26px">
+                <div style="{{f.topPad}}"></div>
+
+                <sc-if value="{{f.isPuzzle}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:34px"></div>
+                  <div style="{{f.oblique}}">Something warm.</div>
+                  <div style="height:20px"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:9px;justify-content:center">
+                    <sc-for list="{{f.chips}}" as="ch" hint-placeholder-count="6">
+                      <div style="{{ch.style}}">{{ch.text}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:52px"></div>
+                  <div style="{{f.gridBox}}">
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="36">
+                      <div style="{{c.tile}}"></div>
+                    </sc-for>
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="36">
+                      <div style="{{c.letter}}">{{c.ch}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:28px"></div>
+                  <div style="flex:1"></div>
+                  <sc-if value="{{f.hasTooltip}}" hint-placeholder-val="{{ true }}">
+                    <div style="{{f.tooltip}}">Stuck? A hint opens one letter.</div>
+                    <div style="{{f.tooltipTail}}"></div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <div style="{{f.primaryButton}}">Hint</div>
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <div style="{{f.hintCount}}">{{f.hintCountText}}</div>
+                      <div style="{{f.hintNote}}">Or hold anywhere on the grid</div>
+                    </div>
+                  </div>
+                  <div style="height:26px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isReveal}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:104px"></div>
+                  <div style="{{f.gridBox}}">
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="36">
+                      <div style="{{c.tile}}"></div>
+                    </sc-for>
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="36">
+                      <div style="{{c.letter}}">{{c.ch}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:80px"></div>
+                  <div style="{{f.themeStyle}}">Morning ritual</div>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isProp}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:150px"></div>
+                  <div style="{{f.propLead}}">Every puzzle hides a theme. The letters you don't use spell it out.</div>
+                  <div style="height:36px"></div>
+                  <div style="{{f.promiseCard}}">
+                    <div style="{{f.promiseTitle}}">No advertising. Ever.</div>
+                    <div style="{{f.promiseBody}}">Not a banner, not a video, not one interruption. You will never be asked to watch anything.</div>
+                  </div>
+                  <div style="flex:1"></div>
+                  <div style="{{f.wideButton}}">Make it mine</div>
+                  <div style="height:34px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isThemes}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:26px"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:12px">
+                    <sc-for list="{{f.themes}}" as="th" hint-placeholder-count="12">
+                      <div style="{{th.style}}">{{th.name}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1"></div>
+                  <div style="{{f.wideButton}}">Three chosen · carry on</div>
+                  <div style="height:34px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isFabricPick}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:26px"></div>
+                  <div style="{{f.previewCard}}">
+                    <div style="{{f.previewSquare}}">
+                      <sc-for list="{{f.previewPatch}}" as="q" hint-placeholder-count="49">
+                        <div style="{{q.style}}"></div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+                      <div style="{{f.previewName}}">Linen</div>
+                      <div style="{{f.previewNote}}">Every square you sew will be this colour. Change it whenever you like.</div>
+                    </div>
+                  </div>
+                  <div style="height:28px"></div>
+                  <div style="display:flex;gap:12px">
+                    <sc-for list="{{f.palettes}}" as="p" hint-placeholder-count="4">
+                      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:74px">
+                        <div style="{{p.swatch}}"></div>
+                        <div style="{{p.label}}">{{p.name}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1"></div>
+                  <div style="{{f.wideButton}}">Use Linen</div>
+                  <div style="height:34px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isPayoff}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:26px"></div>
+                  <sc-for list="{{f.packs}}" as="pk" hint-placeholder-count="3">
+                    <div style="display:flex;flex-direction:column">
+                      <div style="display:flex;align-items:center;gap:14px;height:74px">
+                        <div style="{{pk.quiltWrap}}">
+                          <sc-for list="{{pk.patches}}" as="q" hint-placeholder-count="20">
+                            <div style="{{q.style}}"></div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                          <div style="{{pk.nameStyle}}">{{pk.name}}</div>
+                          <div style="{{pk.countStyle}}">{{pk.count}}</div>
+                        </div>
+                      </div>
+                      <div style="{{f.rule}}"></div>
+                    </div>
+                  </sc-for>
+                  <div style="height:22px"></div>
+                  <div style="{{f.promiseCard}}">
+                    <div style="{{f.promiseTitle}}">Six themes. 120 puzzles.</div>
+                    <div style="{{f.promiseBody}}">And a new Daily every day, free for as long as the app exists.</div>
+                  </div>
+                  <div style="flex:1"></div>
+                  <div style="{{f.wideButton}}">Carry on</div>
+                  <div style="height:34px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isRhythm}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:24px"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:12px">
+                    <sc-for list="{{f.times}}" as="tm" hint-placeholder-count="4">
+                      <div style="{{tm.style}}">{{tm.name}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:28px"></div>
+                  <div style="{{f.notifCard}}">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="{{f.notifIcon}}"></div>
+                      <div style="{{f.notifApp}}">WordQuilt · 7:30 am</div>
+                    </div>
+                    <div style="{{f.notifBody}}">Today's Daily is up whenever you are.</div>
+                  </div>
+                  <div style="height:16px"></div>
+                  <div style="{{f.notifNote}}">One a day, at the time you picked. Never about days you missed.</div>
+                  <div style="flex:1"></div>
+                  <div style="{{f.wideButton}}">Yes, remind me</div>
+                  <div style="height:12px"></div>
+                  <div style="{{f.ghostButton}}">Not now</div>
+                  <div style="height:30px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isShelf}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:20px"></div>
+                  <div style="{{f.dailyCard}}">
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <div style="{{f.dailyKicker}}">Today's Daily</div>
+                      <div style="{{f.dailyTitle}}">Wednesday, 12 August</div>
+                      <div style="{{f.dailySub}}">Unplayed · free, every day</div>
+                    </div>
+                    <div style="{{f.primaryButton}}">Play</div>
+                  </div>
+                  <div style="height:32px"></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;height:44px">
+                    <div style="{{f.linkQuiet}}">All Dailies</div>
+                    <div style="{{f.metaSmall}}">None yet</div>
+                  </div>
+                  <div style="{{f.rule}}"></div>
+                  <sc-for list="{{f.packs}}" as="pk" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column">
+                      <div style="display:flex;align-items:center;gap:14px;height:76px">
+                        <div style="{{pk.quiltWrap}}">
+                          <sc-for list="{{pk.patches}}" as="q" hint-placeholder-count="20">
+                            <div style="{{q.style}}"></div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                          <div style="{{pk.nameStyle}}">{{pk.name}}</div>
+                          <div style="{{pk.countStyle}}">{{pk.count}}</div>
+                        </div>
+                      </div>
+                      <div style="{{f.rule}}"></div>
+                    </div>
+                  </sc-for>
+                  <div style="flex:1"></div>
+                  <div style="display:flex;gap:10px;height:58px;align-items:center">
+                    <div style="{{f.footPill}}">Fabric</div>
+                    <div style="{{f.footPill}}">Store</div>
+                    <div style="{{f.footPill}}">Settings</div>
+                  </div>
+                  <div style="height:16px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.hasHeaderOnly}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:1px"></div>
+                </sc-if>
+
+              </div>
+
+              <sc-if value="{{f.hasTitle}}" hint-placeholder-val="{{ true }}">
+                <div style="{{f.titleBlock}}">
+                  <div style="{{f.pageTitle}}">{{f.title}}</div>
+                  <sc-if value="{{f.hasSubtitle}}" hint-placeholder-val="{{ true }}">
+                    <div style="{{f.subtitle}}">{{f.subtitleText}}</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <div style="{{f.homeIndicator}}"></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:13px;font-weight:800">{{f.capTitle}}</div>
+              <div style="font-size:12px;color:#6B6559;font-family:'IBM Plex Sans',monospace">{{f.capRoute}}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5F5A51;text-wrap:pretty">{{f.capState}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:3800,&quot;height&quot;:2100},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C25A34&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C25A34&quot;,&quot;#B4543A&quot;,&quot;#A8552F&quot;,&quot;#C2603F&quot;],&quot;section&quot;:&quot;Direction&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || "#C25A34";
+    const T = {
+      light: { field:accent, fieldInk:"#FFF6E8", fieldLine:"rgba(255,246,232,0.62)", fieldFill:"rgba(255,246,232,0.16)",
+               sheet:"#FBF4E4", ink:"#241F19", line:"#241F19", shade:"#241F19", muted:"#7A6E5C",
+               tile:"#FFFDF6", sewn:"#F0C982", sewnAlt:"#E7B563", accent:accent, kicker:"#9E4227", onAccent:"#FFF6E8", wash:"#F6DCCB",
+               empty:"rgba(36,31,25,0.34)" },
+      dark:  { field:"#8A3E27", fieldInk:"#FCEEDD", fieldLine:"rgba(252,238,221,0.55)", fieldFill:"rgba(252,238,221,0.12)",
+               sheet:"#1E1B16", ink:"#F4EDDF", line:"rgba(244,237,223,0.42)", shade:"#0E0C09", muted:"#A99C89",
+               tile:"#2C2721", sewn:"#7A6038", sewnAlt:"#8E7141", accent:"#E39466", kicker:"#E39466", onAccent:"#241710", wash:"#4A2E22",
+               empty:"rgba(244,237,223,0.30)" }
+    };
+    const display = "Newsreader, Georgia, serif";
+    const ui = "Nunito, system-ui, sans-serif";
+    const G = { PITCH:52, CELL:50, PAD:12 };
+
+    const grid = ["TOASTM","MMORNS","IIUNGO","LRIGMA","KTUAJP","OATSAL"];
+    const words = {
+      TOAST: [[0,0],[0,1],[0,2],[0,3],[0,4]],
+      MILK:  [[1,0],[2,0],[3,0],[4,0]],
+      OATS:  [[5,0],[5,1],[5,2],[5,3]],
+      SOAP:  [[1,5],[2,5],[3,5],[4,5]],
+      MUG:   [[1,1],[2,2],[3,3]],
+      JAM:   [[4,4],[4,3],[3,4]]
+    };
+    const order = ["TOAST","MILK","OATS","SOAP","MUG","JAM"];
+    const k = (r,c) => r + "," + c;
+    const inWord = new Set();
+    Object.values(words).forEach(p => p.forEach(([r,c]) => inWord.add(k(r,c))));
+    const demo = new Set(words.TOAST.map(([r,c]) => k(r,c)));
+
+    const patch = (seed, t, size, tone) => {
+      const out = [];
+      let h = (seed * 2654435761) % 4294967296;
+      for (let i = 0; i < 49; i++) {
+        h = (h * 1103515245 + 12345) % 2147483648;
+        out.push({ style: { width:size+"px", height:size+"px", borderRadius:"1px",
+          background: (h >> 7) % 100 < 46 ? (tone || t.sewn) : "transparent" } });
+      }
+      return out;
+    };
+
+    const shell = (mode, opt) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const fieldH = opt.fieldH, seam = fieldH - 40;
+      return {
+        isPuzzle:false, isReveal:false, isProp:false, isThemes:false, isFabricPick:false, isPayoff:false, isRhythm:false, isShelf:false,
+        hasTooltip:false, hasTitle: !!opt.title, hasSubtitle: !!opt.subtitle, hasHeaderOnly:false,
+        title: opt.title || "", subtitleText: opt.subtitle || "",
+        frame: { position:"relative", width:"390px", height:"844px", borderRadius:"44px", overflow:"hidden",
+                 background: opt.full ? t.field : t.sheet,
+                 boxShadow: mode === "light" ? "0 0 0 1px rgba(0,0,0,0.12)" : "0 0 0 1px rgba(255,255,255,0.12)" },
+        field: { position:"absolute", left:"0", top:"0", width:"390px", height:(opt.full ? 844 : fieldH)+"px", background:t.field },
+        sheet: opt.full ? { display:"none" }
+          : { position:"absolute", left:"-8%", top:seam+"px", width:"116%", height:(900-seam)+"px", background:t.sheet,
+              borderTop:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.35)"),
+              borderTopLeftRadius:"50% 74px", borderTopRightRadius:"50% 74px", boxSizing:"border-box" },
+        topPad: { height:(opt.topPad || 0)+"px", flexShrink:0 },
+        titleBlock: { position:"absolute", left:"26px", top:(opt.titleTop || 96)+"px", width:"338px",
+                      display:"flex", flexDirection:"column", gap:"10px" },
+        pageTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:(opt.titleSize || 36)+"px",
+                     lineHeight:"1.1", color:t.fieldInk, textWrap:"pretty" },
+        subtitle: { fontFamily:ui, fontSize:"15px", fontWeight:600, lineHeight:"1.5", color:t.fieldInk, opacity:0.9, textWrap:"pretty" },
+        statusType: { fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.fieldInk },
+        bar1: { width:"3px", height:"7px", borderRadius:"1px", background:t.fieldInk },
+        bar2: { width:"3px", height:"10px", borderRadius:"1px", background:t.fieldInk },
+        bar3: { width:"3px", height:"13px", borderRadius:"1px", background:t.fieldInk },
+        battery: { width:"24px", height:"12px", borderRadius:"3px", border:"2px solid "+t.fieldInk, boxSizing:"border-box", marginLeft:"4px" },
+        rule: { height:"2px", background:t.empty, opacity:0.35 },
+        linkQuiet: { fontFamily:ui, fontSize:"16px", fontWeight:800, color:t.ink, display:"flex", alignItems:"center", minHeight:"44px" },
+        metaSmall: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted },
+        footPill: { flex:"1", height:"50px", borderRadius:"16px", background:t.tile, border:"2px solid "+t.line,
+                    boxShadow:"0 4px 0 "+inkEdge, display:"flex", alignItems:"center", justifyContent:"center",
+                    fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.ink, boxSizing:"border-box" },
+        primaryButton: { height:"56px", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 28px",
+                         background:t.accent, color:t.onAccent, borderRadius:"18px",
+                         border:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.42)"),
+                         boxShadow:"0 5px 0 "+inkEdge, fontFamily:ui, fontSize:"19px", fontWeight:900, boxSizing:"border-box" },
+        wideButton: { height:"62px", display:"flex", alignItems:"center", justifyContent:"center",
+                      background: opt.full ? t.fieldInk : t.accent, color: opt.full ? t.field : t.onAccent, borderRadius:"20px",
+                      border:"2px solid "+(mode === "light" ? t.ink : (opt.full ? "rgba(36,23,16,0.5)" : "rgba(244,237,223,0.42)")),
+                      boxShadow:"0 5px 0 "+(mode === "light" ? t.ink : (opt.full ? "rgba(36,23,16,0.5)" : t.shade)),
+                      fontFamily:ui, fontSize:"19px", fontWeight:900, boxSizing:"border-box", flexShrink:0 },
+        ghostButton: { height:"56px", display:"flex", alignItems:"center", justifyContent:"center",
+                       background:"transparent", color: opt.full ? t.fieldInk : t.ink, borderRadius:"18px",
+                       border:"2px solid "+(opt.full ? t.fieldLine : t.empty),
+                       fontFamily:ui, fontSize:"17px", fontWeight:800, boxSizing:"border-box", flexShrink:0 },
+        promiseCard: { background: opt.full ? t.fieldInk : t.tile, borderRadius:"22px",
+                       border:"2px solid "+(mode === "light" ? t.ink : (opt.full ? "rgba(36,23,16,0.5)" : t.line)),
+                       boxShadow:"0 5px 0 "+(mode === "light" ? t.ink : (opt.full ? "rgba(36,23,16,0.5)" : t.shade)),
+                       padding:"20px", display:"flex", flexDirection:"column", gap:"8px", boxSizing:"border-box", flexShrink:0 },
+        promiseTitle: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"25px",
+                        color: opt.full && mode === "dark" ? "#241710" : t.ink },
+        promiseBody: { fontFamily:ui, fontSize:"15px", fontWeight:600, lineHeight:"1.5",
+                       color: opt.full && mode === "dark" ? "rgba(36,23,16,0.72)" : t.muted, textWrap:"pretty" },
+        homeIndicator: { position:"absolute", left:"125px", bottom:"10px", width:"140px", height:"5px", borderRadius:"3px",
+                         background: opt.full ? "rgba(255,246,232,0.45)" : (mode === "light" ? "rgba(0,0,0,0.30)" : "rgba(255,255,255,0.34)") },
+        capTitle: opt.capTitle, capRoute: opt.capRoute + " · " + mode, capState: opt.capState
+      };
+    };
+
+    const puzzleCells = (mode, revealMode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const cells = [];
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          const id = k(r,c);
+          let bg = t.tile, fg = t.ink, line = t.line, shadow = true, alpha = 1;
+          if (revealMode) {
+            if (inWord.has(id)) { bg = "transparent"; line = "transparent"; fg = t.fieldInk; shadow = false; alpha = 0.38; }
+            else { bg = t.fieldInk; fg = t.field; line = mode === "light" ? t.ink : "rgba(36,23,16,0.5)"; }
+          } else if (demo.has(id)) { bg = t.accent; fg = t.onAccent; }
+          const tilt = (((r * 6 + c) % 5) - 2) * 0.7;
+          const base = { position:"absolute", left:(c*G.PITCH + G.PAD)+"px", top:(r*G.PITCH)+"px",
+                         width:G.CELL+"px", height:G.CELL+"px", transform:"rotate("+tilt+"deg)" };
+          cells.push({ ch: grid[r][c],
+            tile: Object.assign({}, base, { background:bg, borderRadius:"16px", boxSizing:"border-box",
+              border: shadow ? ("2px solid "+line) : "none",
+              boxShadow: shadow ? ("0 4px 0 "+(revealMode ? (mode === "light" ? t.ink : "rgba(36,23,16,0.5)") : inkEdge)) : "none" }),
+            letter: Object.assign({}, base, { display:"flex", alignItems:"center", justifyContent:"center",
+              fontFamily:ui, fontSize:"23px", fontWeight:800, color:fg, opacity:alpha, pointerEvents:"none" }) });
+        }
+      }
+      return cells;
+    };
+
+    const wordChips = (mode) => order.map((w, i) => {
+      const t = T[mode], tilt = ((i % 3) - 1) * 1.4;
+      return { text:"", style: { height:"36px", width:(w.length * 13 + 18)+"px", borderRadius:"999px",
+        background:t.fieldFill, border:"2px dashed "+t.fieldLine, boxSizing:"border-box", transform:"rotate("+tilt+"deg)" } };
+    });
+
+    const gridStyles = (mode) => ({
+      gridBox: { position:"relative", width:"334px", height:(6*G.PITCH - (G.PITCH - G.CELL))+"px", margin:"0 auto" },
+      oblique: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"31px", lineHeight:"1.18",
+                 color:T[mode].fieldInk, textAlign:"center" },
+      hintCount: { fontFamily:ui, fontSize:"17px", fontWeight:800, color:T[mode].ink },
+      hintNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:T[mode].muted }
+    });
+
+    const o1 = (mode) => Object.assign(shell(mode, { fieldH:306,
+      capTitle:"O1 · Cold open", capRoute:"/onboarding/1",
+      capState:"First launch, two seconds in. A one-shot demo traces TOAST and clears; input is accepted during it and it aborts on first touch. No settings, no back, no close — completing the puzzle is the only way forward." }),
+      gridStyles(mode), { isPuzzle:true, cells:puzzleCells(mode,false), chips:wordChips(mode), hintCountText:"3 free today" });
+
+    const o2 = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      return Object.assign(shell(mode, { fieldH:306,
+        capTitle:"O2 · Hint tooltip", capRoute:"/onboarding/1#hint-tooltip",
+        capState:"Fires once, after 45 seconds with nothing found. Dismisses on any touch, including one that starts a trace, and never blocks input. Once per install." }),
+        gridStyles(mode), { isPuzzle:true, cells:puzzleCells(mode,false), chips:wordChips(mode), hintCountText:"3 free today", hasTooltip:true,
+        tooltip: { alignSelf:"flex-start", maxWidth:"250px", background:t.tile, color:t.ink, borderRadius:"16px",
+                   border:"2px solid "+t.line, boxShadow:"0 4px 0 "+inkEdge, padding:"12px 16px",
+                   fontFamily:ui, fontSize:"15px", fontWeight:700, marginBottom:"-2px", flexShrink:0 },
+        tooltipTail: { width:"14px", height:"14px", background:t.tile, borderRight:"2px solid "+t.line, borderBottom:"2px solid "+t.line,
+                       transform:"rotate(45deg)", marginLeft:"34px", marginTop:"-8px", marginBottom:"12px", flexShrink:0 } });
+    };
+
+    const o3 = (mode) => Object.assign(shell(mode, { full:true,
+      capTitle:"O3 · Reveal", capRoute:"/onboarding/3",
+      capState:"The aha. Leftover letters resolve one at a time in reading order, then a minimum three-second hold with nothing else on screen. Tapping does not skip it — the one place the player is not in control." }),
+      gridStyles(mode), { isReveal:true, cells:puzzleCells(mode,true),
+      themeStyle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"42px", lineHeight:"1.14",
+                    color:T[mode].fieldInk, textAlign:"center", textWrap:"balance" } });
+
+    const o4 = (mode) => Object.assign(shell(mode, { full:true,
+      capTitle:"O4 · Proposition", capRoute:"/onboarding/4",
+      capState:"Names what just happened and makes the promise at the moment it is most credible. No back, no dismiss, no pricing, no mention of packs — nothing is sold during onboarding." }),
+      { isProp:true,
+      propLead: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"34px", lineHeight:"1.24",
+                  color:T[mode].fieldInk, textWrap:"pretty" } });
+
+    const o5 = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const picked = ["Kitchen Things","Breakfast","Rain"];
+      const names = ["Kitchen Things","The Garden","Cats","Breakfast","Small Weather","Rain","Old Films","The Sea","Birds","Books","Trains","Sweets"];
+      const themes = names.map((n, i) => {
+        const on = picked.indexOf(n) !== -1;
+        return { name:n, style: { width:"161px", minHeight:"58px", borderRadius:"18px", boxSizing:"border-box",
+          display:"flex", alignItems:"center", padding:"0 16px",
+          background: on ? t.sewn : t.tile, border:"2px solid "+(on ? t.line : t.empty),
+          boxShadow:"0 4px 0 "+(on ? inkEdge : "transparent"),
+          fontFamily:ui, fontSize:"16px", fontWeight: on ? 900 : 700, color:t.ink,
+          transform:"rotate(" + (((i % 3) - 1) * 0.9) + "deg)" } };
+      });
+      return Object.assign(shell(mode, { fieldH:230, title:"What do you like thinking about?", titleTop:86, titleSize:31, topPad:150,
+        capTitle:"O5 · Theme picker", capRoute:"/onboarding/5",
+        capState:"Multi-select, minimum one, no maximum, re-editable later in Settings. Preference orders the Shelf and decides which free themes unlock first — it never restricts content. Forward control is disabled until one is chosen." }),
+        { isThemes:true, themes });
+    };
+
+    const o6 = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const pal = [
+        { name:"Linen", a:"#F0C982", on:true },
+        { name:"Indigo", a:"#96A3C9", on:false },
+        { name:"Moss", a:"#A9B78D", on:false },
+        { name:"Dusk", a:"#C9A2B0", on:false }
+      ].map((p, i) => ({ name:p.name,
+        swatch: { width:"66px", height:"66px", borderRadius:"20px", background:p.a,
+                  border: p.on ? ("3px solid "+t.accent) : ("2px solid "+t.line), boxShadow:"0 5px 0 "+inkEdge,
+                  transform:"rotate(" + (((i % 3) - 1) * 2) + "deg)", boxSizing:"border-box" },
+        label: { fontFamily:ui, fontSize:"14px", fontWeight: p.on ? 900 : 700, color: p.on ? t.ink : t.muted } }));
+      return Object.assign(shell(mode, { fieldH:230, title:"Pick your fabric.", titleTop:96, topPad:140,
+        subtitle:"All four are free, and stay free.",
+        capTitle:"O6 · Fabric picker", capRoute:"/onboarding/6",
+        capState:"Single-select with one always chosen, defaulting to Linen. A functional preview of the Fabric store without referencing it — no paid fabric is shown or teased here." }),
+        { isFabricPick:true, palettes:pal, previewPatch:patch(7, t, 12),
+        previewCard: { background:t.tile, borderRadius:"24px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                       padding:"18px", display:"flex", alignItems:"center", gap:"18px", boxSizing:"border-box", flexShrink:0 },
+        previewSquare: { width:"104px", height:"104px", borderRadius:"18px", background:t.sheet, border:"2px solid "+t.line,
+                         display:"grid", gridTemplateColumns:"repeat(7,12px)", gap:"1px", alignContent:"center", justifyContent:"center",
+                         transform:"rotate(-1.5deg)", boxSizing:"border-box" },
+        previewName: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"26px", color:t.ink },
+        previewNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.45", color:t.muted, textWrap:"pretty" } });
+    };
+
+    const shelfPacks = (mode, list) => {
+      const t = T[mode];
+      return list.map((p, pi) => {
+        const patches = [];
+        for (let i = 0; i < 20; i++) {
+          const filled = i < p.sewn;
+          patches.push({ style: { width:"15px", height:"15px", borderRadius:"4px",
+            background: filled ? (i % 3 === 0 ? t.sewnAlt : t.sewn) : "transparent",
+            border:"1.5px "+(filled ? "solid "+t.line : "dashed "+t.empty),
+            transform:"rotate(" + ((((i + pi) % 3) - 1) * 2) + "deg)", boxSizing:"border-box" } });
+        }
+        return { name:p.name, count:p.count, patches,
+          quiltWrap: { display:"grid", gridTemplateColumns:"repeat(10,15px)", gap:"4px", width:"186px" },
+          nameStyle: { fontFamily:ui, fontSize:"18px", fontWeight:800, color:t.ink },
+          countStyle: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } };
+      });
+    };
+
+    const o7 = (mode) => Object.assign(shell(mode, { fieldH:230, title:"Your quilt, then.", titleTop:96, topPad:140,
+      subtitle:"One square already sewn — the one you just finished.",
+      capTitle:"O7 · Payoff", capRoute:"/onboarding/7",
+      capState:"Built from real state with the same component the Shelf uses, in the palette just chosen, with the cold-open square already in place. The free totals stated here are the ones actually delivered." }),
+      { isPayoff:true, packs: shelfPacks(mode, [
+        { name:"Breakfast", count:"1 of 20 sewn", sewn:1 },
+        { name:"Kitchen Things", count:"20 puzzles, none sewn yet", sewn:0 },
+        { name:"Rain", count:"20 puzzles, none sewn yet", sewn:0 }
+      ]) });
+
+    const o8 = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const times = ["Morning","Lunch","Evening","Before bed"].map((n, i) => ({ name:n,
+        style: { minHeight:"56px", padding:"0 22px", borderRadius:"18px", display:"flex", alignItems:"center",
+          background: i === 0 ? t.sewn : t.tile, border:"2px solid "+(i === 0 ? t.line : t.empty),
+          boxShadow:"0 4px 0 "+(i === 0 ? inkEdge : "transparent"), boxSizing:"border-box",
+          fontFamily:ui, fontSize:"16px", fontWeight: i === 0 ? 900 : 700, color:t.ink } }));
+      return Object.assign(shell(mode, { fieldH:230, title:"When do you have five quiet minutes?", titleTop:82, titleSize:30, topPad:150,
+        capTitle:"O8 · Rhythm and notification", capRoute:"/onboarding/8",
+        capState:"The OS permission dialog fires only after 'Yes, remind me'. 'Not now' advances with no confirmation and no second ask. The rhythm answer is kept either way — it orders content, not just reminders." }),
+        { isRhythm:true, times,
+        notifCard: { background:t.tile, borderRadius:"20px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                     padding:"16px 18px", display:"flex", flexDirection:"column", gap:"8px", boxSizing:"border-box", flexShrink:0 },
+        notifIcon: { width:"30px", height:"30px", borderRadius:"9px", background:t.sewn, border:"2px solid "+t.line, boxSizing:"border-box" },
+        notifApp: { fontFamily:ui, fontSize:"13px", fontWeight:800, letterSpacing:"0.06em", textTransform:"uppercase", color:t.muted },
+        notifBody: { fontFamily:ui, fontSize:"16px", fontWeight:700, color:t.ink },
+        notifNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.45", color:t.muted, textWrap:"pretty" } });
+    };
+
+    const o9 = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      return Object.assign(shell(mode, { fieldH:306, title:"Your quilt", titleTop:76, topPad:82,
+        capTitle:"O9 · Shelf handoff", capRoute:"/shelf",
+        capState:"Onboarding does not end with a modal — it ends here, on the live Shelf, with one square sewn and today's Daily waiting. The completion flag is written on arrival, so a crash before this point resumes onboarding." }),
+        { isShelf:true, packs: shelfPacks(mode, [
+          { name:"Breakfast", count:"1 of 20 sewn", sewn:1 },
+          { name:"Kitchen Things", count:"20 puzzles, none sewn yet", sewn:0 },
+          { name:"Rain", count:"20 puzzles, none sewn yet", sewn:0 }
+        ]),
+        dailyCard: { background:t.tile, borderRadius:"24px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                     padding:"18px 18px 18px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"12px", boxSizing:"border-box" },
+        dailyKicker: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.kicker },
+        dailyTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"25px", color:t.ink },
+        dailySub: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } });
+    };
+
+    const build = (mode) => [ o1(mode), o2(mode), o3(mode), o4(mode), o5(mode), o6(mode), o7(mode), o8(mode), o9(mode) ];
+    return { rows: [ { label:"Light", frames: build("light") }, { label:"Dark", frames: build("dark") } ] };
+  }
+}
+
+</script>
+</body>
+</html>

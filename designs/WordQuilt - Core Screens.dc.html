@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Nunito:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E7E4DD; }
+  a { color: #A8462A; }
+  a:hover { color: #C25A34; }
+</style>
+</helmet>
+
+<section style="display:flex;flex-direction:column;gap:36px;padding:56px 64px 96px;font-family:Nunito,system-ui,sans-serif;color:#26241F">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">Turn 4 · every core screen, flow order</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border:2px solid #241F19;border-radius:8px;font-size:13px;font-weight:800">4b</span>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-0.01em">Shelf · Pack · Hint · Dailies · Wall · Store · Fabric · Settings</span>
+    </div>
+    <div style="font-size:16px;line-height:1.55;color:#5F5A51;text-wrap:pretty">Same ink-outline system as <a href="#4a">4a</a>: drawn edges on every card, tile and button, a hard offset shade under each, patches sitting at slight angles, and the cream sheet meeting the colour field on a curve. Numbers hold across all ten screens — six free packs of twenty is the 120 promised in onboarding, six paid packs is the 120 beyond the Wall, and 29 pack squares plus 13 Dailies plus the cold-open square is the 43 on the Shelf.</div>
+  </div>
+
+  <sc-for list="{{rows}}" as="row" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7C766B">{{row.label}}</div>
+      <div style="display:flex;gap:28px">
+        <sc-for list="{{row.frames}}" as="f" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+            <div style="{{f.frame}}">
+              <div style="{{f.field}}"></div>
+              <div style="{{f.sheet}}"></div>
+
+              <div style="position:absolute;left:0;top:0;width:390px;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;box-sizing:border-box">
+                <div style="{{f.statusType}}">9:41</div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <div style="{{f.bar1}}"></div>
+                  <div style="{{f.bar2}}"></div>
+                  <div style="{{f.bar3}}"></div>
+                  <div style="{{f.battery}}"></div>
+                </div>
+              </div>
+
+              <div style="position:absolute;left:0;top:54px;width:390px;height:756px;display:flex;flex-direction:column;box-sizing:border-box;padding:0 26px">
+
+                <sc-if value="{{f.hasNav}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:52px;display:flex;align-items:center;gap:12px">
+                    <div style="{{f.roundButton}}">
+                      <div style="{{f.backGlyph}}"></div>
+                    </div>
+                    <div style="{{f.crumb}}">{{f.crumbText}}</div>
+                    <div style="flex:1"></div>
+                    <sc-if value="{{f.hasHeaderChip}}" hint-placeholder-val="{{ true }}">
+                      <div style="{{f.headerChip}}">{{f.headerChipText}}</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <div style="{{f.titleGap}}"></div>
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
+                  <div style="{{f.pageTitle}}">{{f.title}}</div>
+                  <sc-if value="{{f.hasTitleMeta}}" hint-placeholder-val="{{ true }}">
+                    <div style="{{f.titleMeta}}">{{f.titleMetaText}}</div>
+                  </sc-if>
+                </div>
+
+                <sc-if value="{{f.hasBlurb}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:12px"></div>
+                  <div style="{{f.blurb}}">{{f.blurbText}}</div>
+                </sc-if>
+
+                <sc-if value="{{f.isShelf}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:20px"></div>
+                  <div style="{{f.dailyCard}}">
+                    <div style="display:flex;flex-direction:column;gap:5px">
+                      <div style="{{f.dailyKicker}}">Today's Daily</div>
+                      <div style="{{f.dailyTitle}}">Wednesday, 12 August</div>
+                      <div style="{{f.dailySub}}">Unplayed · free, every day</div>
+                    </div>
+                    <div style="{{f.primaryButton}}">Play</div>
+                  </div>
+                  <div style="height:24px"></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;height:44px">
+                    <div style="{{f.linkQuiet}}">All Dailies</div>
+                    <div style="{{f.metaSmall}}">13 sewn</div>
+                  </div>
+                  <div style="{{f.rule}}"></div>
+                  <sc-for list="{{f.packs}}" as="pk" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column">
+                      <div style="display:flex;align-items:center;gap:14px;height:76px">
+                        <div style="{{pk.quiltWrap}}">
+                          <sc-for list="{{pk.patches}}" as="q" hint-placeholder-count="20">
+                            <div style="{{q.style}}"></div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                          <div style="{{pk.nameStyle}}">{{pk.name}}</div>
+                          <div style="{{pk.countStyle}}">{{pk.count}}</div>
+                        </div>
+                      </div>
+                      <div style="{{f.rule}}"></div>
+                    </div>
+                  </sc-for>
+                  <div style="flex:1"></div>
+                  <div style="display:flex;gap:10px;height:58px;align-items:center">
+                    <div style="{{f.footPill}}">Fabric</div>
+                    <div style="{{f.footPill}}">Store</div>
+                    <div style="{{f.footPill}}">Settings</div>
+                  </div>
+                  <div style="height:16px"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isPack}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:110px"></div>
+                  <div style="{{f.sheetBlurb}}">{{f.sheetBlurbText}}</div>
+                  <div style="height:22px"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:14px">
+                    <sc-for list="{{f.slots}}" as="s" hint-placeholder-count="20">
+                      <div style="display:flex;flex-direction:column;gap:6px;width:74px">
+                        <div style="{{s.wrap}}">
+                          <sc-for list="{{s.patches}}" as="q" hint-placeholder-count="49">
+                            <div style="{{q.style}}"></div>
+                          </sc-for>
+                        </div>
+                        <div style="{{s.label}}">{{s.text}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isWall}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:18px"></div>
+                  <div style="{{f.reassure}}">
+                    <div style="{{f.reassureTitle}}">The Daily stays free. Every day, for good.</div>
+                    <div style="{{f.reassureSub}}">You can stop here and never pay a penny.</div>
+                  </div>
+                  <div style="height:16px"></div>
+                  <div style="{{f.offerCard}}">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <div style="{{f.offerKicker}}">Once only, for the next 48 hours</div>
+                      <div style="{{f.offerTitle}}">The Whole Quilt</div>
+                      <div style="{{f.offerSub}}">All six packs, 120 puzzles, and everything released later.</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="{{f.offerPrice}}">$11.99</div>
+                      <div style="{{f.offerWas}}">usually $14.99</div>
+                      <div style="flex:1"></div>
+                      <div style="{{f.primaryButton}}">Buy</div>
+                    </div>
+                  </div>
+                  <div style="height:20px"></div>
+                  <div style="{{f.sectionLabel}}">Or one theme at a time</div>
+                  <div style="height:10px"></div>
+                  <div style="{{f.card}}">
+                    <sc-for list="{{f.wallPacks}}" as="it" hint-placeholder-count="3">
+                      <div style="{{it.row}}">
+                        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                          <div style="{{it.titleStyle}}">{{it.title}}</div>
+                          <div style="{{it.subStyle}}">{{it.sub}}</div>
+                        </div>
+                        <div style="{{it.rightStyle}}">{{it.right}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1"></div>
+                  <div style="display:flex;justify-content:center;height:54px;align-items:center">
+                    <div style="{{f.linkQuiet}}">Back to your quilt</div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{f.isList}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:22px"></div>
+                  <sc-for list="{{f.sections}}" as="sec" hint-placeholder-count="3">
+                    <div style="display:flex;flex-direction:column">
+                      <div style="{{f.sectionLabel}}">{{sec.label}}</div>
+                      <div style="height:10px"></div>
+                      <div style="{{f.card}}">
+                        <sc-for list="{{sec.items}}" as="it" hint-placeholder-count="3">
+                          <div style="{{it.row}}">
+                            <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                              <div style="{{it.titleStyle}}">{{it.title}}</div>
+                              <div style="{{it.subStyle}}">{{it.sub}}</div>
+                            </div>
+                            <div style="{{it.rightStyle}}">{{it.right}}</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="height:22px"></div>
+                    </div>
+                  </sc-for>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isCalendar}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:22px"></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;height:46px">
+                    <div style="{{f.roundButtonInk}}">
+                      <div style="{{f.navLeft}}"></div>
+                    </div>
+                    <div style="{{f.monthLabel}}">August 2026</div>
+                    <div style="{{f.roundButtonInk}}">
+                      <div style="{{f.navRight}}"></div>
+                    </div>
+                  </div>
+                  <div style="height:14px"></div>
+                  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+                    <sc-for list="{{f.weekdays}}" as="w" hint-placeholder-count="7">
+                      <div style="{{f.weekdayStyle}}">{{w.ch}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:10px"></div>
+                  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:7px">
+                    <sc-for list="{{f.days}}" as="d" hint-placeholder-count="35">
+                      <div style="{{d.cell}}">
+                        <div style="{{d.numStyle}}">{{d.num}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="height:26px"></div>
+                  <div style="{{f.rule}}"></div>
+                  <div style="height:18px"></div>
+                  <div style="display:flex;flex-direction:column;gap:5px">
+                    <div style="{{f.calTotal}}">13 Dailies sewn</div>
+                    <div style="{{f.calNote}}">Every past day stays playable. Nothing expires.</div>
+                  </div>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isFabric}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:22px"></div>
+                  <div style="{{f.previewCard}}">
+                    <div style="{{f.previewSquare}}">
+                      <sc-for list="{{f.previewPatch}}" as="q" hint-placeholder-count="49">
+                        <div style="{{q.style}}"></div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+                      <div style="{{f.previewName}}">Linen</div>
+                      <div style="{{f.previewNote}}">Applied everywhere, right away. Fabric never changes a puzzle.</div>
+                    </div>
+                  </div>
+                  <div style="height:22px"></div>
+                  <div style="{{f.sectionLabel}}">Yours, free forever</div>
+                  <div style="height:12px"></div>
+                  <div style="display:flex;gap:12px">
+                    <sc-for list="{{f.palettes}}" as="p" hint-placeholder-count="4">
+                      <div style="display:flex;flex-direction:column;gap:7px;align-items:center;width:74px">
+                        <div style="{{p.swatch}}"></div>
+                        <div style="{{p.label}}">{{p.name}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="height:24px"></div>
+                  <div style="{{f.sectionLabel}}">Sets in the Store</div>
+                  <div style="height:10px"></div>
+                  <div style="{{f.card}}">
+                    <sc-for list="{{f.fabricSets}}" as="it" hint-placeholder-count="2">
+                      <div style="{{it.row}}">
+                        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+                          <div style="{{it.titleStyle}}">{{it.title}}</div>
+                          <div style="{{it.subStyle}}">{{it.sub}}</div>
+                        </div>
+                        <div style="{{it.rightStyle}}">{{it.right}}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1"></div>
+                </sc-if>
+
+                <sc-if value="{{f.isHint}}" hint-placeholder-val="{{ true }}">
+                  <div style="height:18px"></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:9px;justify-content:center">
+                    <sc-for list="{{f.chips}}" as="ch" hint-placeholder-count="6">
+                      <div style="{{ch.style}}">{{ch.text}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:44px"></div>
+                  <div style="{{f.gridBox}}">
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="49">
+                      <div style="{{c.tile}}"></div>
+                    </sc-for>
+                    <svg viewBox="{{f.viewBox}}" style="{{f.svgStyle}}">
+                      <sc-for list="{{f.paths}}" as="p" hint-placeholder-count="4">
+                        <polyline points="{{p.points}}" style="{{p.style}}"></polyline>
+                      </sc-for>
+                    </svg>
+                    <sc-for list="{{f.cells}}" as="c" hint-placeholder-count="49">
+                      <div style="{{c.letter}}">{{c.ch}}</div>
+                    </sc-for>
+                  </div>
+                  <div style="height:14px"></div>
+                  <div style="{{f.hintBand}}">One letter, sewn in.</div>
+                  <div style="flex:1"></div>
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <div style="{{f.primaryButton}}">Hint</div>
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <div style="{{f.hintCount}}">2 free today</div>
+                      <div style="{{f.hintNote}}">Refills at midnight</div>
+                    </div>
+                  </div>
+                  <div style="height:26px"></div>
+                </sc-if>
+
+              </div>
+
+              <div style="{{f.homeIndicator}}"></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:13px;font-weight:800">{{f.capTitle}}</div>
+              <div style="font-size:12px;color:#6B6559;font-family:'IBM Plex Sans',monospace">{{f.capRoute}}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5F5A51;text-wrap:pretty">{{f.capState}}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:3400,&quot;height&quot;:2100},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C25A34&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C25A34&quot;,&quot;#B4543A&quot;,&quot;#A8552F&quot;,&quot;#C2603F&quot;],&quot;section&quot;:&quot;Direction&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || "#C25A34";
+    const T = {
+      light: { field:accent, fieldInk:"#FFF6E8", fieldLine:"rgba(255,246,232,0.62)", fieldFill:"rgba(255,246,232,0.16)",
+               sheet:"#FBF4E4", ink:"#241F19", line:"#241F19", shade:"#241F19", muted:"#7A6E5C",
+               tile:"#FFFDF6", sewn:"#F0C982", sewnAlt:"#E7B563", accent:accent, kicker:"#9E4227", onAccent:"#FFF6E8", wash:"#F6DCCB",
+               empty:"rgba(36,31,25,0.34)", thread:"rgba(36,31,25,0.30)" },
+      dark:  { field:"#8A3E27", fieldInk:"#FCEEDD", fieldLine:"rgba(252,238,221,0.55)", fieldFill:"rgba(252,238,221,0.12)",
+               sheet:"#1E1B16", ink:"#F4EDDF", line:"rgba(244,237,223,0.42)", shade:"#0E0C09", muted:"#A99C89",
+               tile:"#2C2721", sewn:"#7A6038", sewnAlt:"#8E7141", accent:"#E39466", kicker:"#E39466", onAccent:"#241710", wash:"#4A2E22",
+               empty:"rgba(244,237,223,0.30)", thread:"rgba(244,237,223,0.30)" }
+    };
+    const display = "Newsreader, Georgia, serif";
+    const ui = "Nunito, system-ui, sans-serif";
+    const G = { PITCH:46, CELL:44, SIZE:320, PAD:7 };
+
+    const grid = ["KESTLTE","TSTAMEL","ESAONTA","AHIUEWD","PINECDL","OOWEVEE","TWHISKR"];
+    const words = {
+      KETTLE: [[0,0],[0,1],[1,2],[0,3],[0,4],[1,5]],
+      TEAPOT: [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]],
+      LADLE:  [[1,6],[2,6],[3,6],[4,6],[5,6]],
+      WHISK:  [[6,1],[6,2],[6,3],[6,4],[6,5]],
+      SAUCER: [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6]],
+      SIEVE:  [[2,1],[3,2],[4,3],[5,4],[5,3]]
+    };
+    const order = ["KETTLE","TEAPOT","LADLE","WHISK","SAUCER","SIEVE"];
+    const foundWords = ["KETTLE","TEAPOT","LADLE","WHISK"];
+    const k = (r,c) => r + "," + c;
+    const foundCells = new Set();
+    foundWords.forEach(w => words[w].forEach(([r,c]) => foundCells.add(k(r,c))));
+
+    const patch = (seed, t, size, tone) => {
+      const out = [];
+      let h = (seed * 2654435761) % 4294967296;
+      for (let i = 0; i < 49; i++) {
+        h = (h * 1103515245 + 12345) % 2147483648;
+        const on = (h >> 7) % 100 < 46;
+        out.push({ style: { width:size+"px", height:size+"px", borderRadius:"1px", background: on ? (tone || t.sewn) : "transparent" } });
+      }
+      return out;
+    };
+
+    const shell = (mode, opt) => {
+      const t = T[mode];
+      const fieldH = opt.fieldH, seam = fieldH - 40;
+      const inkEdge = mode === "light" ? t.ink : t.shade;
+      return {
+        isShelf:false, isPack:false, isWall:false, isList:false, isCalendar:false, isFabric:false, isHint:false,
+        hasNav: opt.hasNav !== false, hasHeaderChip: !!opt.chip, hasTitleMeta: !!opt.titleMeta, hasBlurb: !!opt.blurb,
+        crumbText: opt.crumb || "Your quilt", headerChipText: opt.chip || "", title: opt.title,
+        titleMetaText: opt.titleMeta || "", blurbText: opt.blurb || "",
+        frame: { position:"relative", width:"390px", height:"844px", borderRadius:"44px", overflow:"hidden", background:t.sheet,
+                 boxShadow: mode === "light" ? "0 0 0 1px rgba(0,0,0,0.12)" : "0 0 0 1px rgba(255,255,255,0.12)" },
+        field: { position:"absolute", left:"0", top:"0", width:"390px", height:fieldH+"px", background:t.field },
+        sheet: { position:"absolute", left:"-8%", top:seam+"px", width:"116%", height:(900-seam)+"px", background:t.sheet,
+                 borderTop:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.35)"),
+                 borderTopLeftRadius:"50% 74px", borderTopRightRadius:"50% 74px", boxSizing:"border-box" },
+        statusType: { fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.fieldInk },
+        bar1: { width:"3px", height:"7px", borderRadius:"1px", background:t.fieldInk },
+        bar2: { width:"3px", height:"10px", borderRadius:"1px", background:t.fieldInk },
+        bar3: { width:"3px", height:"13px", borderRadius:"1px", background:t.fieldInk },
+        battery: { width:"24px", height:"12px", borderRadius:"3px", border:"2px solid "+t.fieldInk, boxSizing:"border-box", marginLeft:"4px" },
+        roundButton: { width:"46px", height:"46px", borderRadius:"999px", background:t.fieldFill, border:"2px solid "+t.fieldLine,
+                       display:"flex", alignItems:"center", justifyContent:"center", boxSizing:"border-box" },
+        roundButtonInk: { width:"46px", height:"46px", borderRadius:"999px", background:t.tile, border:"2px solid "+t.line,
+                          boxShadow:"0 3px 0 "+inkEdge, display:"flex", alignItems:"center", justifyContent:"center", boxSizing:"border-box" },
+        backGlyph: { width:"11px", height:"11px", borderLeft:"2.5px solid "+t.fieldInk, borderBottom:"2.5px solid "+t.fieldInk,
+                     transform:"rotate(45deg)", marginLeft:"-3px" },
+        crumb: { fontFamily:ui, fontSize:"15px", fontWeight:800, letterSpacing:"0.1em", textTransform:"uppercase", color:t.fieldInk },
+        headerChip: { height:"36px", display:"flex", alignItems:"center", padding:"0 14px", borderRadius:"999px",
+                      background:t.fieldFill, border:"2px solid "+t.fieldLine, boxSizing:"border-box",
+                      fontFamily:ui, fontSize:"14px", fontWeight:800, color:t.fieldInk },
+        titleGap: { height:(opt.titleGap || 16)+"px" },
+        pageTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"36px", lineHeight:"1.06", color:t.fieldInk },
+        titleMeta: { fontFamily:ui, fontSize:"14px", fontWeight:800, color:t.fieldInk, opacity:0.9, paddingBottom:"6px" },
+        blurb: { fontFamily:ui, fontSize:"15px", fontWeight:600, lineHeight:"1.5", color:t.fieldInk, opacity:0.9, textWrap:"pretty" },
+        sectionLabel: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.muted },
+        card: { background:t.tile, borderRadius:"22px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge, overflow:"hidden", flexShrink:0 },
+        rule: { height:"2px", background:t.empty, opacity:0.35 },
+        linkQuiet: { fontFamily:ui, fontSize:"16px", fontWeight:800, color:t.ink, display:"flex", alignItems:"center", minHeight:"44px" },
+        metaSmall: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted },
+        footPill: { flex:"1", height:"50px", borderRadius:"16px", background:t.tile, border:"2px solid "+t.line,
+                    boxShadow:"0 4px 0 "+inkEdge, display:"flex", alignItems:"center", justifyContent:"center",
+                    fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.ink, boxSizing:"border-box" },
+        primaryButton: { height:"56px", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 28px",
+                         background:t.accent, color:t.onAccent, borderRadius:"18px",
+                         border:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.42)"),
+                         boxShadow:"0 5px 0 "+inkEdge, fontFamily:ui, fontSize:"19px", fontWeight:900, boxSizing:"border-box" },
+        homeIndicator: { position:"absolute", left:"125px", bottom:"10px", width:"140px", height:"5px", borderRadius:"3px",
+                         background: mode === "light" ? "rgba(0,0,0,0.30)" : "rgba(255,255,255,0.34)" },
+        capTitle: opt.capTitle, capRoute: opt.capRoute + " · " + mode, capState: opt.capState
+      };
+    };
+
+    const listItem = (t, mode, o) => ({
+      title: o.title, sub: o.sub, right: o.right,
+      row: { display:"flex", alignItems:"center", gap:"14px", padding:"16px 18px", minHeight:"66px",
+             borderTop: o.first ? "none" : ("2px solid " + t.empty), boxSizing:"border-box" },
+      titleStyle: { fontFamily:ui, fontSize:"17px", fontWeight:800, color:t.ink },
+      subStyle: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.4", color:t.muted, textWrap:"pretty" },
+      rightStyle: o.owned
+        ? { fontFamily:ui, fontSize:"14px", fontWeight:800, color:t.muted, whiteSpace:"nowrap" }
+        : { fontFamily:ui, fontSize:"16px", fontWeight:900, color:t.onAccent, background:t.accent, borderRadius:"999px",
+            padding:"10px 16px", border:"2px solid "+(mode === "light" ? t.ink : "rgba(244,237,223,0.42)"),
+            boxShadow:"0 3px 0 "+(mode === "light" ? t.ink : "#0E0C09"), whiteSpace:"nowrap" }
+    });
+
+    const shelf = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:306, hasNav:false, title:"Your quilt", titleMeta:"43 squares sewn", titleGap:22,
+        capTitle:"S1 · Shelf (home)", capRoute:"/shelf",
+        capState:"Two packs in progress, one complete, one locked. The locked pack reads as unstitched, not badged — no price sticker, no red dot, no timer. Counts accumulate; nothing counts down." });
+      const packs = [
+        { name:"Kitchen Things", count:"6 of 20 sewn · puzzle 7 waiting", sewn:6 },
+        { name:"Breakfast", count:"3 of 20 sewn", sewn:3 },
+        { name:"The Garden", count:"20 of 20 sewn", sewn:20 },
+        { name:"Old Films", count:"20 puzzles, none sewn yet", sewn:0 }
+      ].map((p, pi) => {
+        const patches = [];
+        for (let i = 0; i < 20; i++) {
+          const filled = i < p.sewn;
+          patches.push({ style: { width:"15px", height:"15px", borderRadius:"4px",
+            background: filled ? (i % 3 === 0 ? t.sewnAlt : t.sewn) : "transparent",
+            border: "1.5px " + (filled ? "solid " + t.line : "dashed " + t.empty),
+            transform: "rotate(" + ((((i + pi) % 3) - 1) * 2) + "deg)", boxSizing:"border-box" } });
+        }
+        return { name:p.name, count:p.count, patches,
+          quiltWrap: { display:"grid", gridTemplateColumns:"repeat(10,15px)", gap:"4px", width:"186px" },
+          nameStyle: { fontFamily:ui, fontSize:"18px", fontWeight:800, color:t.ink },
+          countStyle: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } };
+      });
+      return Object.assign(s, { isShelf:true, packs,
+        dailyCard: { background:t.tile, borderRadius:"24px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                     padding:"18px 18px 18px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"12px", boxSizing:"border-box" },
+        dailyKicker: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.16em", textTransform:"uppercase", color:t.kicker },
+        dailyTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"25px", color:t.ink },
+        dailySub: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } });
+    };
+
+    const packView = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:214, title:"Kitchen Things", titleMeta:"6 of 20 sewn",
+        capTitle:"S4 · Pack view", capRoute:"/pack/kitchen-things",
+        capState:"Owned, in progress. Puzzles are not sequentially locked — any unplayed square can be started; puzzle 7 is marked only because it has saved state. Scrolls on to squares 17 to 20." });
+      const slots = [];
+      for (let i = 1; i <= 16; i++) {
+        const done = i <= 6, next = i === 7;
+        slots.push({
+          patches: done ? patch(i * 13, t, 8) : [],
+          wrap: { width:"74px", height:"74px", borderRadius:"16px", boxSizing:"border-box",
+                  display:"grid", gridTemplateColumns:"repeat(7,8px)", gap:"1px", alignContent:"center", justifyContent:"center",
+                  background: done ? t.tile : (next ? t.wash : "transparent"),
+                  border: done ? ("2px solid "+t.line) : (next ? ("2.5px solid "+t.accent) : ("2px dashed "+t.empty)),
+                  boxShadow: done || next ? ("0 5px 0 "+inkEdge) : "none",
+                  transform: "rotate(" + ((((i) % 3) - 1) * 1.2) + "deg)" },
+          text: done ? String(i) : (next ? "Resume" : String(i)),
+          label: { fontFamily:ui, fontSize:"13px", textAlign:"center", fontWeight: next ? 900 : 700,
+                   color: next ? t.kicker : t.muted, opacity: done || next ? 1 : 0.75 }
+        });
+      }
+      return Object.assign(s, { isPack:true, slots, hasSheetBlurb:true,
+        sheetBlurb: { fontFamily:ui, fontSize:"15px", fontWeight:600, lineHeight:"1.5", color:t.muted, textWrap:"pretty" },
+        sheetBlurbText:"Twenty puzzles about the drawer nobody organises, the kettle that whistles, and what the light does at seven." });
+    };
+
+    const wall = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:274, hasNav:false, title:"That's all 120.", titleGap:26,
+        blurb:"Six themes, every square sewn, and thirteen Dailies besides. The end of a chapter, not a wall.",
+        capTitle:"S5 · The Wall", capRoute:"/wall",
+        capState:"Reached only by finishing all free content, and only by forward navigation — never thrown over a puzzle. The free-Daily promise sits above the fold; the once-per-lifetime offer states its window plainly and never returns." });
+      const items = [
+        { title:"Old Films", sub:"20 puzzles · yours permanently", right:"$2.99", first:true },
+        { title:"Trains", sub:"20 puzzles · yours permanently", right:"$2.99" },
+        { title:"The Sea", sub:"20 puzzles · yours permanently", right:"$2.99" }
+      ].map(o => listItem(t, mode, o));
+      return Object.assign(s, { isWall:true, wallPacks:items,
+        reassure: { background:t.tile, borderRadius:"18px", border:"2px solid "+t.line, boxShadow:"0 4px 0 "+inkEdge,
+                    padding:"14px 18px", display:"flex", flexDirection:"column", gap:"3px", boxSizing:"border-box" },
+        reassureTitle: { fontFamily:ui, fontSize:"16px", fontWeight:800, color:t.ink },
+        reassureSub: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted },
+        offerCard: { background:t.wash, borderRadius:"24px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                     padding:"18px 20px", display:"flex", flexDirection:"column", gap:"16px", boxSizing:"border-box" },
+        offerKicker: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.14em", textTransform:"uppercase", color:t.kicker },
+        offerTitle: { fontFamily:display, fontStyle:"italic", fontWeight:600, fontSize:"28px", color:t.ink },
+        offerSub: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.45", color:t.muted, textWrap:"pretty" },
+        offerPrice: { fontFamily:ui, fontSize:"23px", fontWeight:900, color:t.ink },
+        offerWas: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } });
+    };
+
+    const store = (mode) => {
+      const t = T[mode];
+      const s = shell(mode, { fieldH:216, title:"Store", chip:"Restore purchases",
+        capTitle:"S6 · Store", capRoute:"/store",
+        capState:"Every price is real money — no coins, no currency bundles, no countdowns. Restore sits in the header so it is reachable before any purchasable item. Scrolls on to Fabric sets and the Whole Quilt, positioned last." });
+      const sections = [
+        { label:"Theme packs", items: [
+          { title:"Old Films", sub:"20 puzzles · one-time purchase", right:"$2.99", first:true },
+          { title:"Trains", sub:"20 puzzles · one-time purchase", right:"$2.99" },
+          { title:"The Garden", sub:"20 puzzles · all 20 sewn", right:"Yours", owned:true }
+        ]},
+        { label:"Collections", items: [
+          { title:"The Long Evening", sub:"Old Films, Books, Trains · 60 puzzles", right:"$6.99", first:true },
+          { title:"Off the Shelf", sub:"Birds, The Sea, Sweets · 60 puzzles", right:"$6.99" }
+        ]},
+        { label:"Hints", items: [
+          { title:"20 hints", sub:"Never expire. Three a day stay free.", right:"$1.99", first:true },
+          { title:"60 hints", sub:"Never expire. Three a day stay free.", right:"$4.99" }
+        ]}
+      ].map(sec => ({ label:sec.label, items: sec.items.map(o => listItem(t, mode, o)) }));
+      return Object.assign(s, { isList:true, sections });
+    };
+
+    const calendar = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:216, title:"Dailies", chip:"13 sewn",
+        capTitle:"S7 · Daily calendar", capRoute:"/dailies/2026-08",
+        capState:"The 4th was missed and renders as an ordinary empty slot — no cross, no red, no label. Today is outlined and unplayed. Future days are visible but inert and never reveal their theme. No streak exists anywhere." });
+      const done = [1,2,3,5,6,7,8,9,10,11];
+      const days = [];
+      for (let i = 0; i < 5; i++) days.push({ num:"", cell:{ height:"46px" }, numStyle:{} });
+      for (let d = 1; d <= 31; d++) {
+        const isDone = done.indexOf(d) !== -1, isToday = d === 12, isFuture = d > 12;
+        days.push({ num:String(d),
+          cell: { height:"46px", borderRadius:"13px", boxSizing:"border-box", display:"flex", alignItems:"center", justifyContent:"center",
+                  background: isDone ? t.sewn : (isToday ? t.wash : "transparent"),
+                  border: isToday ? ("2.5px solid "+t.accent) : (isDone ? ("2px solid "+t.line) : ("2px dashed "+t.empty)),
+                  boxShadow: isDone || isToday ? ("0 4px 0 "+inkEdge) : "none",
+                  transform: isDone ? ("rotate(" + (((d % 3) - 1) * 1.4) + "deg)") : "none",
+                  opacity: isFuture ? 0.45 : 1 },
+          numStyle: { fontFamily:ui, fontSize:"16px", fontWeight: isToday ? 900 : 800,
+                      color: isToday ? t.kicker : (isDone ? (mode === "light" ? "#3A2F1E" : "#F4EDDF") : t.muted) } });
+      }
+      return Object.assign(s, { isCalendar:true, days,
+        weekdays: ["M","T","W","T","F","S","S"].map(ch => ({ ch })),
+        weekdayStyle: { fontFamily:ui, fontSize:"12px", fontWeight:900, letterSpacing:"0.1em", textAlign:"center", color:t.muted },
+        monthLabel: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"26px", color:t.ink },
+        navLeft: { width:"10px", height:"10px", borderLeft:"2.5px solid "+t.ink, borderBottom:"2.5px solid "+t.ink, transform:"rotate(45deg)", marginLeft:"3px" },
+        navRight: { width:"10px", height:"10px", borderRight:"2.5px solid "+t.ink, borderTop:"2.5px solid "+t.ink, transform:"rotate(45deg)", marginRight:"3px" },
+        calTotal: { fontFamily:ui, fontSize:"18px", fontWeight:800, color:t.ink },
+        calNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.45", color:t.muted } });
+    };
+
+    const fabric = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:216, title:"Fabric",
+        capTitle:"S8 · Fabric", capRoute:"/fabric",
+        capState:"Cosmetic only, and the screen says so. The four onboarding palettes stay free permanently; paid sets route to the Store and remain purchasable after their season. Changes apply immediately and globally." });
+      const pal = [
+        { name:"Linen", a:"#F0C982", on:true },
+        { name:"Indigo", a:"#96A3C9", on:false },
+        { name:"Moss", a:"#A9B78D", on:false },
+        { name:"Dusk", a:"#C9A2B0", on:false }
+      ].map((p, i) => ({ name:p.name,
+        swatch: { width:"66px", height:"66px", borderRadius:"20px", background:p.a,
+                  border: p.on ? ("3px solid "+t.accent) : ("2px solid "+t.line), boxShadow:"0 5px 0 "+inkEdge,
+                  transform:"rotate(" + (((i % 3) - 1) * 2) + "deg)", boxSizing:"border-box" },
+        label: { fontFamily:ui, fontSize:"14px", fontWeight: p.on ? 900 : 700, color: p.on ? t.ink : t.muted } }));
+      const sets = [
+        { title:"Winter Weight", sub:"Three patterns, two borders", right:"$1.99", first:true },
+        { title:"Sun-Bleached", sub:"Three patterns, two borders", right:"$1.99" }
+      ].map(o => listItem(t, mode, o));
+      return Object.assign(s, { isFabric:true, palettes:pal, fabricSets:sets,
+        previewCard: { background:t.tile, borderRadius:"24px", border:"2px solid "+t.line, boxShadow:"0 5px 0 "+inkEdge,
+                       padding:"18px", display:"flex", alignItems:"center", gap:"18px", boxSizing:"border-box" },
+        previewSquare: { width:"104px", height:"104px", borderRadius:"18px", background:t.sheet, border:"2px solid "+t.line,
+                         display:"grid", gridTemplateColumns:"repeat(7,12px)", gap:"1px", alignContent:"center", justifyContent:"center",
+                         transform:"rotate(-1.5deg)", boxSizing:"border-box" },
+        previewPatch: patch(7, t, 12),
+        previewName: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"26px", color:t.ink },
+        previewNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, lineHeight:"1.45", color:t.muted, textWrap:"pretty" } });
+    };
+
+    const hint = (mode) => {
+      const t = T[mode], inkEdge = mode === "light" ? t.ink : t.shade;
+      const s = shell(mode, { fieldH:306, title:"Before anyone else is up.", titleGap:14, chip:"6 of 20", crumb:"Kitchen Things",
+        capTitle:"S9 · Hint on the Puzzle screen", capRoute:"/pack/kitchen-things/07#hint",
+        capState:"The only thing allowed to appear during play, and only because the player asked. One cell of the least-revealed word is outlined, the count is spelled out in words, and the message lands in the band that was already reserved — nothing on the grid moves." });
+      const revealed = k(2,1);
+      const cells = [];
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 7; c++) {
+          const id = k(r,c);
+          let bg = t.tile, fg = t.ink, line = t.line;
+          if (foundCells.has(id)) { bg = t.sewn; }
+          if (id === revealed) { bg = t.wash; fg = t.accent; line = t.accent; }
+          const tilt = (((r * 7 + c) % 5) - 2) * 0.7;
+          const base = { position:"absolute", left:(c*G.PITCH + G.PAD)+"px", top:(r*G.PITCH)+"px",
+                         width:G.CELL+"px", height:G.CELL+"px", transform:"rotate("+tilt+"deg)" };
+          cells.push({ ch: grid[r][c],
+            tile: Object.assign({}, base, { background:bg, borderRadius:"15px", boxSizing:"border-box",
+              border: (id === revealed ? "2.5px dashed " : "2px solid ") + line, boxShadow:"0 4px 0 "+inkEdge }),
+            letter: Object.assign({}, base, { display:"flex", alignItems:"center", justifyContent:"center",
+              fontFamily:ui, fontSize:"21px", fontWeight:800, color:fg, pointerEvents:"none" }) });
+        }
+      }
+      const paths = foundWords.map(w => ({
+        points: words[w].map(([r,c]) => (c*G.PITCH + G.CELL/2) + "," + (r*G.PITCH + G.CELL/2)).join(" "),
+        style: { fill:"none", stroke:t.thread, strokeWidth:"5px", strokeLinecap:"round", strokeLinejoin:"round", strokeDasharray:"9 8" }
+      }));
+      const chips = order.map((w, i) => {
+        const isFound = foundWords.indexOf(w) !== -1;
+        const tilt = ((i % 3) - 1) * 1.4;
+        return { text: isFound ? w : "",
+          style: isFound
+            ? { height:"36px", display:"flex", alignItems:"center", padding:"0 15px", borderRadius:"999px", background:t.fieldInk,
+                color:t.field, border:"2px solid "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"),
+                boxShadow:"0 3px 0 "+(mode === "light" ? t.ink : "rgba(36,23,16,0.55)"), boxSizing:"border-box",
+                fontFamily:ui, fontSize:"14px", fontWeight:900, letterSpacing:"0.08em", transform:"rotate("+tilt+"deg)" }
+            : { height:"36px", width:(w.length * 13 + 18)+"px", borderRadius:"999px", background:t.fieldFill,
+                border:"2px dashed "+t.fieldLine, boxSizing:"border-box", transform:"rotate("+tilt+"deg)" } };
+      });
+      return Object.assign(s, { isHint:true, cells, paths, chips,
+        pageTitle: { fontFamily:display, fontStyle:"italic", fontWeight:500, fontSize:"30px", lineHeight:"1.16", color:t.fieldInk },
+        gridBox: { position:"relative", width:"334px", height:(7*G.PITCH - (G.PITCH - G.CELL))+"px", margin:"0 auto" },
+        viewBox: "0 0 " + G.SIZE + " " + G.SIZE,
+        svgStyle: { position:"absolute", left:G.PAD+"px", top:"0", width:G.SIZE+"px", height:G.SIZE+"px", pointerEvents:"none" },
+        hintBand: { height:"32px", display:"flex", alignItems:"center", justifyContent:"center",
+                    fontFamily:ui, fontSize:"15px", fontWeight:800, color:t.kicker },
+        hintCount: { fontFamily:ui, fontSize:"17px", fontWeight:800, color:t.ink },
+        hintNote: { fontFamily:ui, fontSize:"14px", fontWeight:600, color:t.muted } });
+    };
+
+    const settings = (mode) => {
+      const t = T[mode];
+      const s = shell(mode, { fieldH:196, title:"Settings",
+        capTitle:"S10 · Settings", capRoute:"/settings",
+        capState:"No account section, no sign-in, no newsletter. Reinstall behaviour is stated plainly rather than discovered. Scrolls on to text size, language, theme preferences, restore, support, privacy, terms and build number." });
+      const sections = [
+        { label:"Sound and motion", items: [
+          { title:"Sound", sub:"Soft, and off in silent mode", right:"On", owned:true, first:true },
+          { title:"Haptics", sub:"A small tick when a word locks", right:"On", owned:true },
+          { title:"Reduce motion", sub:"Reveals resolve in one step", right:"Off", owned:true }
+        ]},
+        { label:"Notifications", items: [
+          { title:"One a day", sub:"Never about days you missed", right:"On", owned:true, first:true },
+          { title:"Time", sub:"Your five quiet minutes", right:"7:30 am", owned:true }
+        ]},
+        { label:"Your things", items: [
+          { title:"Fabric", sub:"Linen", right:"Change", owned:true, first:true },
+          { title:"If you reinstall", sub:"Purchases restore from the App Store. Puzzle progress is not backed up in this version.", right:"", owned:true }
+        ]}
+      ].map(sec => ({ label:sec.label, items: sec.items.map(o => listItem(t, mode, o)) }));
+      return Object.assign(s, { isList:true, sections });
+    };
+
+    const build = (mode) => [ shelf(mode), packView(mode), hint(mode), calendar(mode), wall(mode), store(mode), fabric(mode), settings(mode) ];
+    return { rows: [ { label:"Light", frames: build("light") }, { label:"Dark", frames: build("dark") } ] };
+  }
+}
+
+</script>
+</body>
+</html>
