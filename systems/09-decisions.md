@@ -172,3 +172,29 @@ Selection now takes `minWordLength` (default 4), `maxWordLength` and
 quality trade off against each other**, because the grid area is fixed. A long
 theme phrase leaves fewer cells for words and forces them short. Theme phrases
 must be authored against the grid sizes they will be used at.
+
+### D-019 — The cold-open board is generated, not transcribed from the design
+*Session 3.*
+The Onboarding design draws a specific 6×6 demo board revealing "morning
+ritual". Its four words (TOAST, MILK, OATS, SOAP) do read correctly off that
+grid, but they occupy only 17 of the 36 cells, so the 19 leftover letters
+resolve to `MMORNIUNGRIGMTUAJAL` — not the 13-letter `MORNINGRITUAL` promised.
+Verified by transcribing the board and reading the leftovers.
+
+The design board is illustrative. Shipping it would mean the first reveal a
+player ever sees resolves to nonsense, and that reveal is the entire product.
+So O1 generates its board with the real packer against a morning pool, seeded so
+every player gets the same one and it actually resolves.
+
+Everything else about O1 follows the design exactly: 6×6, four words, the
+"Something warm." oblique title, the 306px field, the reserved hint band.
+
+### D-020 — Tapping a word slot stands in for tracing, temporarily
+*Session 3. OPEN — the biggest remaining gap.*
+The drag-to-trace gesture is not built. Until it is, O1 and S2 sew a word by
+tapping its slot.
+
+This keeps the whole flow walkable and every other behaviour real — the boards,
+the reveal, the hint band, the progression — but it is NOT the game. The drag is
+the core interaction of the product and everything else is scaffolding around
+it. `react-native-gesture-handler` is already installed.
