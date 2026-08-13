@@ -198,3 +198,55 @@ This keeps the whole flow walkable and every other behaviour real — the boards
 the reveal, the hint band, the progression — but it is NOT the game. The drag is
 the core interaction of the product and everything else is scaffolding around
 it. `react-native-gesture-handler` is already installed.
+
+### D-020 — SUPERSEDED by D-021. Tracing is no longer stubbed.
+*Session 4.* Kept for the record; see D-021.
+
+### D-021 — Trace rules are pure functions in the generator, not in the gesture handler
+*Session 4.*
+`packages/generator/src/trace.ts`, with 23 tests. The rules about what a legal
+trace IS are game rules, not UI concerns, and they are the one piece of logic
+that must be right — a trace accepting a non-adjacent hop, or rejecting a
+legitimate diagonal, breaks the only interaction the product has. Pure functions
+mean CI tests them directly instead of through a gesture handler.
+
+Three specifics that are easy to get wrong:
+- Hit targets are the full PITCH, not the drawn cell. The 2px gutters between
+  tiles must not drop a trace mid-drag.
+- Dragging back onto the previous cell UNDOES the last step. Players correct
+  themselves constantly; a grow-only trace forces them to lift and restart.
+- A trace matches against PLACEMENTS, not the word list. A coincidental spelling
+  elsewhere on the board would leave the real placement unsewn and its cells
+  wrongly counted as used, breaking the leftover arithmetic and the reveal.
+
+A wrong trace does nothing at all — no shake, no red, no buzz (constraint 4).
+A correct one gets a light haptic tick. Silence is not a rebuke.
+
+### D-022 — Progress stores a set of things done, and nothing else
+*Session 4.*
+No streak, no last-played-for-a-chain, no missed-day count, no scores, times or
+stars. Those fields do not exist in `Progress`, because a field that exists
+eventually gets displayed and each would be a way of telling a player they have
+let something slip. A test asserts no such field appears.
+
+Free hints REFILL daily rather than accumulating, and are never removed, so
+there is nothing to lose by not playing. Free hints are spent before purchased
+ones, always.
+
+Pure rules are split from persistence (`progress.ts` vs `progress-store.ts`) so
+they test under plain `node` without a simulator.
+
+### D-023 — CI asserts the palette survived the build
+*Session 4.*
+`scripts/check-bundle.mjs` greps the shipped Hermes bytecode for the WordQuilt
+colours and font families, and for the absence of heroui-native's stock accent.
+
+This is the one failure the project cannot catch any other way. If the uniwind
+config stops being picked up, every component falls back to the library's theme:
+everything stays internally consistent, nothing errors, the typecheck passes and
+the diff looks fine — and the app ships in grey and blue. It has to be asserted
+against the artefact, not the source.
+
+CI ordering is deliberate: pure logic first (milliseconds), then design fidelity,
+then typecheck and bundle. A broken trace rule should fail in ten seconds rather
+than after a twenty-minute build.

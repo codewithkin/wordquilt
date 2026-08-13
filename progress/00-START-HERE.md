@@ -6,7 +6,7 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 3.
+Last updated: end of session 4.
 
 ---
 
@@ -75,22 +75,16 @@ built carefully.** In the project this workflow came from, a session that had
 genuinely followed the designs still had five real deviations, including a wrong
 background on the most important screen.
 
-### 2. The drag gesture. It is the core interaction and it is stubbed (D-020).
-
-Tracing a word by dragging across adjacent cells.
-`react-native-gesture-handler` is installed. Until it lands, O1 and S2 sew a
-word by tapping its slot — the flow is walkable but it is not the game.
-
-### 3. A progress store
-
-Every screen shows placeholder counts. Sewn squares, hints used and daily
-history all need somewhere real to live. `lib/storage.ts` has the pattern.
-
-### 4. The remaining five screens
+### 2. The remaining five screens
 
 S5 The Wall, S6 Store, S8 Fabric, S9 Hint overlay, S10 Settings.
 
-### 5. The generator spike is written but unmeasured
+### 3. Wire Pack view and Daily to real puzzle identity
+
+Progress stores sewn puzzles as `packId#index`, but those two screens still
+render a fixed grid. The store is there; the screens need reading from it.
+
+### 4. The generator spike is written but unmeasured
 
 `packages/generator` selects word sets, packs snaking paths and resolves the
 theme reveal — verified end to end on a real board. What has NOT been run is
@@ -128,6 +122,9 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | The seam | **Solved** (D-006 closed). One SVG arc — see `components/ui/seam.tsx` |
 | Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
 | Motion | **Reanimated only** (D-017). Moti removed |
+| Tracing | **Done.** Drag to trace; rules are pure and tested (23 tests) |
+| Progress | **Done.** Sewn squares, dailies, refilling hints (13 tests) |
+| CI | **Every PR.** Rules, tokens, assets, typecheck, bundle, palette-survival |
 
 "Built" above means written, bundled and machine-checked. It does **not** mean
 seen.
