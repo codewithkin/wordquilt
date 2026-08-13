@@ -5,6 +5,7 @@ import { Pressable, View } from "react-native";
 import { Button, Card, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { useOnboarding } from "@/contexts/onboarding-context";
+import { requestPermission, scheduleDailyReminder } from "@/lib/notifications";
 
 /**
  * O8 — Rhythm question, and the notification pre-permission.
@@ -24,11 +25,21 @@ const TIMES = ["Morning", "Lunch", "Evening", "Before bed"] as const;
 export default function Rhythm() {
   const { prefs, setRhythm, setReminders } = useOnboarding();
 
-  const advance = (wantsReminders: boolean) => {
+  const advance = async (wantsReminders: boolean) => {
     setReminders(wantsReminders);
-    // The real OS permission request belongs here, and only on "Yes".
-    // Until expo-notifications lands this records the intent — see the open
-    // items in progress/00-START-HERE.md.
+
+    // The OS prompt fires ONLY here, only on "Yes", and only after the player
+    // has seen what the reminder looks like. It is one-shot per install.
+    if (wantsReminders) {
+      const granted = await requestPermission();
+      if (granted && prefs.rhythm) {
+        await scheduleDailyReminder(prefs.rhythm);
+      }
+      // A refusal at the OS level is not an error and gets no second ask. The
+      // rhythm answer is kept either way, because it orders content too.
+      setReminders(granted);
+    }
+
     router.push("/shelf");
   };
 
@@ -42,9 +53,9 @@ export default function Rhythm() {
       }
       footer={
         <View className="gap-3">
-          <Button label="Yes, remind me" onPress={() => advance(true)} />
+          <Button label="Yes, remind me" onPress={() => void advance(true)} />
           <Pressable
-            onPress={() => advance(false)}
+            onPress={() => void advance(false)}
             accessibilityRole="button"
             className="h-[44px] items-center justify-center"
           >
