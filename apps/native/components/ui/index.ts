@@ -15,6 +15,7 @@ export {
   type LetterTileProps,
   type LetterTileState,
 } from "./letter-tile";
+export { ListRow, type ListRowProps } from "./list-row";
 export { Screen, type ScreenProps } from "./screen";
 export { Seam, type SeamProps } from "./seam";
 export { Card, Pill, Rule, type SurfaceProps } from "./surface";
