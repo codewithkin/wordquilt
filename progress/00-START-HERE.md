@@ -6,19 +6,20 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 4.
+Last updated: end of session 5.
 
 ---
 
 ## Which screens are done?
 
-**14 of 19.** All nine onboarding screens, and five of the ten core screens.
+**All 19.** Nine onboarding screens and ten core screens.
 
 The app walks a complete first-time flow: cold open -> reveal -> proposition ->
 theme picker -> fabric picker -> payoff -> rhythm -> Shelf, then Shelf -> pack ->
 puzzle -> reveal -> back to the Shelf.
 
-Not built: The Wall, Store, Fabric, Hint overlay, Settings.
+What is left is making them real rather than making more: real content, real
+per-puzzle progress, working Settings toggles, and a payments SDK.
 
 **`progress/02-screens.md` is the screen-by-screen list.** Read that for what to
 build next. It is the only doc that talks in screens rather than layers.
@@ -75,16 +76,13 @@ built carefully.** In the project this workflow came from, a session that had
 genuinely followed the designs still had five real deviations, including a wrong
 background on the most important screen.
 
-### 2. The remaining five screens
+### 2. Real content, and real per-puzzle progress
 
-S5 The Wall, S6 Store, S8 Fabric, S9 Hint overlay, S10 Settings.
+Five themes' worth of vocabulary to curate — the handover names this as the real
+launch risk. The screens also still show one hard-coded pack list, and Pack view
+and Daily render fixed grids rather than reading which puzzles are sewn.
 
-### 3. Wire Pack view and Daily to real puzzle identity
-
-Progress stores sewn puzzles as `packId#index`, but those two screens still
-render a fixed grid. The store is there; the screens need reading from it.
-
-### 4. The generator spike is written but unmeasured
+### 3. The generator spike is written but unmeasured
 
 `packages/generator` selects word sets, packs snaking paths and resolves the
 theme reveal — verified end to end on a real board. What has NOT been run is
@@ -118,7 +116,7 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | UI primitives | **Written and they bundle. Never rendered on a device.** |
 | Fonts | **All 7 faces load and bundle**, verified by content hash |
 | Platform assets | **All 15 manifest rows pass.** Prebuild generates both native projects correctly |
-| Screens | **14 of 19.** All onboarding, 5 core. See `progress/02-screens.md` |
+| Screens | **19 of 19.** See `progress/02-screens.md` |
 | The seam | **Solved** (D-006 closed). One SVG arc — see `components/ui/seam.tsx` |
 | Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
 | Motion | **Reanimated only** (D-017). Moti removed |

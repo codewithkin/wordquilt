@@ -3,20 +3,21 @@
 **The one place that answers "which screens are done".** Every other doc talks
 about layers and packages; this one talks only about screens.
 
-Last updated: end of session 4.
+Last updated: end of session 5.
 
 ---
 
 ## The short answer
 
-**14 of 19 screens are built.** All nine onboarding screens, and five of the ten
-core screens. The app runs a complete first-time flow end to end: cold open,
-reveal, proposition, pickers, payoff, rhythm, Shelf, pack, puzzle, reveal.
+**All 19 screens are built.** Nine onboarding, ten core. The app walks the
+complete flow: cold open, reveal, proposition, pickers, payoff, rhythm, Shelf,
+pack, puzzle, reveal — and reaches Store, Fabric, Settings, the Wall and the
+Daily calendar from the Shelf.
 
 | Group | Built | Total |
 | --- | --- | --- |
 | Onboarding | **9** | 9 |
-| Core app | **5** | 10 |
+| Core app | **10** | 10 |
 
 **Every screen bundles. None has been rendered on a device.** That remains the
 biggest gap in the project — "bundles" is not "runs" and is not "looks right".
@@ -54,7 +55,7 @@ with a fixed seed so it actually resolves.
 
 ---
 
-## Core app — 5 of 10 built
+## Core app — 10 of 10 built
 
 Design source: `designs/extracted/Core Screens.txt`, `Puzzle & Reveal.txt`
 
@@ -64,12 +65,12 @@ Design source: `designs/extracted/Core Screens.txt`, `Puzzle & Reveal.txt`
 | S2 | **Puzzle** — the core loop, zero interruptions | **built** | — |
 | S3 | **Reveal** — the payoff, square sews into the quilt | **built** | — |
 | S4 | Pack view — puzzles within a theme, any order | **built** | real per-puzzle state |
-| S5 | The Wall — sole conversion surface | **not built** | — |
-| S6 | Store — packs, collections, fabric, hints | **not built** | payments |
+| S5 | The Wall — sole conversion surface | **built** | — |
+| S6 | Store — packs, collections, fabric, hints | **built** | a payments SDK |
 | S7 | Daily calendar — month grid, catch-up always free | **built** | real daily history |
-| S8 | Fabric — cosmetics, zero gameplay effect | **not built** | — |
-| S9 | Hint overlay — press-and-hold on the grid | **not built** | drag gesture |
-| S10 | Settings — controls, transparency, working support route | **not built** | — |
+| S8 | Fabric — cosmetics, zero gameplay effect | **built** | — |
+| S9 | Hint overlay — opens one cell during play | **built** | press-and-hold entry |
+| S10 | Settings — controls, transparency, working support route | **built** | toggles are display-only |
 
 Alternate states (`designs/extracted/Alternate States.txt`) add 8 more variants
 — store offline, purchase in flight, purchase failure, everything finished,
@@ -125,15 +126,21 @@ writing raw colours or sizes, read the design file instead — the value is in
 
 ## Suggested order for the next session
 
+Every screen exists. What is left is making them real rather than making more.
+
 1. **Run it on a device and walk the whole flow.** Nothing has ever been seen.
-   Then audit each of the 14 screens against its design file in BOTH themes and
-   write down every deviation — this is a separate, deliberate step, and in the
-   project this workflow came from a careful session still had five real
-   deviations including a wrong background on the most important screen.
-2. **The remaining five screens**: S5 The Wall, S6 Store, S8 Fabric, S9 Hint
-   overlay, S10 Settings.
+   Then audit all 19 screens against their design files in BOTH themes and write
+   down every deviation — a separate, deliberate step. In the project this
+   workflow came from, a careful session still had five real deviations,
+   including a wrong background on the most important screen.
+2. **Real content.** There are five puzzle themes' worth of vocabulary to
+   curate, and the screens still show one hard-coded pack list. The handover
+   names vocabulary as the real launch risk.
 3. **Real puzzle identity.** Progress stores sewn puzzles by `packId#index`, but
    Pack view and Daily still render a fixed grid rather than reading which
-   specific puzzles are sewn. The store is there; the screens need wiring to it.
-4. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
+   specific puzzles are sewn.
+4. **Settings toggles are display-only.** Sound, haptics and notification
+   switches render their state but do not yet change anything.
+5. **Payments.** The Store lists real prices against no SDK.
+6. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
    the thing that decides 50 vs 30 puzzles per pack.
