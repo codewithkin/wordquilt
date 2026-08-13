@@ -17,3 +17,4 @@ export * from "./rng.ts";
 export * from "./select.ts";
 export * from "./titles.ts";
 export * from "./types.ts";
+export * from "./trace.ts";
