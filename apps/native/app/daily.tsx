@@ -4,6 +4,8 @@ import { Pressable, ScrollView, View } from "react-native";
 
 import { Card, RoundButton, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
+import { useProgress } from "@/contexts/progress-context";
+import { today } from "@/lib/progress";
 
 /**
  * S7 — Daily calendar.
@@ -20,10 +22,21 @@ import { Screen } from "@/components/ui/screen";
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
 export default function DailyCalendar() {
-  const today = 12;
-  const daysInMonth = 31;
-  // Placeholder until the store layer lands.
-  const played = new Set([3, 4, 8, 11]);
+  const { progress } = useProgress();
+
+  const now = new Date();
+  const todayDate = now.getDate();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthName = now.toLocaleDateString(undefined, { month: "long" });
+
+  const iso = (day: number) => today(new Date(year, month, day));
+  const played = new Set(
+    progress.dailies
+      .filter((d) => d.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`))
+      .map((d) => Number(d.slice(-2))),
+  );
 
   return (
     <Screen
@@ -56,15 +69,17 @@ export default function DailyCalendar() {
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
                 const done = played.has(day);
-                const future = day > today;
+                const future = day > todayDate;
                 return (
                   <View key={day} style={{ width: `${100 / 7}%` }} className="items-center py-1">
                     <Pressable
                       disabled={future}
-                      onPress={() => router.push("/puzzle")}
+                      onPress={() =>
+                        router.push({ pathname: "/puzzle", params: { daily: iso(day) } })
+                      }
                       accessibilityRole="button"
                       accessibilityLabel={
-                        `August ${day}` +
+                        `${monthName} ${day}` +
                         (done ? ", sewn" : future ? ", not yet" : ", free to play")
                       }
                       className={

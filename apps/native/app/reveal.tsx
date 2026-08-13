@@ -1,6 +1,4 @@
-import { generatePuzzle, puzzleSeed } from "@wordquilt/generator";
-import { kitchenThings, kitchenTitles } from "@wordquilt/generator/data/kitchen-things";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
@@ -9,6 +7,7 @@ import { TraceableBoard } from "@/components/traceable-board";
 import { Button, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { duration, revealHoldMs, revealStaggerMs } from "@/lib/motion";
+import { buildDaily, buildPuzzle } from "@/lib/puzzles";
 
 /**
  * S3 — Reveal. The payoff, and the entire point of the product.
@@ -25,26 +24,29 @@ import { duration, revealHoldMs, revealStaggerMs } from "@/lib/motion";
  * the Shelf with one more square than they had.
  */
 export default function RevealScreen() {
-  const puzzle = useMemo(() => {
-    const result = generatePuzzle({
-      theme: kitchenThings,
-      titles: kitchenTitles,
-      spec: { rows: 7, cols: 7, wordCount: 7 },
-      seed: puzzleSeed("kitchen-things", 7),
-    });
-    if (!result.ok) throw new Error(`reveal failed to generate: ${result.reason}`);
-    return result.puzzle;
-  }, []);
+  // The same identity the Puzzle screen used. Generation is a pure function of
+  // it, so this resolves to exactly the board the player just solved.
+  const params = useLocalSearchParams<{ pack?: string; index?: string; daily?: string }>();
+  const puzzle = useMemo(
+    () =>
+      params.daily
+        ? buildDaily(params.daily)
+        : buildPuzzle(params.pack ?? "kitchen-things", Number(params.index ?? 0)),
+    [params.pack, params.index, params.daily],
+  );
 
   const [holdDone, setHoldDone] = useState(false);
 
   useEffect(() => {
+    if (!puzzle) return;
     // The hold begins once the letters have finished resolving, so the phrase
     // is legible for the full three seconds rather than three minus the stagger.
     const resolveMs = puzzle.leftover.length * revealStaggerMs;
     const t = setTimeout(() => setHoldDone(true), resolveMs + revealHoldMs);
     return () => clearTimeout(t);
-  }, [puzzle.leftover.length]);
+  }, [puzzle]);
+
+  if (!puzzle) return null;
 
   return (
     <Screen

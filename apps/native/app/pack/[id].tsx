@@ -2,8 +2,11 @@ import { fieldHeight } from "@wordquilt/tokens";
 import { router, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Card, Chip, Rule, RoundButton, Text } from "@/components/ui";
+import { Card, Chip, RoundButton, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
+import { useProgress } from "@/contexts/progress-context";
+import { puzzleId } from "@/lib/progress";
+import { findPack, packIdFromName } from "@/lib/puzzles";
 
 /**
  * S4 — Pack view.
@@ -17,11 +20,15 @@ import { Screen } from "@/components/ui/screen";
  */
 export default function PackView() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const name = typeof id === "string" ? decodeURIComponent(id) : "Pack";
+  const raw = typeof id === "string" ? decodeURIComponent(id) : "";
+  // Links are built from either an id or a display name, so accept both.
+  const packId = findPack(raw)?.id ?? packIdFromName(raw);
+  const pack = findPack(packId);
+  const name = pack?.name ?? raw ?? "Pack";
 
-  // Placeholder progress until the store layer lands.
-  const total = 20;
-  const sewn = 1;
+  const { progress, sewnInPack } = useProgress();
+  const total = pack?.size ?? 20;
+  const sewn = sewnInPack(packId);
 
   return (
     <Screen
@@ -46,11 +53,18 @@ export default function PackView() {
           <Card delay={0} className="p-4">
             <View className="flex-row flex-wrap gap-[10px]">
               {Array.from({ length: total }).map((_, i) => {
-                const done = i < sewn;
+                // Which SPECIFIC puzzles are sewn, not just how many — a player
+                // who did 3, 7 and 12 should see those three filled.
+                const done = progress.sewn.includes(puzzleId(packId, i));
                 return (
                   <Pressable
                     key={i}
-                    onPress={() => router.push("/puzzle")}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/puzzle",
+                        params: { pack: packId, index: String(i) },
+                      })
+                    }
                     accessibilityRole="button"
                     accessibilityLabel={`Puzzle ${i + 1}, ${done ? "sewn" : "not yet played"}`}
                     className={

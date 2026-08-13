@@ -1,7 +1,5 @@
-import { generatePuzzle, puzzleSeed } from "@wordquilt/generator";
-import { kitchenThings, kitchenTitles } from "@wordquilt/generator/data/kitchen-things";
 import { fieldHeight } from "@wordquilt/tokens";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
@@ -9,12 +7,18 @@ import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated
 import { TraceableBoard, cellKey } from "@/components/traceable-board";
 import { Button, Chip, RoundButton, Text, WordSlot } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
-import { duration } from "@/lib/motion";
-import { puzzleId } from "@/lib/progress";
 import { useProgress } from "@/contexts/progress-context";
+import { duration } from "@/lib/motion";
+import { puzzleId, today } from "@/lib/progress";
+import { buildDaily, buildPuzzle, findPack } from "@/lib/puzzles";
 
 /**
  * S2 — Puzzle. The core loop.
+ *
+ * Identified by route: `?pack=<id>&index=<n>` for a pack puzzle, or
+ * `?daily=<YYYY-MM-DD>` for a Daily. Generation is a pure function of that
+ * identity, so this screen and the Reveal independently resolve to the same
+ * board without passing one between them.
  *
  * ── Zero interruption budget ────────────────────────────────────────────────
  * Nothing may appear over the grid during play. No modals, no toasts, no rating
@@ -26,10 +30,11 @@ import { useProgress } from "@/contexts/progress-context";
  * theme was rejected in design: with no hint, players pattern-scan for any word
  * and the theme becomes a post-hoc credit sequence rather than part of solving.
  *
- * Hints are generous — three free daily, refilling — and labelled in plain words
- * rather than an unexplained icon. The puzzle is always completable with zero
- * hints (constraint 3); nothing here is ever gated on a resource.
+ * Hints are generous and labelled in plain words. The puzzle is always
+ * completable with zero hints (constraint 3); nothing here is gated on a
+ * resource.
  */
+
 /** Counts are spelled out, never shown as a bare numeral (constraint 8). */
 const NUMBER_WORDS = [
   "zero", "one", "two", "three", "four", "five",
@@ -38,29 +43,39 @@ const NUMBER_WORDS = [
 const wordLength = (n: number) => `${NUMBER_WORDS[n] ?? n}-letter`;
 
 export default function PuzzleScreen() {
-  const puzzle = useMemo(() => {
-    const result = generatePuzzle({
-      theme: kitchenThings,
-      titles: kitchenTitles,
-      spec: { rows: 7, cols: 7, wordCount: 7 },
-      seed: puzzleSeed("kitchen-things", 7),
-    });
-    if (!result.ok) throw new Error(`puzzle failed to generate: ${result.reason}`);
-    return result.puzzle;
-  }, []);
+  const params = useLocalSearchParams<{ pack?: string; index?: string; daily?: string }>();
+  const packId = params.pack ?? "kitchen-things";
+  const index = Number(params.index ?? 0);
+  const dailyDate = params.daily;
 
-  const words = puzzle.placements.map((p) => p.word);
+  const puzzle = useMemo(
+    () => (dailyDate ? buildDaily(dailyDate) : buildPuzzle(packId, index)),
+    [packId, index, dailyDate],
+  );
+
+  const crumb = dailyDate ? "Today's Daily" : (findPack(packId)?.name ?? "Puzzle");
+
   const [found, setFound] = useState<string[]>([]);
   const [hint, setHint] = useState<string | null>(null);
   const [hinted, setHinted] = useState<ReadonlySet<string>>(new Set());
-  const { hints, useHint: spendHint, sew } = useProgress();
+  const { hints, useHint: spendHint, sew, sewDailyFor } = useProgress();
+
+  const words = puzzle?.placements.map((p) => p.word) ?? [];
 
   useEffect(() => {
-    if (found.length === words.length) {
-      sew(puzzleId("kitchen-things", 7));
-      router.replace("/reveal");
-    }
-  }, [found.length, words.length, sew]);
+    if (!puzzle || words.length === 0) return;
+    if (found.length !== words.length) return;
+
+    // Sew on completion, then hand to the Reveal with the same identity so it
+    // regenerates the board the player actually solved.
+    if (dailyDate) sewDailyFor(dailyDate);
+    else sew(puzzleId(packId, index));
+
+    router.replace({
+      pathname: "/reveal",
+      params: dailyDate ? { daily: dailyDate } : { pack: packId, index: String(index) },
+    });
+  }, [found.length, words.length, puzzle, dailyDate, packId, index, sew, sewDailyFor]);
 
   /**
    * S9 — the hint. The ONLY thing allowed to appear during play, and only
@@ -69,25 +84,44 @@ export default function PuzzleScreen() {
    * It opens ONE cell of the least-revealed unfound word. It never solves a
    * word, never traces one, and never picks the word the player is closest to —
    * helping where they are already succeeding would be pointless.
-   *
-   * The count is spelled out in words, not shown as a bare number beside an
-   * icon, and the message lands in the reserved band so nothing moves.
    */
   const takeHint = () => {
+    if (!puzzle) return;
     const unfound = puzzle.placements.filter((p) => !found.includes(p.word));
     if (unfound.length === 0) return;
 
-    // Least revealed = longest still-unfound word. Nothing about this puzzle is
-    // partially revealed yet, so length is the honest proxy for "hardest".
     const target = unfound.reduce((a, b) => (b.path.length > a.path.length ? b : a));
-    const cell = target.path.find((c) => !hinted.has(cellKey(c.row, c.col)))
-      ?? target.path[0]!;
+    const cell =
+      target.path.find((c) => !hinted.has(cellKey(c.row, c.col))) ?? target.path[0]!;
 
     if (!spendHint()) return;
 
     setHinted((h) => new Set(h).add(cellKey(cell.row, cell.col)));
     setHint(`One letter of a ${wordLength(target.path.length)} word.`);
   };
+
+  // A pool too thin for any grid size. Better to say so than to show a broken
+  // board — and it is a signal the theme needs more words, not a crash.
+  if (!puzzle) {
+    return (
+      <Screen
+        field={fieldHeight.medium}
+        header={
+          <View className="h-[52px] flex-row items-center gap-3">
+            <RoundButton ground="field" accessibilityLabel="Back" onPress={() => router.back()}>
+              <View className="ml-[-3px] h-[11px] w-[11px] -rotate-45 border-b-[2.5px] border-l-[2.5px] border-field-ink" />
+            </RoundButton>
+            <Text variant="crumb">Your quilt</Text>
+          </View>
+        }
+      >
+        <View className="flex-1 justify-center gap-2">
+          <Text variant="listTitle">This one is still being made.</Text>
+          <Text variant="meta">Try another puzzle — the rest are ready.</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen
@@ -98,7 +132,7 @@ export default function PuzzleScreen() {
             <RoundButton ground="field" accessibilityLabel="Back" onPress={() => router.back()}>
               <View className="ml-[-3px] h-[11px] w-[11px] -rotate-45 border-b-[2.5px] border-l-[2.5px] border-field-ink" />
             </RoundButton>
-            <Text variant="crumb">Kitchen Things</Text>
+            <Text variant="crumb">{crumb}</Text>
             <View className="flex-1" />
             <Chip label={`${found.length} of ${words.length}`} />
           </View>
@@ -140,7 +174,9 @@ export default function PuzzleScreen() {
             entering={FadeIn.duration(duration.enter).reduceMotion(ReduceMotion.System)}
             exiting={FadeOut.duration(duration.reduced).reduceMotion(ReduceMotion.System)}
           >
-            <Text variant="hintBand" className="text-kicker">{hint}</Text>
+            <Text variant="hintBand" className="text-kicker">
+              {hint}
+            </Text>
           </Animated.View>
         )}
       </View>
@@ -148,3 +184,5 @@ export default function PuzzleScreen() {
     </Screen>
   );
 }
+
+export { today };

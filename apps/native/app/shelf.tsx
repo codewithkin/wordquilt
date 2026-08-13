@@ -7,6 +7,8 @@ import { Card, Chip, Pill, Rule, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useProgress } from "@/contexts/progress-context";
+import { today } from "@/lib/progress";
+import { PACKS } from "@/lib/puzzles";
 
 /**
  * O9 / S1 — The Shelf. Home.
@@ -35,7 +37,7 @@ const SWATCH: Record<string, string> = {
 
 export default function Shelf() {
   const { prefs, finish } = useOnboarding();
-  const { squares, sewnInPack } = useProgress();
+  const { squares, sewnInPack, progress } = useProgress();
   const colour = SWATCH[prefs.fabric] ?? fabricSwatches.terracotta;
 
   // Written on arrival, not on leaving O8.
@@ -43,20 +45,20 @@ export default function Shelf() {
     finish();
   }, [finish]);
 
-  const packs = [
-    prefs.themes[0] ?? "Breakfast",
-    prefs.themes[1] ?? "Kitchen Things",
-    prefs.themes[2] ?? "The Garden",
-  ].map((name) => {
-    const done = sewnInPack(name.toLowerCase().replace(/\s+/g, "-"));
+  const packs = PACKS.map((pack) => {
+    const done = sewnInPack(pack.id);
     return {
-      name,
+      id: pack.id,
+      name: pack.name,
       sewn: done,
       // Counts accumulate; nothing counts down. "20 waiting" rather than
       // "19 remaining" — the same number said without a deficit.
-      count: done === 0 ? "20 waiting" : `${done} of 20 sewn`,
+      count: done === 0 ? `${pack.size} waiting` : `${done} of ${pack.size} sewn`,
     };
   });
+
+  const todayIso = today();
+  const dailyDone = progress.dailies.includes(todayIso);
 
   return (
     <Screen
@@ -95,17 +97,27 @@ export default function Shelf() {
                 Today&apos;s Daily
               </Text>
               <Text variant="listTitle" className="text-[22px]">
-                Wednesday, 12 August
+                {new Date().toLocaleDateString(undefined, {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
               </Text>
-              <Text variant="meta">Unplayed · free, every day</Text>
+              <Text variant="meta">
+                {dailyDone ? "Sewn · free, every day" : "Unplayed · free, every day"}
+              </Text>
             </View>
             <Rule />
             <Pressable
-              onPress={() => router.push("/puzzle")}
+              onPress={() =>
+                router.push({ pathname: "/puzzle", params: { daily: todayIso } })
+              }
               accessibilityRole="button"
               className="h-[56px] items-center justify-center"
             >
-              <Text variant="listTitle" className="text-kicker">Play</Text>
+              <Text variant="listTitle" className="text-kicker">
+                {dailyDone ? "Play again" : "Play"}
+              </Text>
             </Pressable>
           </Card>
 
@@ -116,7 +128,7 @@ export default function Shelf() {
                 <View key={pack.name}>
                   {i > 0 && <Rule />}
                   <Pressable
-                    onPress={() => router.push(`/pack/${encodeURIComponent(pack.name)}`)}
+                    onPress={() => router.push(`/pack/${pack.id}`)}
                     accessibilityRole="button"
                     accessibilityLabel={`${pack.name}, ${pack.count}`}
                     className="flex-row items-center gap-[14px] px-[18px] py-4"
