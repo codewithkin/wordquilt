@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
 
-import { PuzzleBoard } from "@/components/puzzle-board";
+import { TraceableBoard } from "@/components/traceable-board";
 import { Button, Card, Chip, Text, WordSlot } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { duration } from "@/lib/motion";
@@ -76,9 +76,6 @@ export default function ColdOpen() {
     }
   }, [found.length, words.length]);
 
-  // Interim input until the drag gesture lands: tapping a slot sews that word.
-  // The board, the reveal and the whole flow are real; only the tracing gesture
-  // is standing in. See progress/02-screens.md.
   const sew = (word: string) => {
     setShowTooltip(false);
     setFound((f) => (f.includes(word) ? f : [...f, word]));
@@ -97,9 +94,7 @@ export default function ColdOpen() {
             <Text variant="oblique">{puzzle.obliqueTitle}</Text>
             <View className="flex-row flex-wrap justify-center gap-[9px]">
               {words.map((word) => (
-                <Pressable key={word} onPress={() => sew(word)}>
-                  <WordSlot word={word} found={found.includes(word)} />
-                </Pressable>
+                <WordSlot key={word} word={word} found={found.includes(word)} />
               ))}
             </View>
           </View>
@@ -115,7 +110,7 @@ export default function ColdOpen() {
         }
       >
         <View className="h-[44px]" />
-        <PuzzleBoard puzzle={puzzle} found={found} />
+        <TraceableBoard puzzle={puzzle} found={found} onFound={sew} />
 
         {/* The reserved band. It holds its height whether or not anything is in
             it, so hint feedback never shifts the grid (constraint 7). */}

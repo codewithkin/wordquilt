@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 
-import { PuzzleBoard } from "@/components/puzzle-board";
+import { TraceableBoard } from "@/components/traceable-board";
 import { Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { duration, revealHoldMs } from "@/lib/motion";
@@ -51,7 +51,12 @@ export default function Reveal() {
   return (
     <Screen field="full">
       <View className="flex-1 justify-center gap-10">
-        <PuzzleBoard puzzle={puzzle} found={puzzle.placements.map((p) => p.word)} revealing />
+        <TraceableBoard
+          puzzle={puzzle}
+          found={puzzle.placements.map((p) => p.word)}
+          onFound={() => {}}
+          revealing
+        />
 
         {holdDone && (
           <Animated.View
