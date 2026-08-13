@@ -2,7 +2,7 @@ name: CI
 
 # Every PR, and every push to main. The point is that a PR cannot be merged
 # without the design-parity and game-rule checks having actually run — those are
-# the ones that catch the failures nothing else would.
+# the ones that catch failures nothing else would.
 on:
   pull_request:
   push:
@@ -13,41 +13,54 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # Keeps the Expo CLI from trying to be interactive on a runner.
-  CI: true
+# Read-only is all this needs. Nothing here writes to the repo.
+permissions:
+  contents: read
 
 jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
 
-      # No `version:` here on purpose. pnpm/action-setup errors out with
-      # "Multiple versions of pnpm specified" when a version input is given AND
-      # package.json has a packageManager field — which ours does. Letting it
-      # read packageManager keeps CI pinned to the same pnpm as local dev, with
-      # one source of truth.
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+
+      # pnpm is enabled through corepack rather than a third-party action.
+      # Corepack ships with Node and reads the version from package.json's
+      # `packageManager` field, so CI and local dev cannot drift — and the
+      # workflow depends on no actions outside the `actions/` org, which some
+      # repositories restrict.
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare --activate
+          pnpm --version
+
+      - name: Locate the pnpm store
+        id: pnpm-store
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
 
       - name: Install
         run: pnpm install --frozen-lockfile
 
       # ---------------------------------------------------------------------
       # Correctness of the game rules and the player's data.
-      # These are pure logic and run in milliseconds, so they go first — a
-      # broken trace rule should fail before anything spends time bundling.
+      # Pure logic, milliseconds to run, so they go first: a broken trace rule
+      # should fail in ten seconds rather than after a twenty-minute build.
       # ---------------------------------------------------------------------
 
-      - name: Game rules — tracing, generation, packing
+      - name: Game rules — tracing, selection, packing, reveal
         run: node --test "packages/generator/test/*.test.ts"
 
       - name: Player data — progress, hints, sewing
@@ -78,8 +91,8 @@ jobs:
         run: pnpm --filter native exec expo export --platform ios --output-dir /tmp/wq-export
 
       # A bundle that builds but has lost the palette is the exact failure that
-      # is invisible in review — every value is self-consistent and wrong. This
-      # asserts the WordQuilt colours are really in the shipped bytecode and
-      # that the component library's stock palette is not.
+      # is invisible in review — every value stays self-consistent and wrong.
+      # This asserts the WordQuilt colours and font faces are really in the
+      # shipped bytecode, and the component library's stock palette is not.
       - name: Assert the palette survived the build
         run: node scripts/check-bundle.mjs /tmp/wq-export
