@@ -122,8 +122,11 @@ export const cellDelay = (row: number, col: number, cols: number, step = revealS
  * animated component calls this and DEGRADES rather than skipping the state
  * change: a player with reduced motion still needs to see that a word locked in.
  */
-export function useMotion() {
-  const reduced = useReducedMotion();
+export function useMotion(override?: boolean) {
+  const system = useReducedMotion();
+  // The app's own switch layers OVER the OS setting rather than replacing it —
+  // see lib/settings.ts. Callers inside the provider pass the resolved value.
+  const reduced = override ?? system;
 
   // Memoised on `reduced` alone. Without this the returned object is a new
   // identity every render, so any `useEffect([..., motion])` re-fires on every

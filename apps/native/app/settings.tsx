@@ -7,6 +7,7 @@ import * as MailComposer from "expo-mail-composer";
 import { Card, ListRow, RoundButton, Rule, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { useOnboarding } from "@/contexts/onboarding-context";
+import { useSettings } from "@/contexts/settings-context";
 
 /**
  * S10 — Settings.
@@ -30,6 +31,24 @@ const SUPPORT_EMAIL = "hello@wordquilt.app";
 
 export default function Settings() {
   const { prefs } = useOnboarding();
+  const {
+    settings,
+    motionRowLabel,
+    toggleSound,
+    toggleHaptics,
+    cycleReduceMotion,
+    toggleNotifications,
+    setRhythm,
+  } = useSettings();
+
+  // The design renders these as words in the right-hand slot, not as platform
+  // switches, and the whole row is the target. That keeps every row the same
+  // shape and keeps the touch area well over the 44px floor.
+  const RHYTHMS = ["Morning", "Lunch", "Evening", "Before bed"] as const;
+  const nextRhythm = () => {
+    const i = RHYTHMS.indexOf((settings.rhythm ?? "Morning") as (typeof RHYTHMS)[number]);
+    setRhythm(RHYTHMS[(i + 1) % RHYTHMS.length]!);
+  };
 
   const version = Application.nativeApplicationVersion ?? "0.1.0";
   const build = Application.nativeBuildVersion ?? "—";
@@ -78,14 +97,28 @@ export default function Settings() {
           <View className="gap-3">
             <Text variant="sectionLabel">Sound and motion</Text>
             <Card delay={0}>
-              <ListRow title="Sound" sub="Soft, and off in silent mode" right="On" />
+              <ListRow
+                title="Sound"
+                sub="Soft, and off in silent mode"
+                right={settings.sound ? "On" : "Off"}
+                onPress={toggleSound}
+              />
               <Rule />
-              <ListRow title="Haptics" sub="A small tick when a word locks" right="On" />
+              <ListRow
+                title="Haptics"
+                sub="A small tick when a word locks"
+                right={settings.haptics ? "On" : "Off"}
+                onPress={toggleHaptics}
+              />
               <Rule />
+              {/* Three-state: following the device, forced on, or forced off.
+                  A plain boolean could not express "only overrides the OS
+                  where the OS has an opinion" — see lib/settings.ts. */}
               <ListRow
                 title="Reduce motion"
                 sub="Reveals resolve in one step"
-                right="Follows your device"
+                right={motionRowLabel}
+                onPress={cycleReduceMotion}
               />
             </Card>
           </View>
@@ -93,16 +126,21 @@ export default function Settings() {
           <View className="gap-3">
             <Text variant="sectionLabel">Notifications</Text>
             <Card delay={60}>
+              {/* Turning this off also cancels what the OS has scheduled. A
+                  setting that says Off while a reminder still fires tomorrow
+                  is a broken promise. */}
               <ListRow
                 title="One a day"
                 sub="Never about days you missed"
-                right={prefs.reminders ? "On" : "Off"}
+                right={settings.notifications ? "On" : "Off"}
+                onPress={toggleNotifications}
               />
               <Rule />
               <ListRow
                 title="Time"
                 sub="Your five quiet minutes"
-                right={prefs.rhythm ?? "Not set"}
+                right={settings.rhythm ?? prefs.rhythm ?? "Not set"}
+                onPress={nextRhythm}
               />
             </Card>
           </View>

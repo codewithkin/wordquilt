@@ -14,6 +14,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 
 import { LetterTile, type LetterTileState } from "@/components/ui";
+import { useSettings } from "@/contexts/settings-context";
 import { cellDelay } from "@/lib/motion";
 
 /**
@@ -55,6 +56,8 @@ export function TraceableBoard({
   revealing = false,
   hinted,
 }: TraceableBoardProps) {
+  const { settings, reduceMotion } = useSettings();
+
   const geo = useMemo(
     () => defaultGeometry(puzzle.rows, puzzle.cols),
     [puzzle.rows, puzzle.cols],
@@ -86,10 +89,13 @@ export function TraceableBoard({
     if (!match || found.includes(match.word)) return;
 
     // A light tick for a found word. Nothing at all for a wrong trace —
-    // silence is not a rebuke, and a buzz would be.
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    // silence is not a rebuke, and a buzz would be. Turning haptics off in
+    // Settings silences WordQuilt and nothing else on the device.
+    if (settings.haptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    }
     onFound(match.word);
-  }, [found, onFound, puzzle.placements]);
+  }, [found, onFound, puzzle.placements, settings.haptics]);
 
   const pan = useMemo(
     () =>
@@ -154,7 +160,7 @@ export function TraceableBoard({
               state={stateFor(r, c)}
               // Only the Reveal staggers. During play a tile must respond to
               // the finger immediately; a delay there reads as lag.
-              delay={revealing ? cellDelay(r, c, puzzle.cols) : 0}
+              delay={revealing && !reduceMotion ? cellDelay(r, c, puzzle.cols) : 0}
             />
           )),
         )}
