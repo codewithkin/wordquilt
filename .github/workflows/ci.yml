@@ -1,0 +1,82 @@
+name: CI
+
+# Every PR, and every push to main. The point is that a PR cannot be merged
+# without the design-parity and game-rule checks having actually run — those are
+# the ones that catch the failures nothing else would.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  # A new push supersedes the run in flight for the same branch.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Keeps the Expo CLI from trying to be interactive on a runner.
+  CI: true
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.4.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # ---------------------------------------------------------------------
+      # Correctness of the game rules and the player's data.
+      # These are pure logic and run in milliseconds, so they go first — a
+      # broken trace rule should fail before anything spends time bundling.
+      # ---------------------------------------------------------------------
+
+      - name: Game rules — tracing, generation, packing
+        run: node --test "packages/generator/test/*.test.ts"
+
+      - name: Player data — progress, hints, sewing
+        run: node --test "apps/native/test/*.test.ts"
+
+      # ---------------------------------------------------------------------
+      # Design fidelity. The checks that catch a layer agreeing with itself
+      # while disagreeing with the design.
+      # ---------------------------------------------------------------------
+
+      - name: Extract the designs
+        run: pnpm designs:extract
+
+      - name: Token parity — TypeScript vs the uniwind CSS
+        run: pnpm check:tokens
+
+      - name: Platform assets vs the design's manifest
+        run: node scripts/check-assets.mjs
+
+      # ---------------------------------------------------------------------
+      # Does it actually build.
+      # ---------------------------------------------------------------------
+
+      - name: Typecheck
+        run: pnpm check-types
+
+      - name: Bundle the app
+        run: pnpm --filter native exec expo export --platform ios --output-dir /tmp/wq-export
+
+      # A bundle that builds but has lost the palette is the exact failure that
+      # is invisible in review — every value is self-consistent and wrong. This
+      # asserts the WordQuilt colours are really in the shipped bytecode and
+      # that the component library's stock palette is not.
+      - name: Assert the palette survived the build
+        run: node scripts/check-bundle.mjs /tmp/wq-export

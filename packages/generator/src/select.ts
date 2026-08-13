@@ -113,7 +113,9 @@ export function selectWordSet(options: SelectOptions): SelectResult {
 
   const minFrom = (i: number, k: number) =>
     k === 0 ? 0 : prefixSum[i + k]! - prefixSum[i]!;
-  const maxFrom = (i: number, k: number) =>
+  // The k longest available are always the final k, regardless of where the
+  // search currently is — so this deliberately ignores the start index.
+  const maxFrom = (_start: number, k: number) =>
     k === 0 ? 0 : prefixSum[n]! - prefixSum[n - k]!;
 
   let steps = 0;

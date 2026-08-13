@@ -148,7 +148,7 @@ export function readTheme(puzzle: Puzzle): string {
   return puzzle.leftover.map(({ row, col }) => puzzle.grid[row]![col]!).join("");
 }
 
-export interface PackOptions {
+export interface GeneratePackOptions {
   theme: Theme;
   titles: TitleBank;
   packId: string;
@@ -172,7 +172,7 @@ export interface PackReport {
   wordUsage: Map<string, number>;
 }
 
-export function generatePack(options: PackOptions): PackReport {
+export function generatePack(options: GeneratePackOptions): PackReport {
   const { theme, titles, packId, size, ramp, noWordRepeatInPack = false } = options;
 
   const puzzles: Puzzle[] = [];
