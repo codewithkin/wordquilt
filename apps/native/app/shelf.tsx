@@ -72,9 +72,17 @@ export default function Shelf() {
       }
       footer={
         <View className="flex-row gap-3">
-          <Pill><Text variant="listTitle">Fabric</Text></Pill>
-          <Pill><Text variant="listTitle">Store</Text></Pill>
-          <Pill><Text variant="listTitle">Settings</Text></Pill>
+          {([
+            ["Fabric", "/fabric"],
+            ["Store", "/store"],
+            ["Settings", "/settings"],
+          ] as const).map(([label, href]) => (
+            <Pressable key={label} className="flex-1" onPress={() => router.push(href)}>
+              <Pill>
+                <Text variant="listTitle">{label}</Text>
+              </Pill>
+            </Pressable>
+          ))}
         </View>
       }
     >

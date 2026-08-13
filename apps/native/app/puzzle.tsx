@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
 
-import { TraceableBoard } from "@/components/traceable-board";
+import { TraceableBoard, cellKey } from "@/components/traceable-board";
 import { Button, Chip, RoundButton, Text, WordSlot } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { duration } from "@/lib/motion";
@@ -30,6 +30,13 @@ import { useProgress } from "@/contexts/progress-context";
  * rather than an unexplained icon. The puzzle is always completable with zero
  * hints (constraint 3); nothing here is ever gated on a resource.
  */
+/** Counts are spelled out, never shown as a bare numeral (constraint 8). */
+const NUMBER_WORDS = [
+  "zero", "one", "two", "three", "four", "five",
+  "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+];
+const wordLength = (n: number) => `${NUMBER_WORDS[n] ?? n}-letter`;
+
 export default function PuzzleScreen() {
   const puzzle = useMemo(() => {
     const result = generatePuzzle({
@@ -45,6 +52,7 @@ export default function PuzzleScreen() {
   const words = puzzle.placements.map((p) => p.word);
   const [found, setFound] = useState<string[]>([]);
   const [hint, setHint] = useState<string | null>(null);
+  const [hinted, setHinted] = useState<ReadonlySet<string>>(new Set());
   const { hints, useHint: spendHint, sew } = useProgress();
 
   useEffect(() => {
@@ -54,12 +62,31 @@ export default function PuzzleScreen() {
     }
   }, [found.length, words.length, sew]);
 
+  /**
+   * S9 — the hint. The ONLY thing allowed to appear during play, and only
+   * because the player asked for it.
+   *
+   * It opens ONE cell of the least-revealed unfound word. It never solves a
+   * word, never traces one, and never picks the word the player is closest to —
+   * helping where they are already succeeding would be pointless.
+   *
+   * The count is spelled out in words, not shown as a bare number beside an
+   * icon, and the message lands in the reserved band so nothing moves.
+   */
   const takeHint = () => {
-    const next = puzzle.placements.find((p) => !found.includes(p.word));
-    if (!next) return;
+    const unfound = puzzle.placements.filter((p) => !found.includes(p.word));
+    if (unfound.length === 0) return;
+
+    // Least revealed = longest still-unfound word. Nothing about this puzzle is
+    // partially revealed yet, so length is the honest proxy for "hardest".
+    const target = unfound.reduce((a, b) => (b.path.length > a.path.length ? b : a));
+    const cell = target.path.find((c) => !hinted.has(cellKey(c.row, c.col)))
+      ?? target.path[0]!;
+
     if (!spendHint()) return;
-    // A hint opens ONE letter — it never solves the word and never traces it.
-    setHint(`${next.word[0]} … ${next.word.length} letters`);
+
+    setHinted((h) => new Set(h).add(cellKey(cell.row, cell.col)));
+    setHint(`One letter of a ${wordLength(target.path.length)} word.`);
   };
 
   return (
@@ -102,6 +129,7 @@ export default function PuzzleScreen() {
       <TraceableBoard
         puzzle={puzzle}
         found={found}
+        hinted={hinted}
         onFound={(word) => setFound((f) => (f.includes(word) ? f : [...f, word]))}
       />
 

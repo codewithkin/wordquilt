@@ -30,6 +30,13 @@ function StackLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="shelf" />
+      <Stack.Screen name="daily" />
+      <Stack.Screen name="reveal" />
+      <Stack.Screen name="puzzle" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="fabric" />
+      <Stack.Screen name="wall" />
+      <Stack.Screen name="store" />
     </Stack>
   );
 }
