@@ -250,3 +250,23 @@ against the artefact, not the source.
 CI ordering is deliberate: pure logic first (milliseconds), then design fidelity,
 then typecheck and bundle. A broken trace rule should fail in ten seconds rather
 than after a twenty-minute build.
+
+### D-024 — GitHub Actions removed; the checks run locally via `pnpm verify`
+*Session 6. Owner's decision.*
+The account reached its Actions limit. That is exactly what the five failed runs
+showed: `runner_id: 0`, no runner name and no steps, failing in two seconds —
+the job was never dispatched to a machine, so nothing in the workflow ever ran.
+It was never a workflow bug, which is why three rewrites changed nothing.
+
+The workflow is deleted. **The checks themselves are not** — they are the
+valuable part and they cost nothing to run:
+
+    pnpm verify   game rules, player data, token parity, assets, typecheck
+
+`scripts/check-bundle.mjs` stays too, run against an export when one is built.
+It is the only thing that catches a bundle that compiles while having lost the
+palette — everything self-consistent, nothing erroring, and the app grey.
+
+If Actions becomes available again, restoring CI is re-adding one YAML file that
+runs `pnpm verify`. Do not re-add it before then: a permanently red check is
+worse than no check, because it trains everyone to ignore the signal.

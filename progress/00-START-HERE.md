@@ -6,7 +6,7 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 5.
+Last updated: end of session 6.
 
 ---
 
@@ -121,8 +121,10 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
 | Motion | **Reanimated only** (D-017). Moti removed |
 | Tracing | **Done.** Drag to trace; rules are pure and tested (23 tests) |
-| Progress | **Done.** Sewn squares, dailies, refilling hints (13 tests) |
-| CI | **Every PR.** Rules, tokens, assets, typecheck, bundle, palette-survival |
+| Progress | **Done.** Per-puzzle identity, dailies, refilling hints |
+| Settings | **Done.** Every toggle takes effect — haptics, motion, notifications |
+| Checks | **`pnpm verify`** — rules, tokens, assets, typecheck. Run it before pushing |
+| CI | **Removed** (D-024). The account hit its Actions limit; the checks moved local |
 
 "Built" above means written, bundled and machine-checked. It does **not** mean
 seen.

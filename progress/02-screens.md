@@ -3,7 +3,7 @@
 **The one place that answers "which screens are done".** Every other doc talks
 about layers and packages; this one talks only about screens.
 
-Last updated: end of session 5.
+Last updated: end of session 6.
 
 ---
 
@@ -64,13 +64,13 @@ Design source: `designs/extracted/Core Screens.txt`, `Puzzle & Reveal.txt`
 | S1 | **Shelf** (home) — Daily, pack list, accumulated squares | **built** | — |
 | S2 | **Puzzle** — the core loop, zero interruptions | **built** | — |
 | S3 | **Reveal** — the payoff, square sews into the quilt | **built** | — |
-| S4 | Pack view — puzzles within a theme, any order | **built** | real per-puzzle state |
+| S4 | Pack view — puzzles within a theme, any order | **built** | — |
 | S5 | The Wall — sole conversion surface | **built** | — |
 | S6 | Store — packs, collections, fabric, hints | **built** | a payments SDK |
-| S7 | Daily calendar — month grid, catch-up always free | **built** | real daily history |
+| S7 | Daily calendar — month grid, catch-up always free | **built** | — |
 | S8 | Fabric — cosmetics, zero gameplay effect | **built** | — |
 | S9 | Hint overlay — opens one cell during play | **built** | press-and-hold entry |
-| S10 | Settings — controls, transparency, working support route | **built** | toggles are display-only |
+| S10 | Settings — controls, transparency, working support route | **built** | — |
 
 Alternate states (`designs/extracted/Alternate States.txt`) add 8 more variants
 — store offline, purchase in flight, purchase failure, everything finished,
@@ -115,8 +115,9 @@ These are ready and verified to bundle:
 - **Generator** — word selection, path packing, theme reveal and the trace
   rules, all tested. Yield not yet measured.
 - **Progress** — sewn squares, dailies, refilling hints. Pure rules tested.
-- **CI** — every PR runs game rules, player data, token parity, the asset
-  manifest, typecheck, a real bundle, and a check that the palette survived it.
+- **Checks** — `pnpm verify` runs game rules, player data, token parity, the
+  asset manifest and typecheck. 75 assertions. CI was removed (D-024) because
+  the account hit its Actions limit; the checks themselves stayed.
 
 A screen should mostly be composition, not new styling. If you find yourself
 writing raw colours or sizes, read the design file instead — the value is in
@@ -136,11 +137,8 @@ Every screen exists. What is left is making them real rather than making more.
 2. **Real content.** There are five puzzle themes' worth of vocabulary to
    curate, and the screens still show one hard-coded pack list. The handover
    names vocabulary as the real launch risk.
-3. **Real puzzle identity.** Progress stores sewn puzzles by `packId#index`, but
-   Pack view and Daily still render a fixed grid rather than reading which
-   specific puzzles are sewn.
-4. **Settings toggles are display-only.** Sound, haptics and notification
-   switches render their state but do not yet change anything.
-5. **Payments.** The Store lists real prices against no SDK.
-6. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
+3. **Payments.** The Store lists real prices against no SDK.
+4. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
    the thing that decides 50 vs 30 puzzles per pack.
+
+Done since: per-puzzle progress, and every Settings toggle now takes effect.

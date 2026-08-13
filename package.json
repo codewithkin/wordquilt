@@ -15,7 +15,8 @@
     "designs:extract": "node designs/extract.mjs",
     "check:assets": "node designs/extract.mjs && node scripts/check-assets.mjs",
     "check:tokens": "node --test \"packages/tokens/test/*.test.ts\"",
-    "check:icons": "node scripts/flatten-ios-icons.mjs"
+    "check:icons": "node scripts/flatten-ios-icons.mjs",
+    "verify": "node --test \"packages/generator/test/*.test.ts\" \"apps/native/test/*.test.ts\" && pnpm designs:extract && pnpm check:tokens && node scripts/check-assets.mjs && pnpm check-types"
   },
   "dependencies": {
     "@wordquilt/env": "workspace:*",
