@@ -57,7 +57,11 @@ export interface GridSpec {
  * obscurity. A harder puzzle is a bigger, more tangled board of ordinary words.
  */
 export const DIFFICULTY_RAMP: readonly GridSpec[] = [
-  { rows: 6, cols: 6, wordCount: 6 },
+  // 6x6 carries FIVE words, not the six the handover sketches. Measured: six is
+  // arithmetically impossible. 36 cells minus a 9-20 letter phrase leaves ~27
+  // letters, but six words with at most two short ones needs 4+5+6+6+6+6 = 33.
+  // Five words fit (4+5+6+6+6 = 27) and the board still reads as a full puzzle.
+  { rows: 6, cols: 6, wordCount: 5 },
   { rows: 7, cols: 7, wordCount: 7 },
   { rows: 8, cols: 8, wordCount: 8 },
   { rows: 8, cols: 8, wordCount: 9 },

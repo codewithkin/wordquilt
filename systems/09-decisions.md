@@ -270,3 +270,46 @@ palette — everything self-consistent, nothing erroring, and the app grey.
 If Actions becomes available again, restoring CI is re-adding one YAML file that
 runs `pnpm verify`. Do not re-add it before then: a permanently red check is
 worse than no check, because it trains everyone to ignore the signal.
+
+### D-025 — 6×6 carries FIVE words, not six
+*Session 6. Measured.*
+The handover sketches the ramp as "6×6 with 6 words". It failed 100% of the time
+and could never have worked: 36 cells minus a 9–20 letter phrase leaves ~27
+letters, but six words with at most two short ones needs 4+5+6+6+6+6 = 33.
+
+Five words fit exactly (4+5+6+6+6 = 27) and success went 0% → 100%. The board
+still reads as a full puzzle. Everything else in the ramp is unchanged.
+
+### D-026 — A word may appear at most twice in a pack
+*Session 6. Measured.*
+Without a budget the selector converged hard on whichever words fit the
+arithmetic: 94 distinct words across 50 puzzles, one word appearing NINE times —
+exactly the repetition the handover says the most engaged players catch.
+
+`maxUsesPerWord` defaults to 2, matching the handover's cross-pack rule.
+Distinct words used went 94 → 138 and no word now exceeds two uses.
+
+Note this replaces "no word repeats inside a pack" as stated in the brief. That
+rule is arithmetically incompatible with a 200-word pool: 50 puzzles × ~8 words
+is 400 slots, so true no-repeat needs a 400-word pool. Measured at 187 words it
+built only 19/50.
+
+### D-027 — Packs are 30 puzzles, not 50. OPEN for the owner to confirm.
+*Session 6. Recommended on measured evidence.*
+At 30 puzzles a ~190-word pool builds 30/30 with no word used more than twice.
+At 50 the same pool manages 36/50 — the vocabulary runs out, not the packer.
+
+Extrapolated, 50 puzzles needs ~280–300 words per theme: about 50% more
+curation, on the work the handover already names as the real launch risk.
+
+Consequence if adopted: the launch library becomes 6 free themes × 20 + 5 packs
+× 30 = 270 puzzles rather than 370. Pricing is the owner's call; the monthly
+cadence gets easier to hold either way.
+
+### D-028 — Theme phrases are authored at 9–15 letters
+*Session 6. Measured.*
+Grid area is fixed, so every letter the phrase takes is a letter the words
+cannot have. At 8×8/8 words: a 9-letter phrase gives 6.9-letter words, a
+20-letter phrase gives 5.5. Every length succeeds, so this is a quality lever
+rather than a feasibility one — but short words are what make a word search
+feel thin.

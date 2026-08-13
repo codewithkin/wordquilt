@@ -30,6 +30,17 @@ export interface SelectOptions {
   /** Words that may not be chosen (already used in this puzzle's pack run). */
   exclude?: ReadonlySet<string>;
   /**
+   * How many times each word has been used so far in this pack.
+   *
+   * Without a budget the selector converges hard on whichever words happen to
+   * fit the arithmetic: measured on a 187-word pool it used only 94 distinct
+   * words across 50 puzzles, with one word appearing NINE times. That is
+   * exactly the repetition the most engaged players notice.
+   */
+  usage?: ReadonlyMap<string, number>;
+  /** Maximum times one word may appear across a pack. */
+  maxUsesPerWord?: number;
+  /**
    * Shortest word the puzzle will show.
    *
    * Defaults to 4, not 3. Hitting an exact total is easy if three-letter words
@@ -77,13 +88,16 @@ export function selectWordSet(options: SelectOptions): SelectResult {
     minWordLength = 4,
     maxWordLength = 9,
     maxShortWords = 2,
+    usage,
+    maxUsesPerWord = 2,
   } = options;
 
   const candidates = pool.filter(
     (w) =>
       w.length >= minWordLength &&
       w.length <= maxWordLength &&
-      !exclude?.has(w),
+      !exclude?.has(w) &&
+      (usage?.get(w) ?? 0) < maxUsesPerWord,
   );
 
   /** A word is "short" if it sits in the bottom two length bands. */

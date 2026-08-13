@@ -21,6 +21,10 @@ export interface GenerateOptions {
   usedWords?: ReadonlySet<string>;
   /** Titles already used in this pack. */
   usedTitles?: ReadonlySet<string>;
+  /** How often each word has been used in this pack so far. */
+  usage?: ReadonlyMap<string, number>;
+  /** Maximum times one word may appear across a pack. */
+  maxUsesPerWord?: number;
   /** Force a specific phrase; otherwise one is chosen by seed. */
   phrase?: string;
 }
@@ -30,7 +34,8 @@ export type GenerateResult =
   | { ok: false; reason: string; stage: "phrase" | "select" | "pack" | "title" };
 
 export function generatePuzzle(options: GenerateOptions): GenerateResult {
-  const { theme, titles, spec, seed, usedWords, usedTitles, phrase } = options;
+  const { theme, titles, spec, seed, usedWords, usedTitles, phrase, usage, maxUsesPerWord } =
+    options;
   const rng = createRng(seed);
   const cells = spec.rows * spec.cols;
 
@@ -60,6 +65,8 @@ export function generatePuzzle(options: GenerateOptions): GenerateResult {
       wordCount: spec.wordCount,
       rng,
       exclude: usedWords,
+      usage,
+      maxUsesPerWord,
     });
     if (!selection.ok) {
       failures.push(`"${candidate}": ${selection.reason}`);
@@ -163,6 +170,12 @@ export interface GeneratePackOptions {
    * the brief are not compatible and the owner has to pick one.
    */
   noWordRepeatInPack?: boolean;
+  /**
+   * Maximum times one word may appear across the pack. Two is the default and
+   * matches the handover's cross-pack rule; it is what keeps a 200-word pool
+   * from collapsing onto its most arithmetically convenient words.
+   */
+  maxUsesPerWord?: number;
 }
 
 export interface PackReport {
@@ -192,6 +205,8 @@ export function generatePack(options: GeneratePackOptions): PackReport {
       seed: puzzleSeed(packId, i),
       usedWords: noWordRepeatInPack ? usedWords : undefined,
       usedTitles,
+      usage: wordUsage,
+      maxUsesPerWord: options.maxUsesPerWord,
     });
 
     if (!result.ok) {

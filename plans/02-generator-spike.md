@@ -55,15 +55,16 @@ has to land, or the pack is short.
   asserted on generated output rather than by construction.
 
 ## T04 — Measure the success rate. THIS IS THE SPIKE.
-- [ ] `pending-T04`
+- [x] `see progress/03-generator-spike.md`
 - **Depends on:** T03
 - **Commit:** `test(generator): measure yield across grid sizes`
 - **Done when:** we have real numbers, not impressions:
   - success rate and median attempts for 6×6/6 words through 9×9/10 words
   - **can a 200-word themed pool actually yield 50 distinct puzzles?**
   - how the rate degrades as the pool shrinks
-- **This answers whether packs are 50 puzzles or 30.** Report the numbers to the
-  owner before building anything on top.
+- **ANSWERED: 30.** At 30 a ~190-word pool builds 30/30 with no word used twice;
+  at 50 the same pool manages 36/50. Full results and the two bugs it found in
+  `progress/03-generator-spike.md`. See D-025, D-026, D-027, D-028.
 
 ## T05 — Vocabulary rules as enforceable checks
 - [ ] `pending-T05`
