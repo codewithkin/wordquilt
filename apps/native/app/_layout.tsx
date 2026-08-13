@@ -9,6 +9,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { AppThemeProvider } from "@/contexts/app-theme-context";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
+import { ProgressProvider } from "@/contexts/progress-context";
 import { appFonts } from "@/lib/fonts";
 
 export const unstable_settings = {
@@ -53,9 +54,11 @@ export default function Layout() {
       <KeyboardProvider>
         <AppThemeProvider>
           <HeroUINativeProvider>
-            <OnboardingProvider>
-              <StackLayout />
-            </OnboardingProvider>
+            <ProgressProvider>
+              <OnboardingProvider>
+                <StackLayout />
+              </OnboardingProvider>
+            </ProgressProvider>
           </HeroUINativeProvider>
         </AppThemeProvider>
       </KeyboardProvider>

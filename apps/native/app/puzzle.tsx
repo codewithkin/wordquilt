@@ -3,13 +3,15 @@ import { kitchenThings, kitchenTitles } from "@wordquilt/generator/data/kitchen-
 import { fieldHeight } from "@wordquilt/tokens";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
 
-import { PuzzleBoard } from "@/components/puzzle-board";
+import { TraceableBoard } from "@/components/traceable-board";
 import { Button, Chip, RoundButton, Text, WordSlot } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { duration } from "@/lib/motion";
+import { puzzleId } from "@/lib/progress";
+import { useProgress } from "@/contexts/progress-context";
 
 /**
  * S2 — Puzzle. The core loop.
@@ -43,17 +45,21 @@ export default function PuzzleScreen() {
   const words = puzzle.placements.map((p) => p.word);
   const [found, setFound] = useState<string[]>([]);
   const [hint, setHint] = useState<string | null>(null);
-  const [hintsLeft, setHintsLeft] = useState(3);
+  const { hints, useHint: spendHint, sew } = useProgress();
 
   useEffect(() => {
-    if (found.length === words.length) router.replace("/reveal");
-  }, [found.length, words.length]);
+    if (found.length === words.length) {
+      sew(puzzleId("kitchen-things", 7));
+      router.replace("/reveal");
+    }
+  }, [found.length, words.length, sew]);
 
-  const useHint = () => {
-    const next = words.find((w) => !found.includes(w));
-    if (!next || hintsLeft === 0) return;
-    setHintsLeft((n) => n - 1);
-    setHint(`${next[0]} … ${next.length} letters`);
+  const takeHint = () => {
+    const next = puzzle.placements.find((p) => !found.includes(p.word));
+    if (!next) return;
+    if (!spendHint()) return;
+    // A hint opens ONE letter — it never solves the word and never traces it.
+    setHint(`${next.word[0]} … ${next.word.length} letters`);
   };
 
   return (
@@ -74,20 +80,18 @@ export default function PuzzleScreen() {
 
           <View className="flex-row flex-wrap justify-center gap-[9px]">
             {words.map((word) => (
-              <Pressable key={word} onPress={() => setFound((f) => f.includes(word) ? f : [...f, word])}>
-                <WordSlot word={word} found={found.includes(word)} />
-              </Pressable>
+              <WordSlot key={word} word={word} found={found.includes(word)} />
             ))}
           </View>
         </View>
       }
       footer={
         <View className="flex-row items-center gap-[14px]">
-          <Button label="Hint" size="lg" onPress={useHint} disabled={hintsLeft === 0} />
+          <Button label="Hint" size="lg" onPress={takeHint} disabled={hints === 0} />
           <View className="flex-1 gap-[2px]">
             {/* Plain words, never an unexplained icon and never a bare number. */}
             <Text variant="listTitle">
-              {hintsLeft === 0 ? "No hints left today" : `${hintsLeft} free today`}
+              {hints === 0 ? "More hints tomorrow" : `${hints} free today`}
             </Text>
             <Text variant="meta">Or hold anywhere on the grid</Text>
           </View>
@@ -95,7 +99,11 @@ export default function PuzzleScreen() {
       }
     >
       <View className="h-[44px]" />
-      <PuzzleBoard puzzle={puzzle} found={found} />
+      <TraceableBoard
+        puzzle={puzzle}
+        found={found}
+        onFound={(word) => setFound((f) => (f.includes(word) ? f : [...f, word]))}
+      />
 
       {/* The reserved band. Never collapses. */}
       <View className="h-[32px] justify-center">

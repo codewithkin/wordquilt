@@ -6,6 +6,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Card, Chip, Pill, Rule, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
 import { useOnboarding } from "@/contexts/onboarding-context";
+import { useProgress } from "@/contexts/progress-context";
 
 /**
  * O9 / S1 — The Shelf. Home.
@@ -34,6 +35,7 @@ const SWATCH: Record<string, string> = {
 
 export default function Shelf() {
   const { prefs, finish } = useOnboarding();
+  const { squares, sewnInPack } = useProgress();
   const colour = SWATCH[prefs.fabric] ?? fabricSwatches.terracotta;
 
   // Written on arrival, not on leaving O8.
@@ -42,12 +44,19 @@ export default function Shelf() {
   }, [finish]);
 
   const packs = [
-    { name: prefs.themes[0] ?? "Breakfast", count: "1 of 20 sewn", sewn: 1 },
-    { name: prefs.themes[1] ?? "Kitchen Things", count: "20 waiting", sewn: 0 },
-    { name: prefs.themes[2] ?? "The Garden", count: "20 waiting", sewn: 0 },
-  ];
-
-  const sewn = packs.reduce((n, p) => n + p.sewn, 0);
+    prefs.themes[0] ?? "Breakfast",
+    prefs.themes[1] ?? "Kitchen Things",
+    prefs.themes[2] ?? "The Garden",
+  ].map((name) => {
+    const done = sewnInPack(name.toLowerCase().replace(/\s+/g, "-"));
+    return {
+      name,
+      sewn: done,
+      // Counts accumulate; nothing counts down. "20 waiting" rather than
+      // "19 remaining" — the same number said without a deficit.
+      count: done === 0 ? "20 waiting" : `${done} of 20 sewn`,
+    };
+  });
 
   return (
     <Screen
@@ -56,7 +65,7 @@ export default function Shelf() {
         <View className="gap-4">
           <View className="h-[52px] flex-row items-center gap-3">
             <View className="flex-1" />
-            <Chip label={`${sewn} ${sewn === 1 ? "square" : "squares"} sewn`} />
+            <Chip label={`${squares} ${squares === 1 ? "square" : "squares"} sewn`} />
           </View>
           <Text variant="pageTitle">Your quilt</Text>
         </View>

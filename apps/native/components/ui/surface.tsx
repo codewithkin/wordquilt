@@ -1,6 +1,6 @@
 import { cn } from "heroui-native";
 import { View, type ViewProps } from "react-native";
-import Animated, { FadeIn, FadeOut, ReduceMotion } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOut, ReduceMotion } from "react-native-reanimated";
 
 import { duration } from "@/lib/motion";
 
@@ -38,9 +38,14 @@ export interface SurfaceProps extends ViewProps {
   animate?: boolean;
 }
 
-/** The lay-down: rise 10px and fade, never a slide from offscreen. */
+/**
+ * The lay-down: a short rise and fade, never a slide from offscreen.
+ *
+ * FadeInDown's default travel is far too big for this — it reads as a slide.
+ * Pinned to 10px so the card settles onto the page rather than arriving at it.
+ */
 const layDown = (delay: number) =>
-  FadeIn.duration(duration.enter)
+  FadeInDown.duration(duration.enter)
     .delay(delay)
     .withInitialValues({ transform: [{ translateY: 10 }] })
     .reduceMotion(ReduceMotion.System);

@@ -12,7 +12,6 @@ export { Button, RoundButton, type ButtonProps, type RoundButtonProps } from "./
 export { Chip, WordSlot, type ChipProps, type WordSlotProps } from "./chip";
 export {
   LetterTile,
-  threadTransition,
   type LetterTileProps,
   type LetterTileState,
 } from "./letter-tile";
