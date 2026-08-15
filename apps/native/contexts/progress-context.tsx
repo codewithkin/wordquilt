@@ -1,8 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import {
+  buyPack,
   emptyProgress,
+  freeContentExhausted,
   hintsAvailable,
+  ownsPack,
   packSewnCount,
   sewDaily,
   sewPuzzle,
@@ -12,6 +15,7 @@ import {
   type Progress,
 } from "@/lib/progress";
 import { progressStore } from "@/lib/progress-store";
+import { PACKS } from "@/lib/puzzles";
 
 /**
  * Progress, loaded once at launch and written on every change.
@@ -27,6 +31,14 @@ interface ProgressValue {
   hints: number;
   squares: number;
   sewnInPack: (packId: string) => number;
+  /** Free packs are owned by everyone; paid ones only once bought. */
+  owns: (packId: string) => boolean;
+  buy: (packId: string) => void;
+  /**
+   * Every puzzle the player can reach is sewn. The single condition that opens
+   * the Wall — never a timer, a session count, or a number of days.
+   */
+  outOfContent: boolean;
   sew: (id: string) => void;
   sewDailyFor: (date: string) => void;
   useHint: () => boolean;
@@ -60,6 +72,12 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const buy = useCallback(
+    (packId: string) =>
+      setProgress((p) => { const n = buyPack(p, packId); void progressStore.save(n); return n; }),
+    [],
+  );
+
   /** Returns whether a hint was actually available to spend. */
   const useHint = useCallback(() => {
     let spent = false;
@@ -80,11 +98,17 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       hints: hintsAvailable(progress, today()),
       squares: totalSquares(progress),
       sewnInPack: (packId: string) => packSewnCount(progress, packId),
+      owns: (packId: string) => {
+        const pack = PACKS.find((p) => p.id === packId);
+        return pack ? ownsPack(progress, pack) : false;
+      },
+      buy,
+      outOfContent: freeContentExhausted(progress, PACKS),
       sew,
       sewDailyFor,
       useHint,
     }),
-    [progress, ready, sew, sewDailyFor, useHint],
+    [progress, ready, buy, sew, sewDailyFor, useHint],
   );
 
   // `update` is retained for future callers that replace progress wholesale

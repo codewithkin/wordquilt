@@ -28,6 +28,11 @@ export interface Progress {
   hintsDate: string;
   /** Hints bought, which never expire. Free hints refill daily; these do not. */
   hintsPurchased: number;
+  /**
+   * Pack ids bought. Free packs are never listed here — ownership is asked of
+   * `ownsPack`, so a pack that later becomes free needs no migration.
+   */
+  packsOwned: string[];
 }
 
 export const FREE_HINTS_PER_DAY = 3;
@@ -38,7 +43,48 @@ export const emptyProgress: Progress = {
   hintsUsedToday: 0,
   hintsDate: "",
   hintsPurchased: 0,
+  packsOwned: [],
 };
+
+/**
+ * The shape entitlement rules need from a pack. Deliberately not
+ * `PackDefinition` — this file stays free of imports so `node --test` can run
+ * it directly, and the rules genuinely do not care what a pack's vocabulary is.
+ */
+export interface PackFacts {
+  id: string;
+  size: number;
+  free: boolean;
+}
+
+/** A free pack is owned by everyone. Nothing else is owned until it is bought. */
+export const ownsPack = (progress: Progress, pack: PackFacts): boolean =>
+  pack.free || progress.packsOwned.includes(pack.id);
+
+/** Buying is idempotent — a restore replays every purchase. */
+export function buyPack(progress: Progress, packId: string): Progress {
+  if (progress.packsOwned.includes(packId)) return progress;
+  return { ...progress, packsOwned: [...progress.packsOwned, packId] };
+}
+
+/**
+ * Has the player sewn every puzzle they can reach without paying?
+ *
+ * This is the ONLY thing that opens the Wall. Not a session count, not a timer,
+ * not a number of days — running out of free content is the one moment the
+ * offer is honest, and it is reached by forward navigation only (constraint 6).
+ *
+ * Owned paid packs count too: someone who bought The Garden and finished it has
+ * not run out of anything while The Sea is still unopened.
+ */
+export function freeContentExhausted(
+  progress: Progress,
+  packs: readonly PackFacts[],
+): boolean {
+  const reachable = packs.filter((p) => ownsPack(progress, p));
+  if (reachable.length === 0) return false;
+  return reachable.every((p) => packSewnCount(progress, p.id) >= p.size);
+}
 
 export const puzzleId = (packId: string, index: number) => `${packId}#${index}`;
 

@@ -3,14 +3,19 @@ import { describe, it } from "node:test";
 
 import {
   FREE_HINTS_PER_DAY,
+  buyPack,
   emptyProgress,
+  freeContentExhausted,
   hintsAvailable,
+  ownsPack,
   packSewnCount,
   sewDaily,
   sewPuzzle,
   spendHint,
   today,
   totalSquares,
+  type PackFacts,
+  type Progress,
 } from "../lib/progress.ts";
 
 /**
@@ -87,6 +92,77 @@ describe("sewing", () => {
     p = sewPuzzle(p, "kitchen#2");
     assert.ok(p.sewn.includes("kitchen#1"));
     assert.ok(p.dailies.includes("2026-08-12"));
+  });
+});
+
+describe("owning packs", () => {
+  const free: PackFacts = { id: "breakfast", size: 2, free: true };
+  const paid: PackFacts = { id: "the-sea", size: 2, free: false };
+
+  it("gives everyone the free packs and nothing else", () => {
+    assert.equal(ownsPack(emptyProgress, free), true);
+    assert.equal(ownsPack(emptyProgress, paid), false);
+  });
+
+  it("buying twice is a no-op, so a restore can replay every purchase", () => {
+    let p = buyPack(emptyProgress, "the-sea");
+    p = buyPack(p, "the-sea");
+    assert.deepEqual(p.packsOwned, ["the-sea"]);
+  });
+
+  it("never records a free pack as bought", () => {
+    // Ownership is asked of `ownsPack`, so a pack that later becomes free needs
+    // no migration of anybody's saved data.
+    assert.deepEqual(emptyProgress.packsOwned, []);
+    assert.equal(ownsPack(emptyProgress, free), true);
+  });
+});
+
+describe("the Wall opens only when free content runs out", () => {
+  const packs: PackFacts[] = [
+    { id: "breakfast", size: 2, free: true },
+    { id: "kitchen-things", size: 2, free: true },
+    { id: "the-sea", size: 2, free: false },
+  ];
+
+  const sewAll = (p: Progress, packId: string, size: number): Progress => {
+    for (let i = 0; i < size; i++) p = sewPuzzle(p, `${packId}#${i}`);
+    return p;
+  };
+
+  it("stays shut while a free puzzle is still unplayed", () => {
+    let p = sewAll(emptyProgress, "breakfast", 2);
+    p = sewPuzzle(p, "kitchen-things#0");
+    assert.equal(freeContentExhausted(p, packs), false);
+  });
+
+  it("opens once every free puzzle is sewn", () => {
+    let p = sewAll(emptyProgress, "breakfast", 2);
+    p = sewAll(p, "kitchen-things", 2);
+    assert.equal(freeContentExhausted(p, packs), true);
+  });
+
+  it("does not count a paid pack the player has not bought", () => {
+    let p = sewAll(emptyProgress, "breakfast", 2);
+    p = sewAll(p, "kitchen-things", 2);
+    // The Sea is unowned, so it is not content they have run out of.
+    assert.equal(freeContentExhausted(p, packs), true);
+  });
+
+  it("shuts again when a bought pack is still unfinished", () => {
+    // Someone who bought The Sea and has puzzles left in it has not run out of
+    // anything, and asking them for money again would be a lie.
+    let p = buyPack(emptyProgress, "the-sea");
+    p = sewAll(p, "breakfast", 2);
+    p = sewAll(p, "kitchen-things", 2);
+    assert.equal(freeContentExhausted(p, packs), false);
+
+    p = sewAll(p, "the-sea", 2);
+    assert.equal(freeContentExhausted(p, packs), true);
+  });
+
+  it("is shut for a player who has done nothing", () => {
+    assert.equal(freeContentExhausted(emptyProgress, packs), false);
   });
 });
 
