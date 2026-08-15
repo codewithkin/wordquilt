@@ -132,3 +132,243 @@ A feature is a plan file; a todo is a sub-feature; each todo is one commit
 carrying its own message and SHA. Where several todos are genuinely one edit to
 one file, they may share a SHA **and must say so** — fabricating intermediate
 states that never existed is worse than an honest shared commit.
+
+### D-016 — Oblique titles are generated per theme, not authored per puzzle
+*Session 2. Owner's decision.*
+Authoring is ~370 lines of editorial at launch and a permanent 50/month tax.
+Generation makes a new pack cost one small block of writing instead of fifty
+lines. `packages/generator/src/titles.ts` assembles from per-theme frames plus
+fillers, plus standalone lines for the ones that only work whole.
+
+Four rules are enforced in code, not left to whoever writes the next theme: a
+title may never contain the theme phrase or theme name; never contain a word
+hidden in that puzzle; never repeat within a pack; and is deterministic per
+puzzle. The first two protect the only moment the product exists for.
+
+### D-017 — Reanimated directly; Moti removed. Supersedes the tooling half of D-014
+*Session 2. Owner's request.*
+The motion vocabulary in D-014 is unchanged — press / stitch / lay-down /
+resolve / recede, material rather than decorative. Only the implementation moved.
+
+`lib/motion.ts` exposes Reanimated configs and a memoised `useMotion()`. Reduced
+motion is handled with `ReduceMotion.System` on every timing, spring and
+entering animation, so Reanimated itself honours the OS setting and animations
+degrade rather than being skipped.
+
+Two things worth knowing: the iOS bundle dropped 6.3MB to 5.8MB, and
+`useMotion()` MUST stay memoised — an unmemoised return makes every
+`useEffect([..., motion])` re-fire on each render, which on the grid restarts
+every tile's spring whenever anything above it re-renders.
+
+### D-018 — Word selection constrains word SHAPE, not just the letter total
+*Session 2.*
+Hitting an exact total is easy if short words are allowed: the first working
+generator returned GREASEPROOF plus six three-letter words — arithmetically
+perfect, and a miserable puzzle. The design's own reference board is six words
+averaging 5.5 letters.
+
+Selection now takes `minWordLength` (default 4), `maxWordLength` and
+`maxShortWords`. This has a direct product consequence: **phrase length and word
+quality trade off against each other**, because the grid area is fixed. A long
+theme phrase leaves fewer cells for words and forces them short. Theme phrases
+must be authored against the grid sizes they will be used at.
+
+### D-019 — The cold-open board is generated, not transcribed from the design
+*Session 3.*
+The Onboarding design draws a specific 6×6 demo board revealing "morning
+ritual". Its four words (TOAST, MILK, OATS, SOAP) do read correctly off that
+grid, but they occupy only 17 of the 36 cells, so the 19 leftover letters
+resolve to `MMORNIUNGRIGMTUAJAL` — not the 13-letter `MORNINGRITUAL` promised.
+Verified by transcribing the board and reading the leftovers.
+
+The design board is illustrative. Shipping it would mean the first reveal a
+player ever sees resolves to nonsense, and that reveal is the entire product.
+So O1 generates its board with the real packer against a morning pool, seeded so
+every player gets the same one and it actually resolves.
+
+Everything else about O1 follows the design exactly: 6×6, four words, the
+"Something warm." oblique title, the 306px field, the reserved hint band.
+
+### D-020 — Tapping a word slot stands in for tracing, temporarily
+*Session 3. OPEN — the biggest remaining gap.*
+The drag-to-trace gesture is not built. Until it is, O1 and S2 sew a word by
+tapping its slot.
+
+This keeps the whole flow walkable and every other behaviour real — the boards,
+the reveal, the hint band, the progression — but it is NOT the game. The drag is
+the core interaction of the product and everything else is scaffolding around
+it. `react-native-gesture-handler` is already installed.
+
+### D-020 — SUPERSEDED by D-021. Tracing is no longer stubbed.
+*Session 4.* Kept for the record; see D-021.
+
+### D-021 — Trace rules are pure functions in the generator, not in the gesture handler
+*Session 4.*
+`packages/generator/src/trace.ts`, with 23 tests. The rules about what a legal
+trace IS are game rules, not UI concerns, and they are the one piece of logic
+that must be right — a trace accepting a non-adjacent hop, or rejecting a
+legitimate diagonal, breaks the only interaction the product has. Pure functions
+mean CI tests them directly instead of through a gesture handler.
+
+Three specifics that are easy to get wrong:
+- Hit targets are the full PITCH, not the drawn cell. The 2px gutters between
+  tiles must not drop a trace mid-drag.
+- Dragging back onto the previous cell UNDOES the last step. Players correct
+  themselves constantly; a grow-only trace forces them to lift and restart.
+- A trace matches against PLACEMENTS, not the word list. A coincidental spelling
+  elsewhere on the board would leave the real placement unsewn and its cells
+  wrongly counted as used, breaking the leftover arithmetic and the reveal.
+
+A wrong trace does nothing at all — no shake, no red, no buzz (constraint 4).
+A correct one gets a light haptic tick. Silence is not a rebuke.
+
+### D-022 — Progress stores a set of things done, and nothing else
+*Session 4.*
+No streak, no last-played-for-a-chain, no missed-day count, no scores, times or
+stars. Those fields do not exist in `Progress`, because a field that exists
+eventually gets displayed and each would be a way of telling a player they have
+let something slip. A test asserts no such field appears.
+
+Free hints REFILL daily rather than accumulating, and are never removed, so
+there is nothing to lose by not playing. Free hints are spent before purchased
+ones, always.
+
+Pure rules are split from persistence (`progress.ts` vs `progress-store.ts`) so
+they test under plain `node` without a simulator.
+
+### D-023 — CI asserts the palette survived the build
+*Session 4.*
+`scripts/check-bundle.mjs` greps the shipped Hermes bytecode for the WordQuilt
+colours and font families, and for the absence of heroui-native's stock accent.
+
+This is the one failure the project cannot catch any other way. If the uniwind
+config stops being picked up, every component falls back to the library's theme:
+everything stays internally consistent, nothing errors, the typecheck passes and
+the diff looks fine — and the app ships in grey and blue. It has to be asserted
+against the artefact, not the source.
+
+CI ordering is deliberate: pure logic first (milliseconds), then design fidelity,
+then typecheck and bundle. A broken trace rule should fail in ten seconds rather
+than after a twenty-minute build.
+
+### D-024 — GitHub Actions removed; the checks run locally via `pnpm verify`
+*Session 6. Owner's decision.*
+The account reached its Actions limit. That is exactly what the five failed runs
+showed: `runner_id: 0`, no runner name and no steps, failing in two seconds —
+the job was never dispatched to a machine, so nothing in the workflow ever ran.
+It was never a workflow bug, which is why three rewrites changed nothing.
+
+The workflow is deleted. **The checks themselves are not** — they are the
+valuable part and they cost nothing to run:
+
+    pnpm verify   game rules, player data, token parity, assets, typecheck
+
+`scripts/check-bundle.mjs` stays too, run against an export when one is built.
+It is the only thing that catches a bundle that compiles while having lost the
+palette — everything self-consistent, nothing erroring, and the app grey.
+
+If Actions becomes available again, restoring CI is re-adding one YAML file that
+runs `pnpm verify`. Do not re-add it before then: a permanently red check is
+worse than no check, because it trains everyone to ignore the signal.
+
+### D-025 — 6×6 carries FIVE words, not six
+*Session 6. Measured.*
+The handover sketches the ramp as "6×6 with 6 words". It failed 100% of the time
+and could never have worked: 36 cells minus a 9–20 letter phrase leaves ~27
+letters, but six words with at most two short ones needs 4+5+6+6+6+6 = 33.
+
+Five words fit exactly (4+5+6+6+6 = 27) and success went 0% → 100%. The board
+still reads as a full puzzle. Everything else in the ramp is unchanged.
+
+### D-026 — A word may appear at most twice in a pack
+*Session 6. Measured.*
+Without a budget the selector converged hard on whichever words fit the
+arithmetic: 94 distinct words across 50 puzzles, one word appearing NINE times —
+exactly the repetition the handover says the most engaged players catch.
+
+`maxUsesPerWord` defaults to 2, matching the handover's cross-pack rule.
+Distinct words used went 94 → 138 and no word now exceeds two uses.
+
+Note this replaces "no word repeats inside a pack" as stated in the brief. That
+rule is arithmetically incompatible with a 200-word pool: 50 puzzles × ~8 words
+is 400 slots, so true no-repeat needs a 400-word pool. Measured at 187 words it
+built only 19/50.
+
+### D-027 — Packs are 30 puzzles, not 50. OPEN for the owner to confirm.
+*Session 6. Recommended on measured evidence.*
+At 30 puzzles a ~190-word pool builds 30/30 with no word used more than twice.
+At 50 the same pool manages 36/50 — the vocabulary runs out, not the packer.
+
+Extrapolated, 50 puzzles needs ~280–300 words per theme: about 50% more
+curation, on the work the handover already names as the real launch risk.
+
+Consequence if adopted: the launch library becomes 6 free themes × 20 + 5 packs
+× 30 = 270 puzzles rather than 370. Pricing is the owner's call; the monthly
+cadence gets easier to hold either way.
+
+### D-028 — Theme phrases are authored at 9–15 letters
+*Session 6. Measured.*
+Grid area is fixed, so every letter the phrase takes is a letter the words
+cannot have. At 8×8/8 words: a 9-letter phrase gives 6.9-letter words, a
+20-letter phrase gives 5.5. Every length succeeds, so this is a quality lever
+rather than a feasibility one — but short words are what make a word search
+feel thin.
+
+### D-029 — The launch library is 50 free + 150 paid, in seven packs
+*Session 7. Measured, and D-027 is now settled.*
+Breakfast and Kitchen Things are free at 25 puzzles each; The Garden, The Sea,
+Birds, Books and Trains are paid at 30 each. 200 puzzles at launch.
+
+30 comes from the spike, not from taste. The free packs sit at 25 because the
+two free pools are the smallest (159 and 160 usable words) and 25 builds
+comfortably where 30 would be tight.
+
+This supersedes the handover's "6 free themes × 20". Two larger free packs beat
+six thin ones: a 20-puzzle pack needs its own ~150-word pool and its own title
+bank, so six of them is six curation jobs for the same 120 puzzles that two
+packs deliver in two.
+
+### D-030 — A pack is generated as a sequence, not as N independent puzzles
+*Session 7. Found by measurement.*
+`buildPuzzle(packId, index)` used to generate that one puzzle from its seed.
+Measured on The Sea, that produced **6 repeated oblique titles out of 30** — the
+title is the one line a player reads before the board, so the app visibly
+repeated itself.
+
+The no-repeat rules are sequential by nature: a title bank is only
+non-repeating if each draw knows what earlier draws took, and the same holds for
+the two-uses-per-word budget. So `buildPack(packId)` builds the whole pack in
+order, carrying `usedTitles` and `usage`, and `buildPuzzle` indexes into it.
+
+Identity is unchanged — still a pure function of (packId, index), still the same
+boards on every device. The cache is a speed convenience, ~200ms per pack paid
+once when the pack is first opened.
+
+`bench/vocabulary.mjs` now seeds with `puzzleSeed(theme.id, i)` and carries the
+same state, so it validates the boards the app actually ships. A check that
+builds a differently-seeded set proves nothing about the app.
+
+### D-031 — The unconfigured purchase path refuses rather than grants
+*Session 7.*
+`lib/purchases.ts` is the single seam where a store SDK will go. With no
+provider wired up, `purchase()` returns `{ ok: false }` in a release build and
+grants only under `__DEV__`.
+
+The obvious placeholder — grant the pack, sort billing out later — is the one
+that ships. Someone cuts a release, the tap "works", and every paid pack in the
+app is free; and the bug is invisible in testing precisely because it looks like
+success. Entitlements are therefore recorded from what the store answered, never
+from what the tap hoped for.
+
+### D-032 — The Reveal is the only door to the Wall
+*Session 7.*
+`freeContentExhausted()` is the single condition, and it is checked in exactly
+one place: the Reveal's "Sew it in" button, after the hold has run in full.
+Never a timer, never a session count, never a modal over a puzzle.
+
+It counts owned paid packs too. Somebody who bought The Garden and finished it
+has not run out of anything while The Sea is still unopened, and asking them for
+money at that moment would be a lie.
+
+A locked pack tapped on the Shelf goes to the Store instead — the Wall is a
+place you arrive at, not a paywall you bump into.

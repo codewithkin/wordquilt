@@ -1,10 +1,12 @@
 import { elevation } from "@wordquilt/tokens";
 import { cn } from "heroui-native";
-import { MotiView } from "moti";
-import { useState } from "react";
 import { Pressable, type PressableProps } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 
-import { useMotion, duration } from "@/lib/motion";
+import { duration, useMotion } from "@/lib/motion";
 
 import { Text } from "./text";
 
@@ -29,6 +31,8 @@ import { Text } from "./text";
  * slide down the page rather than compress into it.
  */
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export interface ButtonProps extends Omit<PressableProps, "children"> {
   label: string;
   size?: "default" | "lg";
@@ -44,43 +48,41 @@ export function Button({
   onPressOut,
   ...props
 }: ButtonProps) {
-  const [pressed, setPressed] = useState(false);
   const motion = useMotion();
   const depth = elevation.card;
+  const pressed = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: pressed.value * depth }],
+    // Collapse the edge as the button travels, so it compresses into the page
+    // instead of sliding down it.
+    boxShadow: `0 ${depth - pressed.value * depth}px 0 var(--wq-shade)`,
+    opacity: disabled ? 0.5 : 1,
+  }));
 
   return (
-    <MotiView
-      animate={{
-        translateY: pressed && !disabled ? depth : 0,
-        opacity: disabled ? 0.5 : 1,
+    <AnimatedPressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+      disabled={disabled}
+      onPressIn={(e) => {
+        pressed.value = motion.time(1, duration.press);
+        onPressIn?.(e);
       }}
-      transition={motion.timing(duration.press)}
+      onPressOut={(e) => {
+        pressed.value = motion.time(0, duration.press);
+        onPressOut?.(e);
+      }}
+      style={style}
+      className={cn(
+        size === "lg" ? "wq-button-lg" : "wq-button",
+        "flex-row items-center justify-center",
+        className,
+      )}
+      {...props}
     >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled: !!disabled }}
-        disabled={disabled}
-        onPressIn={(e) => {
-          setPressed(true);
-          onPressIn?.(e);
-        }}
-        onPressOut={(e) => {
-          setPressed(false);
-          onPressOut?.(e);
-        }}
-        // The shadow collapses as the button travels, so it compresses into the
-        // page instead of sliding down it.
-        style={pressed && !disabled ? { boxShadow: "0 0 0 transparent" } : undefined}
-        className={cn(
-          size === "lg" ? "wq-button-lg" : "wq-button",
-          "flex-row items-center justify-center",
-          className,
-        )}
-        {...props}
-      >
-        <Text variant={size === "lg" ? "buttonLg" : "button"}>{label}</Text>
-      </Pressable>
-    </MotiView>
+      <Text variant={size === "lg" ? "buttonLg" : "button"}>{label}</Text>
+    </AnimatedPressable>
   );
 }
 
@@ -111,42 +113,44 @@ export function RoundButton({
   onPressOut,
   ...props
 }: RoundButtonProps) {
-  const [pressed, setPressed] = useState(false);
   const motion = useMotion();
   const onSheet = ground === "sheet";
+  const depth = elevation.chip;
+  const pressed = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => {
+    if (!onSheet) {
+      return { opacity: disabled ? 0.5 : 1 - pressed.value * 0.3 };
+    }
+    return {
+      transform: [{ translateY: pressed.value * depth }],
+      boxShadow: `0 ${depth - pressed.value * depth}px 0 var(--wq-shade)`,
+      opacity: disabled ? 0.5 : 1,
+    };
+  });
 
   return (
-    <MotiView
-      animate={{
-        translateY: onSheet && pressed && !disabled ? elevation.chip : 0,
-        opacity: disabled ? 0.5 : !onSheet && pressed ? 0.7 : 1,
+    <AnimatedPressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+      disabled={disabled}
+      onPressIn={(e) => {
+        pressed.value = motion.time(1, duration.press);
+        onPressIn?.(e);
       }}
-      transition={motion.timing(duration.press)}
+      onPressOut={(e) => {
+        pressed.value = motion.time(0, duration.press);
+        onPressOut?.(e);
+      }}
+      style={style}
+      className={cn(
+        onSheet ? "wq-round" : "wq-round-on-field",
+        "items-center justify-center",
+        className,
+      )}
+      {...props}
     >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled: !!disabled }}
-        disabled={disabled}
-        onPressIn={(e) => {
-          setPressed(true);
-          onPressIn?.(e);
-        }}
-        onPressOut={(e) => {
-          setPressed(false);
-          onPressOut?.(e);
-        }}
-        style={
-          onSheet && pressed && !disabled ? { boxShadow: "0 0 0 transparent" } : undefined
-        }
-        className={cn(
-          onSheet ? "wq-round" : "wq-round-on-field",
-          "items-center justify-center",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </Pressable>
-    </MotiView>
+      {children}
+    </AnimatedPressable>
   );
 }

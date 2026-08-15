@@ -8,10 +8,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { AppThemeProvider } from "@/contexts/app-theme-context";
+import { OnboardingProvider } from "@/contexts/onboarding-context";
+import { ProgressProvider } from "@/contexts/progress-context";
+import { SettingsProvider } from "@/contexts/settings-context";
 import { appFonts } from "@/lib/fonts";
 
 export const unstable_settings = {
-  initialRouteName: "(drawer)",
+  initialRouteName: "index",
 };
 
 // Hold the terracotta splash until the faces are in memory. Without this the
@@ -22,9 +25,19 @@ SplashScreen.preventAutoHideAsync();
 
 function StackLayout() {
   return (
-    <Stack screenOptions={{}}>
-      <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-      <Stack.Screen name="modal" options={{ title: "Modal", presentation: "modal" }} />
+    // No headers anywhere. Every screen draws its own chrome inside the
+    // terracotta field, and a platform header would sit on top of the seam.
+    <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="shelf" />
+      <Stack.Screen name="daily" />
+      <Stack.Screen name="reveal" />
+      <Stack.Screen name="puzzle" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="fabric" />
+      <Stack.Screen name="wall" />
+      <Stack.Screen name="store" />
     </Stack>
   );
 }
@@ -49,7 +62,13 @@ export default function Layout() {
       <KeyboardProvider>
         <AppThemeProvider>
           <HeroUINativeProvider>
-            <StackLayout />
+            <SettingsProvider>
+              <ProgressProvider>
+                <OnboardingProvider>
+                  <StackLayout />
+                </OnboardingProvider>
+              </ProgressProvider>
+            </SettingsProvider>
           </HeroUINativeProvider>
         </AppThemeProvider>
       </KeyboardProvider>

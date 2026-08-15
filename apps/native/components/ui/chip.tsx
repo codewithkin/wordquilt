@@ -1,6 +1,10 @@
 import { cn } from "heroui-native";
-import { AnimatePresence, MotiView } from "moti";
+import { useEffect } from "react";
 import { View, type ViewProps } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 
 import { duration, useMotion } from "@/lib/motion";
 
@@ -43,13 +47,14 @@ export function Chip({ label, className, children, ...props }: ChipProps) {
  * the grid must not move.
  *
  * ── Motion: the lock ────────────────────────────────────────────────────────
- * Finding a word is the small reward the whole loop runs on, so the slot filling
- * in is the one moment on this screen allowed a flourish. The found chip stitches
- * in over the outline with the stitch spring while the outline fades beneath it.
+ * Finding a word is the small reward the whole loop runs on, so the slot
+ * filling in is the one moment on this screen allowed a flourish. Both layers
+ * are always mounted and cross-fade against each other — that keeps the row
+ * height fixed, which an enter/exit swap would not.
  *
- * Under reduced motion this degrades to a 120ms cross-fade — stated verbatim in
- * the Accessibility design ("the lock animation becomes an instant state change
- * with a 120ms cross-fade"), not invented here.
+ * The found chip stitches down over the outline. Under reduced motion this
+ * degrades to a 120ms cross-fade with no scale — stated verbatim in the
+ * Accessibility design, not invented here.
  */
 export interface WordSlotProps {
   /** The word. Rendered only once found. */
@@ -61,48 +66,45 @@ export interface WordSlotProps {
 export function WordSlot({ word, found = false, className }: WordSlotProps) {
   const motion = useMotion();
   const width = word.length * 13 + 18;
+  const lock = useSharedValue(found ? 1 : 0);
+
+  useEffect(() => {
+    lock.value = found ? motion.settle(1) : motion.time(0, duration.reduced);
+  }, [found, lock, motion]);
+
+  const emptyStyle = useAnimatedStyle(() => ({ opacity: 1 - lock.value }));
+
+  const foundStyle = useAnimatedStyle(() => ({
+    opacity: lock.value,
+    // Stitched down onto the outline, not faded in over it.
+    transform: [{ scale: motion.reduced ? 1 : 0.86 + lock.value * 0.14 }],
+  }));
 
   return (
     <View style={{ width, height: 36 }}>
-      <AnimatePresence>
-        {!found && (
-          <MotiView
-            key="empty"
-            accessible
-            accessibilityRole="text"
-            accessibilityLabel={`Not yet found, ${word.length} letters`}
-            className={cn("wq-word-empty absolute inset-0", className)}
-            from={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={motion.timing(duration.reduced)}
-          />
+      <Animated.View
+        accessible={!found}
+        accessibilityRole="text"
+        accessibilityLabel={`Not yet found, ${word.length} letters`}
+        className={cn("wq-word-empty absolute inset-0", className)}
+        style={emptyStyle}
+        pointerEvents="none"
+      />
+      <Animated.View
+        accessible={found}
+        accessibilityRole="text"
+        accessibilityLabel={`Found, ${word}`}
+        className={cn(
+          "wq-word-found absolute inset-0 flex-row items-center justify-center",
+          className,
         )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {found && (
-          <MotiView
-            key="found"
-            accessible
-            accessibilityRole="text"
-            accessibilityLabel={`Found, ${word}`}
-            className={cn(
-              "wq-word-found absolute inset-0 flex-row items-center justify-center",
-              className,
-            )}
-            // Stitched down onto the outline, not faded in over it.
-            from={{ opacity: 0, scale: motion.reduced ? 1 : 0.86 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={motion.stitch}
-          >
-            <Text variant="wordChip" className="text-field">
-              {word}
-            </Text>
-          </MotiView>
-        )}
-      </AnimatePresence>
+        style={foundStyle}
+        pointerEvents="none"
+      >
+        <Text variant="wordChip" className="text-field">
+          {word}
+        </Text>
+      </Animated.View>
     </View>
   );
 }

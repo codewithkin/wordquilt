@@ -1,0 +1,8 @@
+{
+  "extends": "@wordquilt/config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "data/**/*.ts"]
+}

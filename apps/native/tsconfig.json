@@ -6,6 +6,8 @@
     // explicit .ts specifiers, so plain `node` can run the token tests and
     // scripts without a build step. Metro resolves them the same way.
     "allowImportingTsExtensions": true,
+    // The app's own pure-logic tests run under `node --test`.
+    "types": ["node"],
     "noEmit": true,
     "paths": {
       "@/*": ["./*"]

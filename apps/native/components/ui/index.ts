@@ -12,9 +12,11 @@ export { Button, RoundButton, type ButtonProps, type RoundButtonProps } from "./
 export { Chip, WordSlot, type ChipProps, type WordSlotProps } from "./chip";
 export {
   LetterTile,
-  threadTransition,
   type LetterTileProps,
   type LetterTileState,
 } from "./letter-tile";
+export { ListRow, type ListRowProps } from "./list-row";
+export { Screen, type ScreenProps } from "./screen";
+export { Seam, type SeamProps } from "./seam";
 export { Card, Pill, Rule, type SurfaceProps } from "./surface";
 export { Text, textRoleClasses, type TextProps, type TextRole } from "./text";

@@ -6,7 +6,26 @@ you never use spell out the theme. This file is self-contained.
 > Read `AGENT-WORKFLOW.md` first — that is *how* work is done here.
 > This file is *what* to build next.
 
-Last updated: end of session 1.
+Last updated: end of session 6.
+
+---
+
+## Which screens are done?
+
+**All 19.** Nine onboarding screens and ten core screens.
+
+The app walks a complete first-time flow: cold open -> reveal -> proposition ->
+theme picker -> fabric picker -> payoff -> rhythm -> Shelf, then Shelf -> pack ->
+puzzle -> reveal -> back to the Shelf.
+
+What is left is making them real rather than making more: real content, real
+per-puzzle progress, working Settings toggles, and a payments SDK.
+
+**`progress/02-screens.md` is the screen-by-screen list.** Read that for what to
+build next. It is the only doc that talks in screens rather than layers.
+
+**Every screen bundles. None has ever been rendered on a device.** That is the
+biggest gap in the project, and it is task one below.
 
 ---
 
@@ -39,7 +58,7 @@ diverging silently.
 
 ## Your task, in order
 
-### 1. Run the app and look at it. Before anything else.
+### 1. Run it, walk the whole flow, then AUDIT. Before anything else.
 
 ```bash
 pnpm install
@@ -47,31 +66,28 @@ pnpm --filter native prebuild     # also flattens the iOS icons — see D-012
 pnpm --filter native ios          # or: android
 ```
 
-`app/(drawer)/index.tsx` is a **foundation preview** screen that renders every
-primitive in both themes. It exists for one reason: a design system wired to the
-wrong config renders in the library's stock palette and looks perfectly
-self-consistent while being completely wrong.
+Fourteen screens have been written and none has been seen. Walk the flow from a
+fresh install, then open each screen's design file and compare it in BOTH
+themes: ground, surface, border, radii, control heights, type sizes, section
+gaps.
 
-Confirm: **terracotta band, cream page, and a hard un-blurred edge under every
-card and tile.** Toggle the theme with the button at the bottom. If it reads grey
-or blue, stop and fix that before anything else.
+**This is a separate, deliberate step — do not skip it because the screens were
+built carefully.** In the project this workflow came from, a session that had
+genuinely followed the designs still had five real deviations, including a wrong
+background on the most important screen.
 
-Nothing in this repo has yet been seen on a device. That is the single biggest
-gap.
+### 2. Real content, and real per-puzzle progress
 
-### 2. Then the generator spike — `plans/02-generator-spike.md`
+Five themes' worth of vocabulary to curate — the handover names this as the real
+launch risk. The screens also still show one hard-coded pack list, and Pack view
+and Daily render fixed grids rather than reading which puzzles are sewn.
 
-**Before any screen work.** It answers whether a 200-word themed pool can yield
-50 distinct puzzles, which decides whether packs are 50 puzzles or 30 — and
-content budget, pack pricing and launch library size all hang off that number.
-It is pure logic, so it does not wait on the seam question.
+### 3. The generator spike is written but unmeasured
 
-### 3. Then the screen scaffold — `plans/03-screen-scaffold.md`
-
-Starting with **the seam (D-006)**, which is unsolved and blocks Shelf, Puzzle,
-Pack and most of Onboarding.
-
----
+`packages/generator` selects word sets, packs snaking paths and resolves the
+theme reveal — verified end to end on a real board. What has NOT been run is
+the yield measurement that answers **50 puzzles per pack or 30**. See
+`plans/02-generator-spike.md` T04.
 
 ## What WordQuilt is, in five rules
 
@@ -100,8 +116,15 @@ Full context in `progress/01-project.md`. The ones that decide arguments:
 | UI primitives | **Written and they bundle. Never rendered on a device.** |
 | Fonts | **All 7 faces load and bundle**, verified by content hash |
 | Platform assets | **All 15 manifest rows pass.** Prebuild generates both native projects correctly |
-| Screens | **None.** The drawer index is a placeholder — delete it when the Shelf lands |
-| Generator | **None** |
+| Screens | **19 of 19.** See `progress/02-screens.md` |
+| The seam | **Solved** (D-006 closed). One SVG arc — see `components/ui/seam.tsx` |
+| Generator | **Works end to end.** Selection, packing and reveal verified on a real board. Yield NOT measured |
+| Motion | **Reanimated only** (D-017). Moti removed |
+| Tracing | **Done.** Drag to trace; rules are pure and tested (23 tests) |
+| Progress | **Done.** Per-puzzle identity, dailies, refilling hints |
+| Settings | **Done.** Every toggle takes effect — haptics, motion, notifications |
+| Checks | **`pnpm verify`** — rules, tokens, assets, typecheck. Run it before pushing |
+| CI | **Removed** (D-024). The account hit its Actions limit; the checks moved local |
 
 "Built" above means written, bundled and machine-checked. It does **not** mean
 seen.
@@ -138,8 +161,10 @@ seen.
 | `designs/extracted/` | Readable values — grep these | **no**, regenerate |
 | `systems/` | Rules, architecture, numbered decisions | yes (D-001) |
 | `plans/` | Numbered todos, one per commit | yes (D-001) |
+| `progress/02-screens.md` | **Which screens are done.** Start here for screens | yes |
 | `progress/` | This file, the project brief, the changelog | yes (D-001) |
 | `packages/tokens/` | Design values as TS + the parity test | yes |
+| `packages/generator/` | Puzzle generation. Deterministic, seeded | yes |
 | `apps/native/global.css` | **The uniwind config.** Mirrors the tokens | yes |
 | `apps/native/components/ui/` | The primitives | yes |
 | `scripts/` | Asset and icon checks | yes |
