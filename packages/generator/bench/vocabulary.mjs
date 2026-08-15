@@ -11,7 +11,7 @@
  * Exit 1 if any rule is broken or any pack cannot be built.
  */
 
-import { generatePuzzle, lettersOnly, readTheme, DIFFICULTY_RAMP } from "../src/index.ts";
+import { generatePuzzle, lettersOnly, puzzleSeed, readTheme, DIFFICULTY_RAMP } from "../src/index.ts";
 import { breakfast, breakfastTitles } from "../data/breakfast.ts";
 import { kitchenThings, kitchenTitles } from "../data/kitchen-things.ts";
 import { theGarden, theGardenTitles } from "../data/the-garden.ts";
@@ -104,9 +104,12 @@ for (const [w, packs] of overshared.slice(0, 10)) {
 
 /* ----------------------------------------------------------- build check */
 
+// This mirrors `apps/native/lib/puzzles.ts` exactly — same seeds, same ramp,
+// same fallback, same carried title and usage state. It has to: a check that
+// builds different boards than the app ships proves nothing about the app.
 console.log("\n\nEVERY PACK BUILDS\n");
 console.log(pad("pack", 16) + pad("size", 7) + pad("built", 10)
-  + pad("distinct", 10) + pad("max uses", 10) + "resolves");
+  + pad("distinct", 10) + pad("max uses", 10) + pad("resolves", 10) + "titles");
 
 for (const { theme, titles, size, free } of PACKS) {
   const usage = new Map();
@@ -120,7 +123,7 @@ for (const { theme, titles, size, free } of PACKS) {
     for (let s = step; s >= 0 && !made; s--) {
       const r = generatePuzzle({
         theme, titles, spec: DIFFICULTY_RAMP[s],
-        seed: i * 7919 + s, usedTitles, usage, maxUsesPerWord: 2,
+        seed: puzzleSeed(theme.id, i), usedTitles, usage, maxUsesPerWord: 2,
       });
       if (r.ok) made = r.puzzle;
     }
@@ -135,12 +138,15 @@ for (const { theme, titles, size, free } of PACKS) {
   console.log(
     pad(theme.name, 16) + pad(`${size}${free ? " free" : ""}`, 7)
     + pad(`${built}/${size}`, 10) + pad(usage.size, 10)
-    + pad(maxUse, 10) + `${resolves}/${built}`,
+    + pad(maxUse, 10) + pad(`${resolves}/${built}`, 10) + `${usedTitles.size}/${built}`,
   );
 
   if (built < size) fail(`${theme.name} built only ${built}/${size}`);
   if (resolves < built) fail(`${theme.name}: ${built - resolves} puzzles do not resolve`);
   if (maxUse > 2) fail(`${theme.name}: a word appears ${maxUse} times`);
+  // The oblique title is the one line a player reads before the board. Two
+  // puzzles carrying the same one reads as the app repeating itself.
+  if (usedTitles.size < built) fail(`${theme.name}: ${built - usedTitles.size} repeated titles`);
 }
 
 const freeTotal = PACKS.filter((p) => p.free).reduce((n, p) => n + p.size, 0);
