@@ -49,7 +49,7 @@ const WORDS = [
 
   // linens and cleaning
   "APRON", "OVENGLOVE", "TEATOWEL", "DISHCLOTH", "SPONGE", "SCOURER",
-  "DUSTER", "MOP", "BROOM", "BUCKET", "SOAP", "POLISH",
+  "DUSTER", "MOP", "BROOM", "SOAP", "POLISH",
 
   // materials and surfaces
   "CHOPPINGBOARD", "BAKINGTRAY", "TIN", "PARCHMENT", "FOIL", "CLINGFILM",
@@ -63,7 +63,7 @@ const WORDS = [
   // actions that belong to the room
   "SIMMER", "BOIL", "ROAST", "BAKE", "STEAM", "POACH", "BRAISE", "GRILL",
   "WHIP", "KNEAD", "PROVE", "CHOP", "DICE", "MINCE", "GRATE", "STIR",
-  "FOLD", "SEASON", "GARNISH", "SERVE", "CHILL", "THAW", "DRAIN", "RINSE",
+  "FOLD", "GARNISH", "SERVE", "CHILL", "THAW", "DRAIN", "RINSE",
 ] as const;
 
 /**
@@ -86,12 +86,12 @@ export const kitchenThings: Theme = {
   id: "kitchen-things",
   name: "Kitchen Things",
   phrases: [
-    "Something's brewing",
-    "Everything in its place",
-    "The heart of the house",
+    "Nearly brewed",
+    "All in its place",
+    "Heart of the house",
     "Warm from the oven",
-    "Where the kettle lives",
-    "Mind the hot handle",
+    "The warm corner",
+    "Mind the handle",
     "A place to gather",
     "Second helpings",
     "Still warm",
