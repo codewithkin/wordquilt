@@ -3,7 +3,7 @@
 **The one place that answers "which screens are done".** Every other doc talks
 about layers and packages; this one talks only about screens.
 
-Last updated: end of session 6.
+Last updated: end of session 7.
 
 ---
 
@@ -61,12 +61,12 @@ Design source: `designs/extracted/Core Screens.txt`, `Puzzle & Reveal.txt`
 
 | # | Screen | State | Blocked by |
 | --- | --- | --- | --- |
-| S1 | **Shelf** (home) — Daily, pack list, accumulated squares | **built** | — |
+| S1 | **Shelf** (home) — Daily, pack list, accumulated squares | **built**, real packs | — |
 | S2 | **Puzzle** — the core loop, zero interruptions | **built** | — |
 | S3 | **Reveal** — the payoff, square sews into the quilt | **built** | — |
 | S4 | Pack view — puzzles within a theme, any order | **built** | — |
-| S5 | The Wall — sole conversion surface | **built** | — |
-| S6 | Store — packs, collections, fabric, hints | **built** | a payments SDK |
+| S5 | The Wall — sole conversion surface | **built**, real packs | — |
+| S6 | Store — packs, collections, fabric, hints | **built**, real packs | a payments SDK |
 | S7 | Daily calendar — month grid, catch-up always free | **built** | — |
 | S8 | Fabric — cosmetics, zero gameplay effect | **built** | — |
 | S9 | Hint overlay — opens one cell during play | **built** | press-and-hold entry |
@@ -94,7 +94,12 @@ Dragging across adjacent cells traces a word; lifting commits it. The rules live
 in `@wordquilt/generator/trace` as pure functions with 23 tests. A wrong trace
 does nothing at all — no shake, no red, no buzz.
 
-### 3. Nothing has ever been run on a device
+### 3. ~~The screens show a hard-coded pack list~~ — DONE
+
+All seven packs are real, generated from real pools, and every screen that
+mentions a pack reads the library rather than a literal. See "Content" below.
+
+### 4. Nothing has ever been run on a device
 
 The app bundles and prebuilds clean, but no screen has been rendered. "Bundles"
 is not "runs" and is not "looks right".
@@ -113,10 +118,16 @@ These are ready and verified to bundle:
   `Chip`, `WordSlot`, `LetterTile`.
 - **Motion** — Reanimated, with reduced-motion degradation built in.
 - **Generator** — word selection, path packing, theme reveal and the trace
-  rules, all tested. Yield not yet measured.
-- **Progress** — sewn squares, dailies, refilling hints. Pure rules tested.
+  rules, all tested. Yield measured (`progress/03-generator-spike.md`).
+- **Content** — seven pools, 200 puzzles. Breakfast and Kitchen Things free at
+  25; The Garden, The Sea, Birds, Books and Trains paid at 30 (D-029). Every
+  pack is proven to build its full run, resolve to its theme, keep every word
+  under three uses and never repeat an oblique title — with the app's own seeds.
+- **Progress** — sewn squares, dailies, refilling hints, packs owned. Pure rules
+  tested.
 - **Checks** — `pnpm verify` runs game rules, player data, token parity, the
-  asset manifest and typecheck. 75 assertions. CI was removed (D-024) because
+  vocabulary rules, the asset manifest and typecheck. 84 assertions plus the
+  seven-pack build check. CI was removed (D-024) because
   the account hit its Actions limit; the checks themselves stayed.
 
 A screen should mostly be composition, not new styling. If you find yourself
@@ -134,11 +145,14 @@ Every screen exists. What is left is making them real rather than making more.
    down every deviation — a separate, deliberate step. In the project this
    workflow came from, a careful session still had five real deviations,
    including a wrong background on the most important screen.
-2. **Real content.** There are five puzzle themes' worth of vocabulary to
-   curate, and the screens still show one hard-coded pack list. The handover
-   names vocabulary as the real launch risk.
-3. **Payments.** The Store lists real prices against no SDK.
-4. **Run the generator yield spike** (`plans/02-generator-spike.md` T04) — still
-   the thing that decides 50 vs 30 puzzles per pack.
+2. **Payments.** The Store lists real prices against no SDK. Everything above
+   the SDK is finished: `lib/purchases.ts` is the single seam, entitlements are
+   recorded from what the store answers, and the unconfigured path refuses in a
+   release build rather than giving paid packs away (D-031).
+3. **Alternate states.** Eight variants in `Alternate States.txt` and five
+   accessibility modes, none built. Three of the eight — store offline, purchase
+   in flight, purchase failure — now have real code paths behind them and only
+   need their screens.
 
-Done since: per-puzzle progress, and every Settings toggle now takes effect.
+Done since: the seven-pack library, pack ownership, the Wall's single trigger,
+and every screen that mentions a pack reading it from the library.

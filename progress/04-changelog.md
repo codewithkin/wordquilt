@@ -4,6 +4,99 @@ Newest first. This is where the **reasoning** lives — git has the file list.
 
 ---
 
+## Session 7
+
+**The content problem, answered with real content: seven pools, 200 puzzles,
+and every screen that mentions a pack now reads the library.**
+
+> Sessions 2–6 were not written up here. `progress/02-screens.md` carries the
+> screen-by-screen state and `systems/09-decisions.md` carries the decisions;
+> this file resumes at 7.
+
+### The library
+
+Two free packs at 25 (Breakfast, Kitchen Things) and five paid at 30 (The
+Garden, The Sea, Birds, Books, Trains). 50 free + 150 paid = 200 puzzles, which
+settles D-027 in favour of 30 and replaces the handover's "6 free themes × 20"
+with two larger free packs — a 20-puzzle pack still needs its own ~150-word pool
+and its own title bank, so six of them is six curation jobs for the same 120
+puzzles two packs deliver in two (D-029).
+
+### The vocabulary rules became checks
+
+`pnpm check:vocabulary`. The handover names vocabulary as the real launch risk —
+roughly 3,000 word placements, and the most engaged players are exactly the ones
+who notice repetition. Hand-checking that does not hold, so it is a program that
+exits 1.
+
+It earned its keep immediately. The cross-pack rule found **20 words in three or
+four packs each** — DAWN, MORNING, TABLE and WINDOW were in four apiece. Each
+one now keeps the two packs it belongs to most. It also caught The Sea building
+29 of 30, which was a thin pool rather than a bug; ~30 more coastal words fixed
+it.
+
+### The bug that only shows up at pack scale
+
+`buildPuzzle(packId, index)` generated one puzzle from its seed, which is
+exactly what "generation is a pure function of identity" seems to ask for.
+Measured across a whole pack, it produced **6 repeated oblique titles out of
+30**. The title is the one line a player reads before the board, so the app
+visibly repeated itself.
+
+The no-repeat rules are sequential by nature: a title bank is only
+non-repeating if each draw knows what earlier draws took, and the same holds for
+the two-uses-per-word budget. So a pack is built as a sequence and indexed into
+(D-030). Identity is unchanged — same boards on every device, every launch — and
+the cost is ~200ms per pack, paid once.
+
+The check now seeds itself the way the app does, because a check that builds a
+differently-seeded set proves nothing about what ships.
+
+### Free and paid, wired through
+
+`packsOwned` in progress, with ownership asked of `ownsPack` so a pack that
+later becomes free needs no migration. `freeContentExhausted` is the single
+condition that opens the Wall, and it counts owned paid packs too: somebody who
+bought The Garden and finished it has not run out of anything while The Sea is
+still unopened (D-032).
+
+Store and Wall stop listing invented rows. Locked packs stay on the Shelf and
+read as unstitched — no price sticker, no red dot, no timer, the same "30
+puzzles, none sewn yet" line an unstarted owned pack gets. Tapping one goes to
+the Store; the Wall is reached only through the Reveal.
+
+Pack and Puzzle both gate on ownership rather than trusting the tap that usually
+got there, because a deep link or a stale back stack would otherwise hand out a
+board nobody paid for.
+
+### The placeholder that was not written
+
+`lib/purchases.ts` refuses in a release build instead of granting (D-031). The
+convenient version — grant the pack, sort billing out later — is the one that
+ships, and a build where every paid pack is free looks exactly like success in
+testing.
+
+### Verified
+
+- `pnpm verify` green: 61 rule assertions, 22 token assertions, 15 asset rows,
+  the vocabulary linter and typecheck across all packages.
+- All seven packs build their full run, resolve to their theme, keep every word
+  under three uses and repeat no title — with the app's own seeds.
+- iOS bundle exports at 5.6MB; the new pools and product ids are in it.
+
+**Still not verified: nothing has been rendered on a device.** That is unchanged
+and remains the biggest gap in the project.
+
+### Next
+
+1. **Run it and look at it.** Then audit all 19 screens against their design
+   files in both themes.
+2. **Payments.** Everything above the SDK is finished; the seam is one file.
+3. **Alternate states.** Store offline, purchase in flight and purchase failure
+   now have real code paths behind them and only need their screens.
+
+---
+
 ## Session 1
 
 **Scaffolded the working method, and built the foundation: token layer,

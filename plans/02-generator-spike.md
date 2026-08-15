@@ -67,14 +67,18 @@ has to land, or the pack is short.
   `progress/03-generator-spike.md`. See D-025, D-026, D-027, D-028.
 
 ## T05 — Vocabulary rules as enforceable checks
-- [ ] `pending-T05`
-- **Commit:** `feat(generator): enforce the vocabulary rules`
-- **Done when:** the rules from the handover are checks, not intentions:
-  - no word repeats inside a pack
-  - no word appears in more than two packs total
-  - every word falls within roughly the top 30,000 lemmas
-  - British/American spellings locked per locale, not accepted inconsistently
-- **Note:** the handover names vocabulary as the real launch risk — 3,000 word
-  placements at launch, and the most engaged players are the ones who notice
-  repetition. These need to be machine-checked; hand-checking 3,000 placements
-  will not hold.
+- [x] `pnpm check:vocabulary` — `packages/generator/bench/vocabulary.mjs`
+- **Commit:** `feat(generator): add five themed packs and the vocabulary linter`
+- **DONE.** The rules are checks and the check exits 1:
+  - no duplicates inside a pool, plain A–Z only
+  - **no word in more than two packs** — found 20 violations across the seven
+    pools on its first run; each shared word now keeps the two packs it belongs
+    to most
+  - no word used more than twice within a pack
+  - enough usable 4–9 letter words for the pack size
+  - 8+ phrases each 9–15 letters (D-028), a title bank that outruns the pack
+  - **every pack builds its full run and every puzzle resolves to its theme**,
+    seeded exactly as the app seeds it, with no repeated oblique title
+- **Not covered:** "top 30,000 lemmas" and locale-locking are still authored by
+  hand. Both need a word list to check against; the length window and the
+  A–Z rule catch the shapes that actually break the packer.

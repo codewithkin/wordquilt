@@ -313,3 +313,62 @@ cannot have. At 8×8/8 words: a 9-letter phrase gives 6.9-letter words, a
 20-letter phrase gives 5.5. Every length succeeds, so this is a quality lever
 rather than a feasibility one — but short words are what make a word search
 feel thin.
+
+### D-029 — The launch library is 50 free + 150 paid, in seven packs
+*Session 7. Measured, and D-027 is now settled.*
+Breakfast and Kitchen Things are free at 25 puzzles each; The Garden, The Sea,
+Birds, Books and Trains are paid at 30 each. 200 puzzles at launch.
+
+30 comes from the spike, not from taste. The free packs sit at 25 because the
+two free pools are the smallest (159 and 160 usable words) and 25 builds
+comfortably where 30 would be tight.
+
+This supersedes the handover's "6 free themes × 20". Two larger free packs beat
+six thin ones: a 20-puzzle pack needs its own ~150-word pool and its own title
+bank, so six of them is six curation jobs for the same 120 puzzles that two
+packs deliver in two.
+
+### D-030 — A pack is generated as a sequence, not as N independent puzzles
+*Session 7. Found by measurement.*
+`buildPuzzle(packId, index)` used to generate that one puzzle from its seed.
+Measured on The Sea, that produced **6 repeated oblique titles out of 30** — the
+title is the one line a player reads before the board, so the app visibly
+repeated itself.
+
+The no-repeat rules are sequential by nature: a title bank is only
+non-repeating if each draw knows what earlier draws took, and the same holds for
+the two-uses-per-word budget. So `buildPack(packId)` builds the whole pack in
+order, carrying `usedTitles` and `usage`, and `buildPuzzle` indexes into it.
+
+Identity is unchanged — still a pure function of (packId, index), still the same
+boards on every device. The cache is a speed convenience, ~200ms per pack paid
+once when the pack is first opened.
+
+`bench/vocabulary.mjs` now seeds with `puzzleSeed(theme.id, i)` and carries the
+same state, so it validates the boards the app actually ships. A check that
+builds a differently-seeded set proves nothing about the app.
+
+### D-031 — The unconfigured purchase path refuses rather than grants
+*Session 7.*
+`lib/purchases.ts` is the single seam where a store SDK will go. With no
+provider wired up, `purchase()` returns `{ ok: false }` in a release build and
+grants only under `__DEV__`.
+
+The obvious placeholder — grant the pack, sort billing out later — is the one
+that ships. Someone cuts a release, the tap "works", and every paid pack in the
+app is free; and the bug is invisible in testing precisely because it looks like
+success. Entitlements are therefore recorded from what the store answered, never
+from what the tap hoped for.
+
+### D-032 — The Reveal is the only door to the Wall
+*Session 7.*
+`freeContentExhausted()` is the single condition, and it is checked in exactly
+one place: the Reveal's "Sew it in" button, after the hold has run in full.
+Never a timer, never a session count, never a modal over a puzzle.
+
+It counts owned paid packs too. Somebody who bought The Garden and finished it
+has not run out of anything while The Sea is still unopened, and asking them for
+money at that moment would be a lie.
+
+A locked pack tapped on the Shelf goes to the Store instead — the Wall is a
+place you arrive at, not a paywall you bump into.
