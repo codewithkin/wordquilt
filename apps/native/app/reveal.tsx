@@ -6,6 +6,7 @@ import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 import { TraceableBoard } from "@/components/traceable-board";
 import { Button, Text } from "@/components/ui";
 import { Screen } from "@/components/ui/screen";
+import { useProgress } from "@/contexts/progress-context";
 import { duration, revealHoldMs, revealStaggerMs } from "@/lib/motion";
 import { buildDaily, buildPuzzle } from "@/lib/puzzles";
 
@@ -37,6 +38,19 @@ export default function RevealScreen() {
 
   const [holdDone, setHoldDone] = useState(false);
 
+  /**
+   * The one door to the Wall.
+   *
+   * The square was already sewn on the Puzzle screen, so by the time this
+   * renders, `outOfContent` reflects the puzzle just finished. If it was the
+   * last one they could reach, "Sew it in" carries them forward to the Wall
+   * instead of back to the Shelf — which is the only way the Wall is ever
+   * reached. It is never thrown over a puzzle, never shown on a timer, and it
+   * does not interrupt this screen: the hold still runs in full first.
+   */
+  const { outOfContent } = useProgress();
+  const onwards = outOfContent ? "/wall" : "/shelf";
+
   useEffect(() => {
     if (!puzzle) return;
     // The hold begins once the letters have finished resolving, so the phrase
@@ -56,7 +70,7 @@ export default function RevealScreen() {
           <Animated.View
             entering={FadeIn.duration(duration.enter).reduceMotion(ReduceMotion.System)}
           >
-            <Button label="Sew it in" onPress={() => router.replace("/shelf")} />
+            <Button label="Sew it in" onPress={() => router.replace(onwards)} />
           </Animated.View>
         ) : undefined
       }

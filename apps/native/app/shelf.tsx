@@ -37,7 +37,7 @@ const SWATCH: Record<string, string> = {
 
 export default function Shelf() {
   const { prefs, finish } = useOnboarding();
-  const { squares, sewnInPack, progress } = useProgress();
+  const { squares, sewnInPack, owns, progress } = useProgress();
   const colour = SWATCH[prefs.fabric] ?? fabricSwatches.terracotta;
 
   // Written on arrival, not on leaving O8.
@@ -51,9 +51,12 @@ export default function Shelf() {
       id: pack.id,
       name: pack.name,
       sewn: done,
-      // Counts accumulate; nothing counts down. "20 waiting" rather than
-      // "19 remaining" — the same number said without a deficit.
-      count: done === 0 ? `${pack.size} waiting` : `${done} of ${pack.size} sewn`,
+      owned: owns(pack.id),
+      // Counts accumulate; nothing counts down. "none sewn yet" rather than
+      // "20 remaining" — the same number said without a deficit. A locked pack
+      // gets exactly the same line as an unstarted owned one: it reads as
+      // unstitched, not badged. No price sticker, no red dot, no timer.
+      count: done === 0 ? `${pack.size} puzzles, none sewn yet` : `${done} of ${pack.size} sewn`,
     };
   });
 
@@ -128,9 +131,18 @@ export default function Shelf() {
                 <View key={pack.name}>
                   {i > 0 && <Rule />}
                   <Pressable
-                    onPress={() => router.push(`/pack/${pack.id}`)}
+                    // A locked pack goes to the Store, not the Wall. The Wall is
+                    // reached only by running out of content, never by tapping
+                    // something that happens to be behind it.
+                    onPress={() =>
+                      router.push(pack.owned ? `/pack/${pack.id}` : "/store")
+                    }
                     accessibilityRole="button"
-                    accessibilityLabel={`${pack.name}, ${pack.count}`}
+                    accessibilityLabel={
+                      pack.owned
+                        ? `${pack.name}, ${pack.count}`
+                        : `${pack.name}, ${pack.count}, not yours yet`
+                    }
                     className="flex-row items-center gap-[14px] px-[18px] py-4"
                   >
                     <View className="flex-row flex-wrap gap-[2px]" style={{ width: 40 }}>

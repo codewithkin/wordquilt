@@ -1,5 +1,6 @@
 import { fieldHeight } from "@wordquilt/tokens";
 import { router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import { Card, Chip, RoundButton, Text } from "@/components/ui";
@@ -26,9 +27,19 @@ export default function PackView() {
   const pack = findPack(packId);
   const name = pack?.name ?? raw ?? "Pack";
 
-  const { progress, sewnInPack } = useProgress();
+  const { progress, sewnInPack, owns } = useProgress();
   const total = pack?.size ?? 20;
   const sewn = sewnInPack(packId);
+  const owned = owns(packId);
+
+  // A pack nobody bought has no board to show. Deep links, a stale back stack
+  // and a restore that has not finished all land here, so the gate lives on the
+  // screen rather than only on the tap that usually reaches it.
+  useEffect(() => {
+    if (!owned) router.replace("/store");
+  }, [owned]);
+
+  if (!owned) return null;
 
   return (
     <Screen

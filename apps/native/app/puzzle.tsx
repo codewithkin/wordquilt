@@ -58,7 +58,15 @@ export default function PuzzleScreen() {
   const [found, setFound] = useState<string[]>([]);
   const [hint, setHint] = useState<string | null>(null);
   const [hinted, setHinted] = useState<ReadonlySet<string>>(new Set());
-  const { hints, useHint: spendHint, sew, sewDailyFor } = useProgress();
+  const { hints, useHint: spendHint, sew, sewDailyFor, owns } = useProgress();
+
+  // The Daily is never gated. A pack puzzle is, and the gate lives here rather
+  // than only on the tap that usually reaches it — a deep link or a stale back
+  // stack would otherwise hand someone a board they have not bought.
+  const locked = !dailyDate && !owns(packId);
+  useEffect(() => {
+    if (locked) router.replace("/store");
+  }, [locked]);
 
   const words = puzzle?.placements.map((p) => p.word) ?? [];
 
@@ -99,6 +107,8 @@ export default function PuzzleScreen() {
     setHinted((h) => new Set(h).add(cellKey(cell.row, cell.col)));
     setHint(`One letter of a ${wordLength(target.path.length)} word.`);
   };
+
+  if (locked) return null;
 
   // A pool too thin for any grid size. Better to say so than to show a broken
   // board — and it is a signal the theme needs more words, not a crash.
